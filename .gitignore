@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+.env
+build
+.twiliodeployinfo
+.env.prod
+.env.stage
+.idea
+yarn-error.log

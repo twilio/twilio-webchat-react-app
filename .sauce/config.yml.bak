@@ -1,0 +1,29 @@
+apiVersion: v1alpha
+kind: cypress
+defaults: {}
+showConsoleLog: false
+sauce:
+  region: us-west-1
+  concurrency: 60
+  sauceignore: .sauceignore
+cypress:
+  configFile: cypress.json
+  version: 9.1.0
+  record: false
+  key: ""
+  reporters: []
+suites:
+- name: cypress - windows 10 - chrome
+  browser: chrome
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
+  mode: sauce
+rootDir: .
+artifacts:
+  download:
+    match:
+    - '*'
+    when: always
+    directory: ./artifacts

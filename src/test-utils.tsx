@@ -1,0 +1,61 @@
+import { render as rtlRender } from "@testing-library/react";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import { ReactElement, ReactNode } from "react";
+import type * as Conversations from "@twilio/conversations";
+
+import type { Notification } from "./store/definitions";
+import { reducers } from "./store/store";
+
+// eslint-disable-next-line import/no-unused-modules
+export function renderWithStore(ui: ReactElement, { store = createStore(reducers), ...renderOptions } = {}) {
+    const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
+        return <Provider store={store}>{children}</Provider>;
+    };
+
+    return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+}
+
+/*
+ *  It's tricky to check if a notification is shown or not as its id contains a `Math.random` that changes with every call.
+ *  This helper simplify the match by removing replacing the id with a regex that compare the strings without the generated number,
+ */
+export const matchPartialNotificationObject = (expectedNotification: Notification) => {
+    return {
+        ...expectedNotification,
+        id: expect.stringMatching(new RegExp(expectedNotification.id.replace(/_(.*)/, "")))
+    };
+};
+
+export * from "@testing-library/react";
+
+export class MockedPaginator<T> implements Conversations.Paginator<T> {
+    /**
+     * Indicates the existence of the next page.
+     */
+    hasNextPage = false;
+
+    /**
+     * Indicates the existence of the previous page.
+     */
+    hasPrevPage = false;
+
+    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-parameter-properties,no-empty-function
+    constructor(public items: T[] = []) {}
+
+    /**
+     * Request next page.
+     * Does not modify the existing object.
+     */
+    async nextPage(): Promise<MockedPaginator<T>> {
+        return Promise.resolve(new MockedPaginator(this.items));
+    }
+
+    /**
+     * Request previous page.
+     * Does not modify the existing object.
+     */
+    async prevPage(): Promise<MockedPaginator<T>> {
+        return Promise.resolve(new MockedPaginator(this.items));
+    }
+}
