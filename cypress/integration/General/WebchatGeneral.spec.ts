@@ -59,25 +59,27 @@ describe("Webchat Lite general scenario's", () => {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
         ChatMessagesView.validateMessagesRootContainerExist();
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.CUSTOMER_MESSAGE);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE);
         PreEngagementChatForm.toggleWebchatExpanded();
         ChatMessagesView.validateMessagesRootContainerNotExist();
         PreEngagementChatForm.toggleWebchatExpanded();
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.CUSTOMER_MESSAGE);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE);
     });
 
     it("FLEXEXP-111 - Webchat Lite - Active chat - exchange message", function flexExp111() {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
         ChatMessagesView.validateMessagesRootContainerExist();
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.CUSTOMER_MESSAGE);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE);
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {
                 cy.task("acceptReservation", { conversationSid: this.convoSid });
-                cy.task("sendMessage", { conversationSid: this.convoSid, messageText: Constants.AGENT_MESSAGE });
-                cy.wait(2000);
-                ChatMessagesView.getAllMessagesBubbles().contains(Constants.AGENT_MESSAGE);
+                cy.task("sendMessage", { conversationSid: this.convoSid, messageText: Constants.AGENT_MESSAGE }).then(
+                    () => {
+                        cy.validateLastTextMessage(Constants.AGENT_MESSAGE);
+                    }
+                );
             });
     });
 
@@ -85,7 +87,7 @@ describe("Webchat Lite general scenario's", () => {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
         ChatMessagesView.validateNewMessageSeparatorExist();
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.AGENT_MESSAGE);
+        cy.validateLastTextMessage(Constants.AGENT_MESSAGE);
         MessageInputBoxView.getMessageInputTextArea().focus();
         cy.wait(1000);
         ChatMessagesView.getMessagesRootContainer().click();
@@ -104,7 +106,7 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.FileTypes.PNG
                 );
             });
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.PNG);
+        cy.validateLastAttachmentMessage(Constants.FileTypes.PNG);
     });
 
     it("FLEXEXP-116 Webchat Lite - file attachments - upload - send - txt", function flexExp116() {
@@ -119,7 +121,7 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.FileTypes.TXT
                 );
             });
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.TXT);
+        cy.validateLastAttachmentMessage(Constants.FileTypes.TXT);
     });
 
     it("FLEXEXP-117 Webchat Lite - file attachments - upload - send - jpg", function flexExp117() {
@@ -134,7 +136,33 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.FileTypes.JPG
                 );
             });
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.JPG);
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
+    });
+
+    it("FLEXEXP-146 Webchat Lite - file attachments- receive - download - invalid file extension", function flexExp146() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        cy.addAttachmentFileAndSend(Constants.FileTypes.JPG);
+        cy.getConversationSid()
+            .as("convoSid")
+            // eslint-disable-next-line sonarjs/no-identical-functions
+            .then(() => {
+                cy.task("getLastMessageMediaData", { conversationSid: this.convoSid }).should(
+                    "include",
+                    Constants.FileTypes.JPG
+                );
+            });
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
+        cy.getConversationSid()
+            .as("convoSid")
+            .then(() => {
+                // find the way to add attachment from agent side
+                cy.task("sendMessage", { conversationSid: this.convoSid, messageText: Constants.AGENT_MESSAGE }).then(
+                    () => {
+                        cy.validateLastTextMessage(Constants.AGENT_MESSAGE);
+                    }
+                );
+            });
     });
 
     it("FLEXEXP-118 Webchat Lite - file attachments - upload - send - pdf", function flexExp118() {
@@ -149,7 +177,7 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.FileTypes.PDF
                 );
             });
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.PDF);
+        cy.validateLastAttachmentMessage(Constants.FileTypes.PDF);
     });
 
     it("FLEXEXP-119 - Webchat Lite - file attachments - upload - choose different file", function flexExp119() {
@@ -169,7 +197,27 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.FileTypes.JPG2
                 );
             });
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.JPG2);
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG2);
+    });
+
+    it("FLEXEXP-122 Webchat Lite - file attachments - send - preview/download", function flexExp122() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        cy.addAttachmentFileAndSend(Constants.FileTypes.JPG);
+        cy.getConversationSid()
+            .as("convoSid")
+            // eslint-disable-next-line sonarjs/no-identical-functions
+            .then(() => {
+                cy.task("getLastMessageMediaData", { conversationSid: this.convoSid }).should(
+                    "include",
+                    Constants.FileTypes.JPG
+                );
+                /*
+                 * find the way to validate link
+                 * cy.task("validateAttachmentLink", { conversationSid: this.convoSid }).should("contain", "Media");
+                 */
+            });
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
     });
 
     it("FLEXEXP-144 Webchat Lite - file attachments - upload - send - invalid file extension", function flexExp144() {
@@ -177,6 +225,18 @@ describe("Webchat Lite general scenario's", () => {
         PreEngagementChatForm.toggleWebchatExpanded();
         MessageInputBoxView.getMessageFileInput().attachFile(`${Constants.FILEPATH}/${Constants.FileTypes.JSON}`);
         ChatNotificationView.getAlertMessageText().contains(Constants.INVALID_FILE_ERROR);
+        ChatNotificationView.getAlertMessage().within(() => {
+            ChatNotificationView.getAlertMessageExitButton().click();
+        });
+        ChatNotificationView.validateAlertMessageNotExist();
+        MessageInputBoxView.validateMessageAttachmentsNotVisible();
+    });
+
+    it("FLEXEXP-145 Webchat Lite - file attachments - upload - exceeds allowed file size", function flexExp145() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        MessageInputBoxView.getMessageFileInput().attachFile(`${Constants.FILEPATH}/${Constants.FileTypes.LARGE_PDF}`);
+        ChatNotificationView.getAlertMessageText().contains(Constants.LARGE_FILE_ERROR);
         ChatNotificationView.getAlertMessage().within(() => {
             ChatNotificationView.getAlertMessageExitButton().click();
         });
@@ -201,6 +261,8 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.CUSTOMER_MESSAGE_TEXT_ATTACHMENT
                 );
             });
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_TEXT_ATTACHMENT);
     });
 
     it("FLEXEXP-136 Webchat Lite - file attachments - upload file - adding text to message", function flexExp136() {
@@ -209,8 +271,6 @@ describe("Webchat Lite general scenario's", () => {
         cy.addAttachmentFile(Constants.FileTypes.JPG);
         MessageInputBoxView.getMessageInputTextArea().type(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
         MessageInputBoxView.getMessageSendButton().click();
-        cy.wait(1000);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.JPG);
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {
@@ -223,18 +283,13 @@ describe("Webchat Lite general scenario's", () => {
                     Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT
                 );
             });
+        cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
     });
 
     it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.CUSTOMER_MESSAGE);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.AGENT_MESSAGE);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.PNG);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.JPG);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.JPG2);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.TXT);
-        ChatMessagesView.getAllMessagesBubbles().contains(Constants.FileTypes.PDF);
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {

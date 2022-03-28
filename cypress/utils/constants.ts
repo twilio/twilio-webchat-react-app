@@ -5,7 +5,8 @@ export enum FileTypes {
     PNG = "test.png",
     TXT = "test.txt",
     GIF = "test.gif",
-    PDF = "test.pdf"
+    PDF = "test.pdf",
+    LARGE_PDF = "largeFile.pdf"
 }
 
 export const TIMESTAMP = Date.now();
@@ -22,6 +23,7 @@ export const AGENT_MESSAGE = `Hello from Agent ${TIMESTAMP}`;
 
 export const EMPTY_FIELD_ERROR_MESSAGE = /Please fill (?:in|out) this field/;
 export const INVALID_FILE_ERROR = /Please try a different file./;
+export const LARGE_FILE_ERROR = /because the file is too large./;
 export const INCORRECT_EMAIL_ERROR_MESSAGE_CHROME = new RegExp(
     `Please include an '@' in the email address. '${INCORRECT_EMAIL}' is missing an '@'.`
 );

@@ -49,7 +49,7 @@ You can find your **Account Sid** and **Auth Token** on the main [Twilio Console
 
 For more info on how to create an **API key** and an **API secret**, please check the [documentation](https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys).
 
-You can find your **Conversations Service Sid** on the [services page](https://console.twilio.com/us1/develop/conversations/manage/services?frameUrl=%2Fconsole%2Fconversations%2Fservices%3Fx-target-region%3Dus1). Make sure top pick the one linked to your Flex Account — usually it is named `Flex Chat Service` and it starts with `IS`
+You can find your **Conversations Service Sid** on the [services page](https://console.twilio.com/us1/develop/conversations/manage/services?frameUrl=%2Fconsole%2Fconversations%2Fservices%3Fx-target-region%3Dus1). Make sure to pick the one linked to your Flex Account — usually it is named `Flex Chat Service` and it starts with `IS`
 
 For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
 

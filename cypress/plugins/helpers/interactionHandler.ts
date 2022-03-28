@@ -184,3 +184,34 @@ export const getLastMessageText = async ({ conversationSid }: { conversationSid:
         .messages.list({ order: "desc", limit: 1 });
     return messageIM[0].body;
 };
+
+export const validateAttachmentLink = async ({ conversationSid }: { conversationSid: string }) => {
+    const client = await getTwilioClient();
+    const messageIM = await client.conversations
+        .conversations(conversationSid)
+        .messages.list({ order: "desc", limit: 1 });
+    const mediaSid = messageIM[0].media[0].sid;
+    const options = {
+        method: "GET",
+        url: `https://mcs.us1.twilio.com/v1/Services/ISefe4b42a882440c0adcfd843a197151a/Media/${mediaSid}`,
+        auth: {
+            username: client.username,
+            password: client.password
+        },
+        headers: {
+            Accept: "*/*"
+        }
+    };
+
+    return new Promise((resolve, reject) => {
+        axios
+            .request(options)
+            .then((response) => {
+                resolve(response.data.url);
+            })
+            .catch((err) => {
+                // result = null;
+                return reject(err);
+            });
+    });
+};

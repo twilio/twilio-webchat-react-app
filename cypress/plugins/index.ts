@@ -7,6 +7,7 @@ import { config } from "dotenv";
 import {
     acceptReservation,
     sendMessage,
+    validateAttachmentLink,
     wrapReservation,
     completeReservation,
     getCustomerName,
@@ -20,6 +21,7 @@ module.exports = (on: any, _config: any) => {
     on("task", {
         acceptReservation,
         sendMessage,
+        validateAttachmentLink,
         wrapReservation,
         completeReservation,
         getCustomerName,

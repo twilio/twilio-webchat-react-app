@@ -15,6 +15,10 @@ const ChatMessagesView = {
         return cy.get('[data-test="all-message-bubbles"]');
     },
 
+    getMessagesBubblesFile() {
+        return cy.get('[data-test="file-preview-main-area"]');
+    },
+
     validateChatStartedVisible(time) {
         this.getChatStarted(time).should("be.visible");
     },
