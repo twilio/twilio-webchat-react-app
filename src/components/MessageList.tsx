@@ -88,7 +88,7 @@ export const MessageList = () => {
                 setShouldFocusLatest(true);
             }
 
-            // Ensure that any new message sent is within scroll view.
+            // Ensure that any new message sent by the current user is within scroll view.
             const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
             if (belongsToCurrentUser) {
                 scrollToBottom();
