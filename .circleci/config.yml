@@ -59,7 +59,9 @@ jobs:
       - run:
           name: "Install Sauce Labs saucectl"
           command: |
-            sudo npm i -g saucectl
+            curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
+            chmod 700 get_saucectl.sh && \
+            sudo ./get_saucectl.sh -b /usr/local/bin
       - run:
           name: "Configure Sauce saucectl"
           command: |
