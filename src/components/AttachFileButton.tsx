@@ -83,6 +83,7 @@ export const AttachFileButton = () => {
                     fileAttachmentConfig.acceptedExtensions.map((e) => `.${e}`).join(",")
                 }
                 ref={fileInputRef}
+                multiple
             />
             <AttachIcon decorative={false} title="Add file attachment" />
         </Button>
