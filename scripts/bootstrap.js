@@ -2,16 +2,12 @@ const fs = require("fs");
 const params = process.argv.slice(2);
 
 const getParams = () => {
-    const { accountSid, authToken, addressSid, apiKey, apiSecret, conversationsServiceSid, stage } = params.reduce(
+    const { accountSid, authToken, addressSid, apiKey, apiSecret, conversationsServiceSid } = params.reduce(
         (acc, arg) => {
             const [, key, val] = arg.match(/(\w*)=(\S*)/) || [];
 
             if (key) {
                 acc[key] = val;
-            }
-
-            if (arg === "stage") {
-                acc[arg] = true;
             }
 
             return acc;
@@ -38,7 +34,7 @@ const getParams = () => {
         throw "Please provide a valid `conversationsServiceSid`";
     }
 
-    return { accountSid, authToken, addressSid, apiKey, apiSecret, stage, conversationsServiceSid };
+    return { accountSid, authToken, addressSid, apiKey, apiSecret, conversationsServiceSid };
 };
 
 const getInitialEnvFile = () => {
@@ -49,7 +45,7 @@ const getInitialEnvFile = () => {
     }
 };
 try {
-    const { accountSid, addressSid, apiKey, apiSecret, stage, authToken, conversationsServiceSid } = getParams();
+    const { accountSid, addressSid, apiKey, apiSecret, authToken, conversationsServiceSid } = getParams();
 
     let envFileContent = getInitialEnvFile()
         .replace(/(?<=ACCOUNT_SID=)(\w*)/gm, accountSid)
@@ -59,11 +55,6 @@ try {
         .replace(/(?<=ADDRESS_SID=)(\w*)/gm, addressSid)
         .replace(/(?<=CONVERSATIONS_SERVICE_SID=)(\w*)/gm, conversationsServiceSid);
 
-    if (stage) {
-        envFileContent = envFileContent
-            .replace(/(?<=TWILIO_REGION=)(\w*)/gm, "stage")
-            .replace(/(?<=REACT_APP_CONVERSATIONS_REGION=)(\S*)/gm, "stage-us1");
-    }
     fs.writeFileSync(".env", envFileContent);
 
     console.log("✅  Project bootstrapped");
