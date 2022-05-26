@@ -229,7 +229,7 @@ export const MessageList = () => {
 
     return (
         <Box {...messageListStyles}>
-            <Box {...outerContainerStyles} onScroll={throttle(handleScroll, 1000)}  ref={messageListRef} role="main">
+            <Box {...outerContainerStyles} onScroll={throttle(handleScroll, 1000)} ref={messageListRef} role="main">
                 <Box
                     aria-label="Chat messages"
                     role="log"
