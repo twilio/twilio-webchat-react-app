@@ -20,6 +20,10 @@ jest.mock("../NotificationBar", () => ({
     NotificationBar: () => <div title="NotificationBar" />
 }));
 
+jest.mock("../AttachFileDropArea", () => ({
+    AttachFileDropArea: (props: any) => <div title="AttachFileDropArea">{props.children}</div>
+}));
+
 jest.mock("../MessageList", () => ({
     MessageList: () => <div title="MessageList" />
 }));
@@ -77,13 +81,14 @@ describe("Messaging Canvas Phase", () => {
         expect(queryByTitle("MessageList")).toBeInTheDocument();
     });
 
-    it("renders message input when conversation state is active", () => {
+    it("renders message input (and file drop area wrapper) when conversation state is active", () => {
         (useSelector as jest.Mock).mockImplementation((callback: any) =>
             callback({ chat: { conversationState: "active" } })
         );
 
         const { queryByTitle } = render(<MessagingCanvasPhase />);
 
+        expect(queryByTitle("AttachFileDropArea")).toBeInTheDocument();
         expect(queryByTitle("MessageInput")).toBeInTheDocument();
         expect(queryByTitle("ConversationEnded")).not.toBeInTheDocument();
     });

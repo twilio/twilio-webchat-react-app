@@ -9,6 +9,7 @@ import { ConversationEnded } from "./ConversationEnded";
 import { NotificationBar } from "./NotificationBar";
 import { removeNotification, updatePreEngagementData } from "../store/actions/genericActions";
 import { notifications } from "../notifications";
+import { AttachFileDropArea } from "./AttachFileDropArea";
 
 export const MessagingCanvasPhase = () => {
     const dispatch = useDispatch();
@@ -19,7 +20,14 @@ export const MessagingCanvasPhase = () => {
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
     }, [dispatch]);
 
-    return (
+    return conversationState === "active" ? (
+        <AttachFileDropArea>
+            <Header />
+            <NotificationBar />
+            <MessageList />
+            <MessageInput />
+        </AttachFileDropArea>
+    ) : (
         <>
             <Header />
             <NotificationBar />
