@@ -33,7 +33,11 @@ export const messageOptionContainerStyles: BoxStyleProps = {
 };
 
 export const filePreviewContainerStyles: BoxStyleProps = {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "auto",
+    maxHeight: "300px",
     position: "relative",
-    marginLeft: "space30",
-    marginRight: "space30"
+    paddingLeft: "space30",
+    paddingRight: "space30"
 };
