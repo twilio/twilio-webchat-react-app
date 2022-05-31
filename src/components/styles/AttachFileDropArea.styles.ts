@@ -14,10 +14,11 @@ const popIn = keyframes`
 `;
 
 export const containerStyles: BoxStyleProps = {
-    display: "flex",
     position: "relative",
+    display: "flex",
     flexDirection: "column",
-    flexGrow: 1
+    flexGrow: 1,
+    overflow: "hidden"
 };
 
 export const dropAreaStyles: BoxStyleProps = {
