@@ -100,7 +100,7 @@ export const MessageList = () => {
         return () => {
             conversation?.removeListener("messageAdded", messageListener);
         };
-    }, [conversation]);
+    }, [conversation, conversationsClient]);
 
     useEffect(() => {
         const checkIfAllMessagesLoaded = async () => {
