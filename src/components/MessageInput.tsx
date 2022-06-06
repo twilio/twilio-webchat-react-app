@@ -120,7 +120,9 @@ export const MessageInput = () => {
                             maxLength={CHAR_LIMIT}
                         />
                     </Box>
-                    <Box {...messageOptionContainerStyles}>{fileAttachmentConfig?.enabled && <AttachFileButton />}</Box>
+                    <Box {...messageOptionContainerStyles}>
+                        {fileAttachmentConfig?.enabled && <AttachFileButton textAreaRef={textAreaRef} />}
+                    </Box>
                     <Box {...messageOptionContainerStyles}>
                         <Button
                             data-test="message-send-button"
