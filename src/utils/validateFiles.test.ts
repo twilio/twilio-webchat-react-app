@@ -15,7 +15,7 @@ const alreadyAttachedFile = { name: "filenameAttached.jpg", type: "image/png", s
 const mockDispatch = jest.fn();
 
 describe("validateFiles", () => {
-    it("does not validate a file that is already attached", async () => {
+    it("does not validate a file that is already attached", () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
         const validFiles = validateFiles(
@@ -33,7 +33,7 @@ describe("validateFiles", () => {
         );
     });
 
-    it("does not validate a file with invalid file size", async () => {
+    it("does not validate a file with invalid file size", () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
         const validFiles = validateFiles(
@@ -51,7 +51,7 @@ describe("validateFiles", () => {
         );
     });
 
-    it("does not validate a file with invalid file type", async () => {
+    it("does not validate a file with invalid file type", () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
         const validFiles = validateFiles(

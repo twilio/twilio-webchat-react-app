@@ -60,16 +60,14 @@ describe("Attach File Button", () => {
         expect(inputClickMock).toHaveBeenCalled();
     });
 
-    it("attaches the files that are selected via input", async () => {
+    it("attaches the files that are selected via input", () => {
         const attachFilesSpy = jest.spyOn(genericActions, "attachFiles");
 
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [dumbFile, dumbFile2] }
-            })
-        );
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile, dumbFile2] }
+        });
 
         expect(attachFilesSpy).toHaveBeenCalledWith([dumbFile, dumbFile2]);
     });
@@ -89,15 +87,13 @@ describe("Attach File Button", () => {
         );
     });
 
-    it("clears the file input on file select", async () => {
+    it("clears the file input on file select", () => {
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
 
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [dumbFile] }
-            })
-        );
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile] }
+        });
 
         expect(fileInput).toHaveValue("");
     });
