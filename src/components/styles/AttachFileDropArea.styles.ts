@@ -1,6 +1,6 @@
 import { BoxStyleProps } from "@twilio-paste/core/box";
 import { TextStyleProps } from "@twilio-paste/core/text";
-import { keyframes } from "@emotion/react";
+import { keyframes } from "@emotion/core";
 
 const popIn = keyframes`
     0% {
