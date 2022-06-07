@@ -10,7 +10,7 @@ import { notifications } from "../notifications";
 import { roundFileSizeInMB } from "../utils/roundFileSizeInMB";
 import { hiddenInputStyles } from "./styles/AttachFileButton.styles";
 
-export const AttachFileButton = () => {
+export const AttachFileButton = ({ textAreaRef }: { textAreaRef?: React.RefObject<HTMLTextAreaElement> }) => {
     const fileInputRef: React.RefObject<HTMLInputElement> = useRef(null);
     const { attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
         attachedFiles: state.chat.attachedFiles || [],
@@ -70,6 +70,7 @@ export const AttachFileButton = () => {
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
+        textAreaRef?.current?.focus();
     };
 
     return (
