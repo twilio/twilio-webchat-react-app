@@ -30,7 +30,9 @@ export const MessageInput = () => {
         attachedFiles: state.chat.attachedFiles || [],
         fileAttachmentConfig: state.config.fileAttachment
     }));
+    const oldAttachmentsLength = useRef((attachedFiles || []).length);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const attachmentsBoxRef = useRef<HTMLDivElement>(null);
 
     const throttleChange = useMemo(
         () =>
@@ -95,6 +97,19 @@ export const MessageInput = () => {
         textAreaRef.current?.focus();
     }, [textAreaRef]);
 
+    // Ensuring attached files are automatically scrolled to
+    useEffect(() => {
+        if (!attachmentsBoxRef.current) {
+            return;
+        }
+
+        if (attachedFiles.length > oldAttachmentsLength.current) {
+            (attachmentsBoxRef.current.lastChild as Element)?.scrollIntoView();
+        }
+
+        oldAttachmentsLength.current = attachedFiles.length;
+    }, [attachedFiles]);
+
     return (
         <Box
             as="form"
@@ -134,7 +149,7 @@ export const MessageInput = () => {
                     </Box>
                 </Box>
                 {attachedFiles && (
-                    <Box data-test="message-attachments" {...filePreviewContainerStyles}>
+                    <Box data-test="message-attachments" {...filePreviewContainerStyles} ref={attachmentsBoxRef}>
                         {attachedFiles.map((file, index) => (
                             <FilePreview
                                 focusable={true}

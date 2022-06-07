@@ -29,14 +29,15 @@ suites:
   config:
     testFiles:
     - '**/*.*'
-- name: cypress - windows 10 - firefox latest
-  browser: firefox
-  extendedDebugging: true
-  browserVersion: latest
-  platformName: windows 10
-  config:
-    testFiles:
-    - '**/*.*'
+#  COMMENTING FIREFOX 101 OUT AS THE SAUCELAB IMAGE IS BUGGY
+#- name: cypress - windows 10 - firefox latest
+#  browser: firefox
+#  extendedDebugging: true
+#  browserVersion: latest
+#  platformName: windows 10
+#  config:
+#    testFiles:
+#    - '**/*.*'
 - name: cypress - windows 10 - firefox latest-1
   browser: firefox
   extendedDebugging: true
