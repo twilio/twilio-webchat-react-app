@@ -2,6 +2,8 @@ import { Client, Conversation, Participant, Message, User } from "@twilio/conver
 import { GenericThemeShape } from "@twilio-paste/theme";
 import { AlertVariants } from "@twilio-paste/core/alert";
 
+import { FileAttachmentConfig } from "../definitions";
+
 export enum EngagementPhase {
     PreEngagementForm = "PreEngagementForm",
     MessagingCanvas = "MessagingCanvas",
@@ -40,11 +42,7 @@ export type ConfigState = {
         isLight?: boolean;
         overrides?: Partial<GenericThemeShape>;
     };
-    fileAttachment?: {
-        enabled?: boolean;
-        maxFileSize?: number;
-        acceptedExtensions?: string[];
-    };
+    fileAttachment?: FileAttachmentConfig;
 };
 
 export type Notification = {

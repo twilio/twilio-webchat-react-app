@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Header } from "./Header";
@@ -20,19 +20,14 @@ export const MessagingCanvasPhase = () => {
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
     }, [dispatch]);
 
-    return conversationState === "active" ? (
-        <AttachFileDropArea>
-            <Header />
-            <NotificationBar />
-            <MessageList />
-            <MessageInput />
-        </AttachFileDropArea>
-    ) : (
-        <>
+    const Wrapper = conversationState === "active" ? AttachFileDropArea : Fragment;
+
+    return (
+        <Wrapper>
             <Header />
             <NotificationBar />
             <MessageList />
             {conversationState === "active" ? <MessageInput /> : <ConversationEnded />}
-        </>
+        </Wrapper>
     );
 };
