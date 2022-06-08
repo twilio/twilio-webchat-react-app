@@ -3,9 +3,8 @@ import "@testing-library/jest-dom";
 import React from "react";
 
 import * as genericActions from "../../store/actions/genericActions";
-import { notifications } from "../../notifications";
 import { AttachFileButton } from "../AttachFileButton";
-import { matchPartialNotificationObject } from "../../test-utils";
+import { validateFiles } from "../../utils/validateFiles";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -23,11 +22,19 @@ jest.mock("react-redux", () => ({
         })
 }));
 
+jest.mock("../../utils/validateFiles", () => ({
+    validateFiles: jest.fn()
+}));
+
 describe("Attach File Button", () => {
     const dumbFile = { name: "filename.jpg", type: "image/jpeg", size: 1, lastModified: 1 } as File;
     const dumbFile2 = { name: "filename2.jpg", type: "image/jpeg", size: 1, lastModified: 1 } as File;
     const attachIconTitle = "Add file attachment";
     const fileInputSelector = 'input[type="file"]';
+
+    beforeEach(() => {
+        (validateFiles as jest.Mock).mockImplementation((files: File[]) => files);
+    });
 
     it("renders the attach file button", () => {
         const { container } = render(<AttachFileButton />);
@@ -42,7 +49,7 @@ describe("Attach File Button", () => {
         expect(queryByTitle(attachIconTitle)).toBeInTheDocument();
     });
 
-    it("clicks the file input when button is clicked", async () => {
+    it("clicks the file input when button is clicked", () => {
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
         const attachFileButton = container.firstChild as Element;
@@ -54,34 +61,34 @@ describe("Attach File Button", () => {
         expect(inputClickMock).toHaveBeenCalled();
     });
 
-    it("attaches the files that are selected via input", async () => {
+    it("attaches the files that are selected via input", () => {
         const attachFilesSpy = jest.spyOn(genericActions, "attachFiles");
 
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [dumbFile, dumbFile2] }
-            })
-        );
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile, dumbFile2] }
+        });
 
         expect(attachFilesSpy).toHaveBeenCalledWith([dumbFile, dumbFile2]);
     });
 
-    it("clears the file input on file select", async () => {
+    it("validates all files that are attached", () => {
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile, dumbFile2] }
+        });
 
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [dumbFile] }
-            })
+        expect(validateFiles).toHaveBeenCalledWith(
+            [dumbFile, dumbFile2],
+            expect.any(Function),
+            [alreadyAttachedFile],
+            fileAttachmentConfig
         );
-
-        expect(fileInput).toHaveValue("");
     });
 
-    it("focuses the text area on file select", async () => {
+    it("focuses the text area on file select", () => {
         const textAreaRef = {
             current: document.createElement("textarea")
         };
@@ -101,57 +108,14 @@ describe("Attach File Button", () => {
         expect(textAreaRef.current).toHaveFocus();
     });
 
-    it("does not attach a file that is already attached", async () => {
-        const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
-
+    it("clears the file input on file select", () => {
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [alreadyAttachedFile] }
-            })
-        );
 
-        expect(addNotificationSpy).toHaveBeenCalledWith(
-            matchPartialNotificationObject(
-                notifications.fileAttachmentAlreadyAttachedNotification({ fileName: alreadyAttachedFile.name })
-            )
-        );
-    });
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile] }
+        });
 
-    it("does not attach a file with invalid file size", async () => {
-        const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
-
-        const { container } = render(<AttachFileButton />);
-        const fileInput = container.querySelector(fileInputSelector) as Element;
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [{ ...dumbFile, size: 999999999 }] }
-            })
-        );
-
-        expect(addNotificationSpy).toHaveBeenCalledWith(
-            matchPartialNotificationObject(
-                notifications.fileAttachmentInvalidSizeNotification({ fileName: dumbFile.name, maxFileSize: "16.0MB" })
-            )
-        );
-    });
-
-    it("does not attach a file with invalid file type", async () => {
-        const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
-
-        const { container } = render(<AttachFileButton />);
-        const fileInput = container.querySelector(fileInputSelector) as Element;
-        await waitFor(() =>
-            fireEvent.change(fileInput, {
-                target: { files: [{ ...dumbFile, type: "unknown/type" }] }
-            })
-        );
-
-        expect(addNotificationSpy).toHaveBeenCalledWith(
-            matchPartialNotificationObject(
-                notifications.fileAttachmentInvalidTypeNotification({ fileName: dumbFile.name })
-            )
-        );
+        expect(fileInput).toHaveValue("");
     });
 });
