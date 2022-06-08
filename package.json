@@ -61,6 +61,7 @@
     "test": "react-app-rewired test --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
     "test:nowatch": "yarn test --watchAll=false --verbose --runInBand",
     "bootstrap": "node scripts/bootstrap",
+    "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
     "deploy": "yarn build && node scripts/deploy",
     "eject": "react-app-rewired eject"
   },
