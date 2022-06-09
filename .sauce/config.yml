@@ -30,13 +30,13 @@ suites:
     testFiles:
     - '**/*.*'
 - name: cypress - windows 10 - firefox latest
- browser: firefox
- extendedDebugging: true
- browserVersion: latest
- platformName: windows 10
- config:
-   testFiles:
-   - '**/*.*'
+  browser: firefox
+  extendedDebugging: true
+  browserVersion: latest
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
 - name: cypress - windows 10 - firefox latest-1
   browser: firefox
   extendedDebugging: true
