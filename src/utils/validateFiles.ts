@@ -4,6 +4,7 @@ import { Dispatch } from "redux";
 import { addNotification } from "../store/actions/genericActions";
 import { notifications } from "../notifications";
 import { roundFileSizeInMB } from "./roundFileSizeInMB";
+import { FileAttachmentConfig } from "../definitions";
 
 /*
  * Validates all provided files and shows an error notification for every invalid file.
@@ -13,8 +14,7 @@ export const validateFiles = (
     files: File[],
     dispatch: Dispatch,
     attachedFiles?: File[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fileAttachmentConfig?: Record<string, any>
+    fileAttachmentConfig?: FileAttachmentConfig
 ): File[] => {
     return files.reduce<File[]>((validFilesAcc, file) => {
         if (

@@ -8,7 +8,7 @@ import { hiddenInputStyles } from "./styles/AttachFileButton.styles";
 import { validateFiles } from "../utils/validateFiles";
 import { attachFiles } from "../store/actions/genericActions";
 
-export const AttachFileButton = () => {
+export const AttachFileButton = ({ textAreaRef }: { textAreaRef?: React.RefObject<HTMLTextAreaElement> }) => {
     const fileInputRef: React.RefObject<HTMLInputElement> = useRef(null);
     const { attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
         attachedFiles: state.chat.attachedFiles || [],
@@ -26,6 +26,7 @@ export const AttachFileButton = () => {
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
+        textAreaRef?.current?.focus();
     };
 
     return (

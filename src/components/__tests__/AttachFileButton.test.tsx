@@ -1,5 +1,6 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, prettyDOM, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import React from "react";
 
 import * as genericActions from "../../store/actions/genericActions";
 import { AttachFileButton } from "../AttachFileButton";
@@ -48,7 +49,7 @@ describe("Attach File Button", () => {
         expect(queryByTitle(attachIconTitle)).toBeInTheDocument();
     });
 
-    it("clicks the file input when button is clicked", async () => {
+    it("clicks the file input when button is clicked", () => {
         const { container } = render(<AttachFileButton />);
         const fileInput = container.querySelector(fileInputSelector) as Element;
         const attachFileButton = container.firstChild as Element;
@@ -85,6 +86,26 @@ describe("Attach File Button", () => {
             [alreadyAttachedFile],
             fileAttachmentConfig
         );
+    });
+
+    it("focuses the text area on file select", () => {
+        const textAreaRef = {
+            current: document.createElement("textarea")
+        };
+
+        const { container } = render(
+            <>
+                <AttachFileButton textAreaRef={textAreaRef} />
+                <textarea ref={textAreaRef} />
+            </>
+        );
+        const fileInput = container.querySelector(fileInputSelector) as Element;
+
+        fireEvent.change(fileInput, {
+            target: { files: [dumbFile] }
+        });
+
+        expect(textAreaRef.current).toHaveFocus();
     });
 
     it("clears the file input on file select", () => {

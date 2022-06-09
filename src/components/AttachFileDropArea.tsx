@@ -25,11 +25,7 @@ export const AttachFileDropArea = ({ children }: { children: React.ReactNode }) 
     const [isDragging, setIsDragging] = useState(false);
 
     const containsFile = (dataTransfer: DataTransfer): boolean =>
-        Boolean(
-            dataTransfer &&
-                dataTransfer.types &&
-                dataTransfer.types.find((dataTransferType) => dataTransferType === "Files")
-        );
+        Boolean(dataTransfer?.types?.find((dataTransferType) => dataTransferType === "Files"));
 
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();
