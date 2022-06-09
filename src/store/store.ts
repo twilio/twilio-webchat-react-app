@@ -10,7 +10,7 @@ const typeWindow = window as unknown as { __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: 
 
 const composeEnhancers = typeWindow.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const reducers = combineReducers({
+const reducers = combineReducers({
     chat: ChatReducer,
     config: ConfigReducer,
     notifications: NotificationReducer,

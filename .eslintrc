@@ -10,7 +10,6 @@
     "es6": true,
     "jest": true
   },
-  "plugins": ["prettier"],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "prettier/prettier": [
