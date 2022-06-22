@@ -6,6 +6,7 @@ import { FormEvent } from "react";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
+import { Option, Select } from "@twilio-paste/core";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { addNotification, changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
@@ -17,7 +18,7 @@ import { NotificationBar } from "./NotificationBar";
 import { introStyles, fieldStyles, titleStyles, formStyles } from "./styles/PreEngagementFormPhase.styles";
 
 export const PreEngagementFormPhase = () => {
-    const { name, email, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
+    const { name, dob, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
     const dispatch = useDispatch();
 
     const handleSubmit = async (e: FormEvent) => {
@@ -27,7 +28,7 @@ export const PreEngagementFormPhase = () => {
             const data = await sessionDataHandler.fetchAndStoreNewSession({
                 formData: {
                     friendlyName: name,
-                    email,
+                    dob,
                     query
                 }
             });
@@ -62,16 +63,26 @@ export const PreEngagementFormPhase = () => {
                     />
                 </Box>
                 <Box {...fieldStyles}>
-                    <Label htmlFor="email">Email address</Label>
+                    <Label htmlFor="dob">Date of Birth</Label>
                     <Input
-                        type="email"
+                        type="date"
                         placeholder="Please enter your email address"
-                        name="email"
+                        name="dob"
                         data-test="pre-engagement-chat-form-email-input"
-                        value={email}
-                        onChange={(e) => dispatch(updatePreEngagementData({ email: e.target.value }))}
+                        value={dob}
+                        onChange={(e) => dispatch(updatePreEngagementData({ dob: e.target.value }))}
                         required
                     />
+                </Box>
+
+                <Box {...fieldStyles}>
+                    <Label htmlFor="reason">Reason for Visit</Label>
+                    <Select id="reason">
+                        <Option value="hours">Hours</Option>
+                        <Option value="scheduling">Scheduling</Option>
+                        <Option value="emergency">Emergency</Option>
+                        <Option value="prescription">Prescriptions</Option>
+                    </Select>
                 </Box>
 
                 <Box {...fieldStyles}>
