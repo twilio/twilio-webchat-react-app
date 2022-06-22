@@ -17,5 +17,5 @@ export const introStyles: TextStyleProps = {
 };
 
 export const fieldStyles: BoxStyleProps = {
-    marginBottom: "space70"
+    marginBottom: "space50"
 };
