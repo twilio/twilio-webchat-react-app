@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Input } from "@twilio-paste/core/input";
 import { Label } from "@twilio-paste/core/label";
 import { Box } from "@twilio-paste/core/box";
@@ -48,6 +49,13 @@ export const PreEngagementFormPhase = () => {
                     Hi there!
                 </Text>
                 <Text {...introStyles} as="p">
+                    We are Cloud City Healthcare and we&#39;re here to help. Press the start button to connect with a
+                    live agent.
+                </Text>
+                {/* <Text {...titleStyles} as="h3">
+                    Hi there!
+                </Text>
+                <Text {...introStyles} as="p">
                     We&#39;re here to help. Please give us some info to get started.
                 </Text>
                 <Box {...fieldStyles}>
@@ -95,7 +103,7 @@ export const PreEngagementFormPhase = () => {
                         onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
                         required
                     />
-                </Box>
+                </Box> */}
 
                 <Button variant="primary" type="submit" data-test="pre-engagement-start-chat-button">
                     Start chat
