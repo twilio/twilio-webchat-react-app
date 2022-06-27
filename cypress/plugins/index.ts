@@ -29,5 +29,16 @@ module.exports = (on: any, _config: any) => {
         getLastMessageText
     });
 
+    // eslint-disable-next-line consistent-return
+    on("before:browser:launch", (browser, launchOptions) => {
+        if (
+            (browser.name === "chrome" || browser.name === "edge" || browser.name === "firefox") &&
+            browser.isHeadless
+        ) {
+            launchOptions.args.push("--disable-gpu");
+            return launchOptions;
+        }
+    });
+
     return _config;
 };
