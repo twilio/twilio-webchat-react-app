@@ -11,7 +11,7 @@ defaults:
 rootDir: .
 cypress:
   configFile: cypress.json
-  version: 9.1.0
+  version: 9.7.0
 suites:
 - name: cypress - windows 10 - chrome latest
   browser: chrome
