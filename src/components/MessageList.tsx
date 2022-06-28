@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { UIEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@twilio-paste/core/box";
@@ -22,6 +23,7 @@ import {
     outerContainerStyles,
     participantTypingStyles
 } from "./styles/MessageList.styles";
+import { SelectableMessage } from "./SelectableMessage";
 
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];
@@ -205,6 +207,13 @@ export const MessageList = () => {
             // Discount loading spinner from indices
             i -= 1;
 
+            const myAttributes = message.attributes as Object & { selections: string[] };
+            const { selections } = myAttributes;
+            /*
+             * const selection = Object.values('selection');
+             * console.log(message.attributes as MessageAttributes);
+             *  console.log(message.attributes["selections"]);
+             */
             return (
                 <Box data-test="all-message-bubbles" key={message.index}>
                     {renderSeparatorIfApplicable(message, i)}
@@ -215,6 +224,18 @@ export const MessageList = () => {
                         focusable={message.index === focusIndex}
                         updateFocus={updateFocus}
                     />
+                    {message.attributes.hasOwnProperty('selections') && selections.map(
+                        option => 
+                        <SelectableMessage
+                            onClick={option => alert(option)}
+                            isLastOfUserGroup={isLastOfUserGroup(message, i, messages)} 
+                            key={`option-${option}`} 
+                            updateFocus={updateFocus}
+                            focusable={message.index === focusIndex}
+                            message={{...message, body: option} as Message}
+                            //message={message}
+                        />
+                    )}
                 </Box>
             );
         });

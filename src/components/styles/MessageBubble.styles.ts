@@ -7,6 +7,13 @@ export const outerContainerStyles: BoxStyleProps = {
     marginBottom: "space40"
 };
 
+export const outerSelectableContainerStyles: BoxStyleProps = {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "space40",
+    cursor: "pointer"
+};
+
 export const bubbleAndAvatarContainerStyles: BoxStyleProps = {
     display: "flex",
     alignItems: "flex-end"
