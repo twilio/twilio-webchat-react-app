@@ -1,16 +1,15 @@
 /* eslint-disable */
-import { Media, Message } from "@twilio/conversations";
+import { Message } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core/box";
 import { ScreenReaderOnly } from "@twilio-paste/core";
 import { useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
 import { Flex } from "@twilio-paste/core/flex";
 import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
-import { Key, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useRef, useState } from "react";
 import { SuccessIcon } from "@twilio-paste/icons/esm/SuccessIcon";
-
+import log from "loglevel";
 import { AppState } from "../store/definitions";
-import { FilePreview } from "./FilePreview";
 import { parseMessageBody } from "../utils/parseMessageBody";
 import {
     getAvatarContainerStyles,
@@ -25,24 +24,26 @@ import {
 const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
 
 export const SelectableMessage = ({
-    onClick,
+    onDisable,
+    disabled,
     message,
     focusable,
     updateFocus,
-    isLastOfUserGroup = false,
+    isLastOfUserGroup = false
 }: {
-    onClick: (option: string) => void;
+    onDisable: ()=>void;
+    disabled: boolean;
     message: Message;
     focusable: boolean;
     isLastOfUserGroup: boolean;
     updateFocus: (newFocus: number) => void;
 }) => {
+    const [chosen, setChosen] = useState(false)
     const [read, setRead] = useState(false);
-    const { conversationsClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
+    const { conversation, conversationsClient, users } = useSelector((state: AppState) => ({
+        conversation: state.chat.conversation,
         conversationsClient: state.chat.conversationsClient,
-        participants: state.chat.participants,
-        users: state.chat.users,
-        fileAttachmentConfig: state.config.fileAttachment
+        users: state.chat.users
     }));
     const messageRef = useRef<HTMLDivElement>(null);
     const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
@@ -51,6 +52,21 @@ export const SelectableMessage = ({
             const newFocusValue = message.index + (e.key === "ArrowUp" ? -1 : 1);
             updateFocus(newFocusValue);
         }
+    };
+
+    const onSelectionClick = async (option: string) => {
+        if (disabled) return;
+
+        if (!conversation) {
+            log.error("Failed sending message: no conversation found");
+            return;
+        }
+
+        let preparedMessage = conversation.prepareMessage();
+        preparedMessage = preparedMessage.setBody(option);
+        await preparedMessage.build().send();
+        setChosen(true)
+        onDisable()
     };
 
     const handleFocus = () => {
@@ -64,7 +80,7 @@ export const SelectableMessage = ({
         <Box
             {...outerSelectableContainerStyles}
             onFocus={handleFocus}
-            onClick={(e) => onClick(message.body)}
+            onClick={(e) => onSelectionClick(message.body)}
             onKeyDown={handleKeyDown}
             ref={messageRef}
             data-message-bubble
@@ -92,10 +108,9 @@ export const SelectableMessage = ({
                             )}`}
                         </Text> */}
                     </Flex>
-                    <Text as="p" {...bodyStyles}>
+                    <Text as="p" {...bodyStyles} {...chosen ? {fontWeight: 'fontWeightBold'} : {}}>
                         {message.body ? parseMessageBody(message.body, belongsToCurrentUser) : null}
                     </Text>
-
                 </Box>
             </Box>
             {read && (

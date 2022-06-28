@@ -60,6 +60,7 @@ export const MessageList = () => {
     const [focusIndex, setFocusIndex] = useState(
         messages && messages.length ? messages[messages?.length - 1].index : -1
     );
+    const [disabledSelectableMessages, setDisabledSelectableMessages] = useState<{ [key: string]: boolean }>({});
     const [shouldFocusLatest, setShouldFocusLatest] = useState(false);
 
     const updateFocus = (newFocus: number) => {
@@ -176,6 +177,10 @@ export const MessageList = () => {
             </>
         ) : null;
 
+    const disableSelectableChat = (val: boolean, msgSid: string) => {
+        setDisabledSelectableMessages((state) => ({ ...state, msgSid: val }));
+    };
+
     const renderChatItems = () => {
         if (!messages) {
             return null;
@@ -209,11 +214,7 @@ export const MessageList = () => {
 
             const myAttributes = message.attributes as Object & { selections: string[] };
             const { selections } = myAttributes;
-            /*
-             * const selection = Object.values('selection');
-             * console.log(message.attributes as MessageAttributes);
-             *  console.log(message.attributes["selections"]);
-             */
+
             return (
                 <Box data-test="all-message-bubbles" key={message.index}>
                     {renderSeparatorIfApplicable(message, i)}
@@ -224,18 +225,22 @@ export const MessageList = () => {
                         focusable={message.index === focusIndex}
                         updateFocus={updateFocus}
                     />
-                    {message.attributes.hasOwnProperty('selections') && selections.map(
-                        option => 
-                        <SelectableMessage
-                            onClick={option => alert(option)}
-                            isLastOfUserGroup={isLastOfUserGroup(message, i, messages)} 
-                            key={`option-${option}`} 
-                            updateFocus={updateFocus}
-                            focusable={message.index === focusIndex}
-                            message={{...message, body: option} as Message}
-                            //message={message}
-                        />
-                    )}
+                    {message.attributes.hasOwnProperty("selections") &&
+                        selections.map((option) => {
+                            return (
+                                <SelectableMessage
+                                    onDisable={() =>
+                                        setDisabledSelectableMessages((state) => ({ ...state, [message.sid]: true }))
+                                    }
+                                    disabled={disabledSelectableMessages[message.sid]}
+                                    isLastOfUserGroup={isLastOfUserGroup(message, i, messages)}
+                                    key={`${message.sid}-option-${option}`}
+                                    updateFocus={updateFocus}
+                                    focusable={message.index === focusIndex}
+                                    message={{ ...message, body: option } as Message}
+                                />
+                            );
+                        })}
                 </Box>
             );
         });
