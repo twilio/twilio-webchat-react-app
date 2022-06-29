@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { UIEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@twilio-paste/core/box";
@@ -23,7 +22,7 @@ import {
     outerContainerStyles,
     participantTypingStyles
 } from "./styles/MessageList.styles";
-import { SelectableMessage } from "./SelectableMessage";
+import { SelectableMessageGroup } from "./SelectableMessageGroup";
 
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];
@@ -60,7 +59,6 @@ export const MessageList = () => {
     const [focusIndex, setFocusIndex] = useState(
         messages && messages.length ? messages[messages?.length - 1].index : -1
     );
-    const [disabledSelectableMessages, setDisabledSelectableMessages] = useState<{ [key: string]: boolean }>({});
     const [shouldFocusLatest, setShouldFocusLatest] = useState(false);
 
     const updateFocus = (newFocus: number) => {
@@ -177,10 +175,6 @@ export const MessageList = () => {
             </>
         ) : null;
 
-    const disableSelectableChat = (val: boolean, msgSid: string) => {
-        setDisabledSelectableMessages((state) => ({ ...state, msgSid: val }));
-    };
-
     const renderChatItems = () => {
         if (!messages) {
             return null;
@@ -212,9 +206,6 @@ export const MessageList = () => {
             // Discount loading spinner from indices
             i -= 1;
 
-            const myAttributes = message.attributes as Object & { selections: string[] };
-            const { selections } = myAttributes;
-
             return (
                 <Box data-test="all-message-bubbles" key={message.index}>
                     {renderSeparatorIfApplicable(message, i)}
@@ -225,22 +216,14 @@ export const MessageList = () => {
                         focusable={message.index === focusIndex}
                         updateFocus={updateFocus}
                     />
-                    {message.attributes.hasOwnProperty("selections") &&
-                        selections.map((option) => {
-                            return (
-                                <SelectableMessage
-                                    onDisable={() =>
-                                        setDisabledSelectableMessages((state) => ({ ...state, [message.sid]: true }))
-                                    }
-                                    disabled={disabledSelectableMessages[message.sid]}
-                                    isLastOfUserGroup={isLastOfUserGroup(message, i, messages)}
-                                    key={`${message.sid}-option-${option}`}
-                                    updateFocus={updateFocus}
-                                    focusable={message.index === focusIndex}
-                                    message={{ ...message, body: option } as Message}
-                                />
-                            );
-                        })}
+                    {message.attributes.hasOwnProperty("selections") && (
+                        <SelectableMessageGroup
+                            key={`selectable-group-${message.sid}`}
+                            isLastOfUserGroup={isLastOfUserGroup(message, i, messages)}
+                            updateFocus={updateFocus}
+                            message={message}
+                        />
+                    )}
                 </Box>
             );
         });
