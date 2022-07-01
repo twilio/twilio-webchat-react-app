@@ -41,7 +41,7 @@ suites:
 - name: cypress - windows 10 - firefox 100
   browser: firefox
   extendedDebugging: true
-  browserVersion: latest-1
+  browserVersion: 100
   platformName: windows 10
   config:
     testFiles:
