@@ -38,7 +38,7 @@ suites:
 #  config:
 #    testFiles:
 #    - '**/*.*'
-- name: cypress - windows 10 - firefox latest-1
+- name: cypress - windows 10 - firefox 100
   browser: firefox
   extendedDebugging: true
   browserVersion: latest-1
