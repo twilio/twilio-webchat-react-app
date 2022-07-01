@@ -38,6 +38,7 @@ export const MessageBubble = ({
     updateFocus: (newFocus: number) => void;
 }) => {
     const [read, setRead] = useState(false);
+    const [isMouseDown, setIsMouseDown] = useState(false);
     const { conversationsClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
         conversationsClient: state.chat.conversationsClient,
         participants: state.chat.participants,
@@ -92,9 +93,20 @@ export const MessageBubble = ({
         }
     };
 
+    const handleMouseDown = () => {
+        setIsMouseDown(true);
+    };
+
+    const handleMouseUp = () => {
+        setIsMouseDown(false);
+    };
+
     const handleFocus = () => {
-        // Necessary since screen readers can set the focus to any focusable element
-        updateFocus(message.index);
+        // Ignore focus from clicks
+        if (!isMouseDown) {
+            // Necessary since screen readers can set the focus to any focusable element
+            updateFocus(message.index);
+        }
     };
 
     const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
@@ -105,6 +117,8 @@ export const MessageBubble = ({
             tabIndex={focusable ? 0 : -1}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
             ref={messageRef}
             data-message-bubble
             data-testid="message-bubble"
