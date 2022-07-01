@@ -51,6 +51,7 @@ export const MessageList = () => {
         conversationsClient: state.chat.conversationsClient
     }));
     const dispatch = useDispatch();
+    const messageListRef = useRef<HTMLDivElement>(null);
     const isLoadingMessages = useRef(false);
     const oldMessagesLength = useRef((messages || []).length);
     const [hasLoadedAllMessages, setHasLoadedAllMessages] = useState(true);
@@ -72,11 +73,25 @@ export const MessageList = () => {
         }
     };
 
+    const scrollToBottom = () => {
+        if (!messageListRef.current) {
+            return;
+        }
+
+        messageListRef.current.scrollTop = 0;
+    };
+
     useEffect(() => {
-        const messageListener = () => {
+        const messageListener = (message: Message) => {
             // Should focus latest message if one arrives while messages are not focused
             if (!document.activeElement?.hasAttribute("data-message-bubble")) {
                 setShouldFocusLatest(true);
+            }
+
+            // Ensure that any new message sent by the current user is within scroll view.
+            const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
+            if (belongsToCurrentUser) {
+                scrollToBottom();
             }
         };
 
@@ -85,7 +100,7 @@ export const MessageList = () => {
         return () => {
             conversation?.removeListener("messageAdded", messageListener);
         };
-    }, [conversation]);
+    }, [conversation, conversationsClient]);
 
     useEffect(() => {
         const checkIfAllMessagesLoaded = async () => {
@@ -214,7 +229,7 @@ export const MessageList = () => {
 
     return (
         <Box {...messageListStyles}>
-            <Box {...outerContainerStyles} onScroll={throttle(handleScroll, 1000)} role="main">
+            <Box {...outerContainerStyles} onScroll={throttle(handleScroll, 1000)} ref={messageListRef} role="main">
                 <Box
                     aria-label="Chat messages"
                     role="log"
