@@ -530,5 +530,34 @@ describe("Message List", () => {
             expect(bottomBubble.tabIndex).toBe(0);
             expect(bottomBubble).toHaveFocus();
         });
+
+        it("does not focus if triggered by a click", async () => {
+            const message3 = { ...message2, index: 2 };
+            const messages = [message1, message2, message3];
+            (useSelector as jest.Mock).mockImplementation((callback: any) =>
+                callback({
+                    ...defaultState,
+                    chat: {
+                        ...defaultState.chat,
+                        messages
+                    }
+                })
+            );
+            const { queryAllByTestId } = render(<MessageList />);
+
+            const [topBubble, middleBubble, bottomBubble] = queryAllByTestId(messageBubbleTestId);
+
+            fireEvent.keyDown(bottomBubble, {
+                key: "ArrowUp"
+            });
+
+            expect(middleBubble.tabIndex).toBe(0);
+            expect(middleBubble).toHaveFocus();
+
+            topBubble.click();
+
+            expect(middleBubble.tabIndex).toBe(0);
+            expect(middleBubble).toHaveFocus();
+        });
     });
 });
