@@ -4,19 +4,16 @@ import { ScreenReaderOnly } from "@twilio-paste/core";
 import { useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
 import { Flex } from "@twilio-paste/core/flex";
-import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState } from "react";
 import log from "loglevel";
 
 import { AppState } from "../store/definitions";
 import { parseMessageBody } from "../utils/parseMessageBody";
 import {
-    getAvatarContainerStyles,
-    getInnerContainerStyles,
-    authorStyles,
     bodyStyles,
     outerSelectableContainerStyles,
-    bubbleAndAvatarContainerStyles
+    bubbleAndAvatarContainerStyles,
+    getSelectableContainerStyles
 } from "./styles/MessageBubble.styles";
 
 export const SelectableMessageGroup = ({
@@ -31,6 +28,7 @@ export const SelectableMessageGroup = ({
     const { selections } = message.attributes as unknown & { selections: string[] };
     const refs = useRef(Array.from({ length: selections.length }, () => React.createRef()));
     const [disabled, setDisabled] = useState(false);
+    const [shouldShowOptions, setShouldShowOptions] = useState<boolean>(true);
     const { conversation, conversationsClient, users } = useSelector((state: AppState) => ({
         conversation: state.chat.conversation,
         conversationsClient: state.chat.conversationsClient,
@@ -51,6 +49,7 @@ export const SelectableMessageGroup = ({
                 preparedMessage = preparedMessage.setBody(option);
                 resolve(preparedMessage.build().send());
             }).then(() => {
+                setShouldShowOptions(false);
                 // set the clicked on text to be bold, then disable the entire selectable message group from further interaction
                 const textRef = (refs.current[index] as RefObject<HTMLParagraphElement>).current;
                 if (textRef) textRef.style.fontWeight = "bold";
@@ -78,47 +77,42 @@ export const SelectableMessageGroup = ({
         return selections.map((option, index) => {
             const key = `${message.sid}-option-${option}`;
             return (
-                <Box
-                    {...outerSelectableContainerStyles}
-                    key={key}
-                    onFocus={handleFocus}
-                    onClick={() => onSelectionClick(option, index)}
-                    onKeyDown={handleKeyDown}
-                    data-message-bubble
-                    data-testid="message-bubble"
-                >
-                    <Box {...bubbleAndAvatarContainerStyles}>
-                        {!belongsToCurrentUser && (
-                            <Box {...getAvatarContainerStyles(!isLastOfUserGroup)} data-testid="avatar-container">
-                                {isLastOfUserGroup && <UserIcon decorative={true} size="sizeIcon40" />}
-                            </Box>
-                        )}
-                        <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
-                            <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                                <Text
-                                    {...authorStyles}
-                                    as="p"
-                                    aria-hidden
-                                    style={{ textOverflow: "ellipsis" }}
-                                    title={author}
+                shouldShowOptions && (
+                    <Box
+                        {...outerSelectableContainerStyles}
+                        key={key}
+                        onFocus={handleFocus}
+                        onClick={() => onSelectionClick(option, index)}
+                        onKeyDown={handleKeyDown}
+                        data-message-bubble
+                        data-testid="message-bubble"
+                    >
+                        <Box {...bubbleAndAvatarContainerStyles}>
+                            <Box {...getSelectableContainerStyles(belongsToCurrentUser)}>
+                                <Flex
+                                    hAlignContent="between"
+                                    width="100%"
+                                    vAlignContent="center"
+                                    marginBottom="space20"
                                 >
-                                    {author}
+                                    <ScreenReaderOnly as="p">
+                                        {belongsToCurrentUser
+                                            ? "You sent at"
+                                            : `${
+                                                  users?.find((u) => u.identity === message.author)?.friendlyName
+                                              } sent at`}
+                                    </ScreenReaderOnly>
+                                </Flex>
+                                <Text as="p" {...bodyStyles} ref={refs.current[index] as RefObject<HTMLElement>}>
+                                    {option ? parseMessageBody(option, belongsToCurrentUser) : null}
                                 </Text>
-                                <ScreenReaderOnly as="p">
-                                    {belongsToCurrentUser
-                                        ? "You sent at"
-                                        : `${users?.find((u) => u.identity === message.author)?.friendlyName} sent at`}
-                                </ScreenReaderOnly>
-                            </Flex>
-                            <Text as="p" {...bodyStyles} ref={refs.current[index] as RefObject<HTMLElement>}>
-                                {option ? parseMessageBody(option, belongsToCurrentUser) : null}
-                            </Text>
+                            </Box>
                         </Box>
                     </Box>
-                </Box>
+                )
             );
         });
-    }, [message, author, belongsToCurrentUser, isLastOfUserGroup, onSelectionClick, selections, users, updateFocus]);
+    }, [message, author, belongsToCurrentUser, isLastOfUserGroup, onSelectionClick, selections, users, updateFocus, shouldShowOptions]);
 
     return <>{messageGroup}</>;
 };

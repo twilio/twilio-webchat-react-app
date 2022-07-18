@@ -76,7 +76,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "attributes": "",
           "body": "Please enter your first name.",
           "timeout": "1800"
@@ -106,7 +106,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "body": "Please enter your last name.",
           "timeout": "1800"
         }
@@ -135,7 +135,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "body": "Please enter your date of birth (YYYY-mm-dd).",
           "timeout": "1800"
         }
@@ -213,7 +213,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "to": "{{contact.channel.address}}",
           "body": "Thank you! Please hold on for just a few moments while I connect you with someone who can help."
         }
@@ -242,7 +242,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "attributes": "{\"selections\": [\"Hours\", \"Parking\", \"Scheduling\", \"Consultation\", \"Other\"]}",
           "body": "Please select a reason for your visit today from the following options:",
           "timeout": "3600"
@@ -298,7 +298,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "to": "{{contact.channel.address}}",
           "body": "Hello! In order for us to assist you today, please answer a few questions."
         }
@@ -327,7 +327,7 @@
           },
           "service": "{{trigger.message.InstanceSid}}",
           "channel": "{{trigger.message.ChannelSid}}",
-          "from": "Owl Health",
+          "from": "Cloud City Healthcare",
           "attributes": "{ \"selections\" : [\"New\", \"Existing\"]}",
           "body": "Are you a new or existing patient?",
           "timeout": "3600"

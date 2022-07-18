@@ -7,7 +7,7 @@ export const Header = ({ customTitle }: { customTitle?: string }) => {
     return (
         <Box as="header" {...containerStyles}>
             <Text as="h2" {...titleStyles}>
-                {customTitle || "Owl Health 🦉"}
+                {customTitle || "Cloud City Healthcare"}
             </Text>
         </Box>
     );
