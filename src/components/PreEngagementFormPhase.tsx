@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Input } from "@twilio-paste/core/input";
 import { Label } from "@twilio-paste/core/label";
 import { Box } from "@twilio-paste/core/box";
@@ -6,6 +7,7 @@ import { FormEvent } from "react";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
+import { Option, Select } from "@twilio-paste/core";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { addNotification, changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
@@ -17,7 +19,7 @@ import { NotificationBar } from "./NotificationBar";
 import { introStyles, fieldStyles, titleStyles, formStyles } from "./styles/PreEngagementFormPhase.styles";
 
 export const PreEngagementFormPhase = () => {
-    const { name, email, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
+    const { name, dob, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
     const dispatch = useDispatch();
 
     const handleSubmit = async (e: FormEvent) => {
@@ -27,7 +29,7 @@ export const PreEngagementFormPhase = () => {
             const data = await sessionDataHandler.fetchAndStoreNewSession({
                 formData: {
                     friendlyName: name,
-                    email,
+                    dob,
                     query
                 }
             });
@@ -47,6 +49,13 @@ export const PreEngagementFormPhase = () => {
                     Hi there!
                 </Text>
                 <Text {...introStyles} as="p">
+                    We are Cloud City Healthcare and we&#39;re here to help. Press the start button to connect with a
+                    live agent.
+                </Text>
+                {/* <Text {...titleStyles} as="h3">
+                    Hi there!
+                </Text>
+                <Text {...introStyles} as="p">
                     We&#39;re here to help. Please give us some info to get started.
                 </Text>
                 <Box {...fieldStyles}>
@@ -62,16 +71,26 @@ export const PreEngagementFormPhase = () => {
                     />
                 </Box>
                 <Box {...fieldStyles}>
-                    <Label htmlFor="email">Email address</Label>
+                    <Label htmlFor="dob">Date of Birth</Label>
                     <Input
-                        type="email"
+                        type="date"
                         placeholder="Please enter your email address"
-                        name="email"
+                        name="dob"
                         data-test="pre-engagement-chat-form-email-input"
-                        value={email}
-                        onChange={(e) => dispatch(updatePreEngagementData({ email: e.target.value }))}
+                        value={dob}
+                        onChange={(e) => dispatch(updatePreEngagementData({ dob: e.target.value }))}
                         required
                     />
+                </Box>
+
+                <Box {...fieldStyles}>
+                    <Label htmlFor="reason">Reason for Visit</Label>
+                    <Select id="reason">
+                        <Option value="hours">Hours</Option>
+                        <Option value="scheduling">Scheduling</Option>
+                        <Option value="emergency">Emergency</Option>
+                        <Option value="prescription">Prescriptions</Option>
+                    </Select>
                 </Box>
 
                 <Box {...fieldStyles}>
@@ -84,7 +103,7 @@ export const PreEngagementFormPhase = () => {
                         onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
                         required
                     />
-                </Box>
+                </Box> */}
 
                 <Button variant="primary" type="submit" data-test="pre-engagement-start-chat-button">
                     Start chat

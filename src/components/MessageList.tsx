@@ -22,6 +22,7 @@ import {
     outerContainerStyles,
     participantTypingStyles
 } from "./styles/MessageList.styles";
+import { SelectableMessageGroup } from "./SelectableMessageGroup";
 
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];
@@ -215,6 +216,14 @@ export const MessageList = () => {
                         focusable={message.index === focusIndex}
                         updateFocus={updateFocus}
                     />
+                    {message.attributes.hasOwnProperty("selections") && (
+                        <SelectableMessageGroup
+                            key={`selectable-group-${message.sid}`}
+                            isLastOfUserGroup={isLastOfUserGroup(message, i, messages)}
+                            updateFocus={updateFocus}
+                            message={message}
+                        />
+                    )}
                 </Box>
             );
         });

@@ -7,6 +7,13 @@ export const outerContainerStyles: BoxStyleProps = {
     marginBottom: "space40"
 };
 
+export const outerSelectableContainerStyles: BoxStyleProps = {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "space20",
+    cursor: "pointer"
+};
+
 export const bubbleAndAvatarContainerStyles: BoxStyleProps = {
     display: "flex",
     alignItems: "flex-end"
@@ -28,6 +35,19 @@ export const getInnerContainerStyles = (belongToCurrentUser: boolean): BoxStyleP
     paddingLeft: "space40",
     paddingRight: "space40",
     backgroundColor: belongToCurrentUser ? "colorBackgroundPrimaryStronger" : "colorBackground",
+    color: belongToCurrentUser ? "colorTextWeakest" : "colorText",
+    borderRadius: "borderRadius30",
+    marginLeft: belongToCurrentUser ? "auto" : "space0",
+    marginRight: belongToCurrentUser ? "space0" : "auto",
+    maxWidth: "90%"
+});
+
+export const getSelectableContainerStyles = (belongToCurrentUser: boolean): BoxStyleProps => ({
+    paddingTop: "space30",
+    paddingBottom: "space30",
+    paddingLeft: "space40",
+    paddingRight: "space40",
+    backgroundColor: belongToCurrentUser ? "colorBackgroundPrimaryStronger" : "colorBackgroundPrimaryWeakest",
     color: belongToCurrentUser ? "colorTextWeakest" : "colorText",
     borderRadius: "borderRadius30",
     marginLeft: belongToCurrentUser ? "auto" : "space0",

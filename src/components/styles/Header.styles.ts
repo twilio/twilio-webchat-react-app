@@ -5,7 +5,7 @@ export const containerStyles: BoxStyleProps = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "colorBackgroundPrimaryStronger",
+    backgroundColor: "colorBackgroundPrimary",
     padding: "space20",
     paddingTop: "space40",
     paddingBottom: "space40",

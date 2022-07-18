@@ -16,7 +16,7 @@ export const MessagingCanvasPhase = () => {
     const conversationState = useSelector((state: AppState) => state.chat.conversationState);
 
     useEffect(() => {
-        dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
+        dispatch(updatePreEngagementData({ dob: "", name: "", query: "" }));
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
     }, [dispatch]);
 

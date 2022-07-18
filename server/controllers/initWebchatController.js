@@ -65,8 +65,8 @@ const sendWelcomeMessage = (conversationSid, customerFriendlyName) => {
     return getTwilioClient()
         .conversations.conversations(conversationSid)
         .messages.create({
-            body: `Welcome ${customerFriendlyName}! An agent will be with you in just a moment.`,
-            author: "Concierge"
+            body: `Welcome ${customerFriendlyName}! An agent will be with you in just a moment.  In the mean time let me ask you a couple of questions.`,
+            author: "Cloud City Healthcare"
         })
         .then(() => {
             logInterimAction("(async) Welcome message sent");
@@ -80,7 +80,6 @@ const initWebchatController = async (request, response) => {
     logInitialAction("Initiating webchat");
 
     const customerFriendlyName = request.body?.formData?.friendlyName || "Customer";
-
     let conversationSid;
     let identity;
 
@@ -88,6 +87,8 @@ const initWebchatController = async (request, response) => {
     try {
         const result = await contactWebchatOrchestrator(request, customerFriendlyName);
         ({ identity, conversationSid } = result);
+        sendWelcomeMessage(conversationSid, customerFriendlyName);
+        sendUserMessage(conversationSid, identity, "Hi Cloud City Healthcare, I would like to speak with an agent.");
     } catch (error) {
         return response.status(500).send(`Couldn't initiate WebChat: ${error?.message}`);
     }

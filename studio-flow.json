@@ -1,0 +1,372 @@
+{
+    "description": "hls-webchat-conversations",
+    "states": [
+      {
+        "name": "Trigger",
+        "type": "trigger",
+        "transitions": [
+          {
+            "event": "incomingMessage"
+          },
+          {
+            "event": "incomingCall"
+          },
+          {
+            "next": "loop_1",
+            "event": "incomingConversationMessage"
+          },
+          {
+            "event": "incomingRequest"
+          },
+          {
+            "event": "incomingParent"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1310,
+            "y": -10
+          }
+        }
+      },
+      {
+        "name": "send_to_flex_agent",
+        "type": "send-to-flex",
+        "transitions": [
+          {
+            "event": "callComplete"
+          },
+          {
+            "event": "failedToEnqueue"
+          },
+          {
+            "event": "callFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -810,
+            "y": 4430
+          },
+          "workflow": "WWd8cd0445d2df474f0744283a8cac96b7",
+          "channel": "TC97cc0cbcd14e9f3a5f7f2b9668ae8cdd",
+          "attributes": "{\"dob\": \"{{widgets.enter_dob.inbound.Body}}\",\"name\": \"{{widgets.enter_firstname.inbound.Body}} {{widgets.enter_lastname.inbound.Body}}\", \"channelType\": \"{{trigger.message.ChannelAttributes.channel_type}}\", \"channelSid\": \"{{trigger.message.ChannelSid}}\", \"serviceType\":\"{{widgets.send_service_options.inbound.Body}}\"}"
+        }
+      },
+      {
+        "name": "enter_firstname",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "enter_lastname",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1480,
+            "y": 2600
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "attributes": "",
+          "body": "Please enter your first name.",
+          "timeout": "1800"
+        }
+      },
+      {
+        "name": "enter_lastname",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "enter_dob",
+            "event": "incomingMessage"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "timeout"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1470,
+            "y": 3050
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "body": "Please enter your last name.",
+          "timeout": "1800"
+        }
+      },
+      {
+        "name": "enter_dob",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "send_thank_you",
+            "event": "incomingMessage"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "timeout"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1450,
+            "y": 3610
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "body": "Please enter your date of birth (YYYY-mm-dd).",
+          "timeout": "1800"
+        }
+      },
+      {
+        "name": "loop_checker",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "next": "loop_1",
+            "event": "noMatch"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "looped 3 times",
+                "arguments": [
+                  "{{flow.variables.count}}"
+                ],
+                "type": "equal_to",
+                "value": "2"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{flow.variables.count}}",
+          "offset": {
+            "x": -480,
+            "y": 1430
+          }
+        }
+      },
+      {
+        "name": "loop_1",
+        "type": "set-variables",
+        "transitions": [
+          {
+            "next": "intro",
+            "event": "next"
+          }
+        ],
+        "properties": {
+          "variables": [
+            {
+              "value": "{%- if flow.variables.count -%}\n  {{flow.variables.count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
+              "key": "count"
+            }
+          ],
+          "offset": {
+            "x": -1310,
+            "y": 250
+          }
+        }
+      },
+      {
+        "name": "send_thank_you",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "send_to_flex_agent",
+            "event": "sent"
+          },
+          {
+            "next": "send_to_flex_agent",
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -850,
+            "y": 3890
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "to": "{{contact.channel.address}}",
+          "body": "Thank you! Please hold on for just a few moments while I connect you with someone who can help."
+        }
+      },
+      {
+        "name": "selection_offering",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "selection_check",
+            "event": "incomingMessage"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "timeout"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1400,
+            "y": 830
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "attributes": "{\"selections\": [\"Hours\", \"Parking\", \"Scheduling\", \"Consultation\", \"Other\"]}",
+          "body": "Please select a reason for your visit today from the following options:",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "selection_check",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "next": "send_thank_you",
+            "event": "noMatch"
+          },
+          {
+            "next": "return_customer_offering",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "If value matches_any_of Hours, Parking, Scheduling, Consultation, Other",
+                "arguments": [
+                  "{{widgets.selection_offering.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "Hours, Parking, Scheduling, Consultation, Other"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.selection_offering.inbound.Body}}",
+          "offset": {
+            "x": -1910,
+            "y": 1140
+          }
+        }
+      },
+      {
+        "name": "intro",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "selection_offering",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1410,
+            "y": 490
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "to": "{{contact.channel.address}}",
+          "body": "Hello! In order for us to assist you today, please answer a few questions."
+        }
+      },
+      {
+        "name": "return_customer_offering",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "return_customer_check",
+            "event": "incomingMessage"
+          },
+          {
+            "next": "return_customer_check",
+            "event": "timeout"
+          },
+          {
+            "next": "send_thank_you",
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1680,
+            "y": 1570
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "Cloud City Healthcare",
+          "attributes": "{ \"selections\" : [\"New\", \"Existing\"]}",
+          "body": "Are you a new or existing patient?",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "return_customer_check",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "next": "send_thank_you",
+            "event": "noMatch"
+          },
+          {
+            "next": "enter_firstname",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "If value matches_any_of New, Existing",
+                "arguments": [
+                  "{{widgets.return_customer_offering.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "New, Existing"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.return_customer_offering.inbound.Body}}",
+          "offset": {
+            "x": -1680,
+            "y": 2100
+          }
+        }
+      }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+      "allow_concurrent_calls": true
+    }
+  }
