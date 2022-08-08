@@ -28,8 +28,11 @@ _Twilio Webchat React App_ is an application that demonstrates a website chat wi
 
 Run the following command
 
-```
+```shell
 yarn
+
+# or with npm
+npm install
 ```
 
 ### 2. Populate Your .env File
@@ -38,6 +41,15 @@ We provide a handy `bootstrap` script to set up the environment variables, but y
 
 ```shell
 yarn bootstrap \
+accountSid=YOUR_ACCOUNT_SID \
+authToken=YOUR_AUTH_TOKEN \
+apiKey=YOUR_API_KEY_SID \
+apiSecret=YOUR_API_SECRET \
+addressSid=YOUR_ADDRESS_SID \
+conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
+
+# or with npm
+npm run bootstrap \
 accountSid=YOUR_ACCOUNT_SID \
 authToken=YOUR_AUTH_TOKEN \
 apiKey=YOUR_API_KEY_SID \
@@ -58,6 +70,9 @@ For the Address Sid, click on the edit button of your address and the edit scree
 ### 1. Start the Local Backend Server
 ```shell
 yarn server
+
+# or with npm
+npm run server
 ```
 Your server will be served at http://localhost:3001/.
 
@@ -66,6 +81,9 @@ Your server will be served at http://localhost:3001/.
 
 ```shell
 yarn start
+
+# or with npm
+npm run start
 ```
 
 Your app will be served at http://localhost:3000/.
@@ -200,7 +218,15 @@ We highly recommend that you implement as many of the following security control
 5. **Include a fingerprint in the token.** Generate a fingerprint to try to identify the client and include it in the token. When the token is sent, the fingerprint is generated again and compared with the token's fingerprint.
 
 ## 2. Upload Compiled and Minimised React App Code
-By running `yarn build`, you will create a bundle file for the whole Webchat React App. Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain. 
+To create a bundle file for the whole Webchat React App.
+```shell
+yarn build
+
+# or with npm
+npm run build
+```
+
+Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain. 
 
 ## 3. Update Your Website Template
 
