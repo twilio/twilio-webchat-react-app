@@ -139,4 +139,21 @@ describe("Pre Engagement Form Phase", () => {
 
         expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: name, query, email } });
     });
+
+    it("submits form on enter within textarea", () => {
+        const fetchAndStoreNewSessionSpy = jest.spyOn(sessionDataHandler, "fetchAndStoreNewSession");
+        const { container, getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
+        const nameInput = getByPlaceholderText(namePlaceholderText);
+        const emailInput = getByPlaceholderText(emailPlaceholderText);
+        const queryInput = getByPlaceholderText(queryPlaceholderText);
+        const name = "John";
+        const email = "email@email.email";
+        const query = "Why is a potato?";
+        fireEvent.change(nameInput, { target: { value: name } });
+        fireEvent.change(emailInput, { target: { value: email } });
+        fireEvent.change(queryInput, { target: { value: query } });
+        const textArea = container.querySelector("textarea") as Element;
+        fireEvent.keyPress(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: false });
+        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: name, query, email } });
+    });
 });
