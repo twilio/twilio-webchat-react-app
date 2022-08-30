@@ -38,6 +38,13 @@ export const PreEngagementFormPhase = () => {
         }
     };
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    };
+
     return (
         <>
             <Header />
@@ -82,6 +89,7 @@ export const PreEngagementFormPhase = () => {
                         data-test="pre-engagement-chat-form-query-textarea"
                         value={query}
                         onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
+                        onKeyPress={handleKeyPress}
                         required
                     />
                 </Box>

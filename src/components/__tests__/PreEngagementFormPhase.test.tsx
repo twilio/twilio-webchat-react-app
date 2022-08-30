@@ -34,6 +34,10 @@ describe("Pre Engagement Form Phase", () => {
     const emailLabelText = "Email address";
     const queryLabelText = "How can we help you?";
 
+    const name = "John";
+    const email = "email@email.email";
+    const query = "Why is a potato?";
+
     beforeEach(() => {
         jest.spyOn(initAction, "initSession").mockImplementation((data: any) => data);
     });
@@ -94,7 +98,6 @@ describe("Pre Engagement Form Phase", () => {
         const { getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
 
         const nameInput = getByPlaceholderText(namePlaceholderText);
-        const name = "John";
         fireEvent.change(nameInput, { target: { value: name } });
 
         expect(nameInput).toHaveValue(name);
@@ -104,7 +107,6 @@ describe("Pre Engagement Form Phase", () => {
         const { getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
 
         const emailInput = getByPlaceholderText(emailPlaceholderText);
-        const email = "john@gmail.com";
         fireEvent.change(emailInput, { target: { value: email } });
 
         expect(emailInput).toHaveValue(email);
@@ -114,7 +116,6 @@ describe("Pre Engagement Form Phase", () => {
         const { getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
 
         const queryInput = getByPlaceholderText(queryPlaceholderText);
-        const query = "Why is a potato?";
         fireEvent.change(queryInput, { target: { value: query } });
 
         expect(queryInput).toHaveValue(query);
@@ -129,14 +130,31 @@ describe("Pre Engagement Form Phase", () => {
         const emailInput = getByPlaceholderText(emailPlaceholderText);
         const queryInput = getByPlaceholderText(queryPlaceholderText);
 
-        const name = "John";
-        const email = "email@email.email";
-        const query = "Why is a potato?";
         fireEvent.change(nameInput, { target: { value: name } });
         fireEvent.change(emailInput, { target: { value: email } });
         fireEvent.change(queryInput, { target: { value: query } });
         fireEvent.submit(formBox);
 
         expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: name, query, email } });
+    });
+
+    it("submits form on enter within textarea", () => {
+        const fetchAndStoreNewSessionSpy = jest.spyOn(sessionDataHandler, "fetchAndStoreNewSession");
+        const { container } = render(withStore(<PreEngagementFormPhase />));
+
+        const textArea = container.querySelector("textarea") as Element;
+        fireEvent.keyPress(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: false });
+
+        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalled();
+    });
+
+    it("does not submit form on shift+enter within textarea", () => {
+        const fetchAndStoreNewSessionSpy = jest.spyOn(sessionDataHandler, "fetchAndStoreNewSession");
+        const { container } = render(withStore(<PreEngagementFormPhase />));
+
+        const textArea = container.querySelector("textarea") as Element;
+        fireEvent.keyPress(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: true });
+
+        expect(fetchAndStoreNewSessionSpy).not.toHaveBeenCalled();
     });
 });
