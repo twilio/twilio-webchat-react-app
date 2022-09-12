@@ -12,10 +12,10 @@ export const containerStyles: BoxStyleProps = {
 };
 
 export const titleStyles: TextStyleProps = {
-    fontSize: "fontSize50",
-    marginBottom: "space50"
+    fontSize: "fontSize50"
 };
 
 export const textStyles: TextStyleProps = {
-    marginBottom: "space50"
+    marginBottom: "space50",
+    marginTop: "space50"
 };

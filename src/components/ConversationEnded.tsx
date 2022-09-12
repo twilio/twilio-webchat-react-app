@@ -21,6 +21,12 @@ export const ConversationEnded = () => {
                 Thanks for chatting with us!
             </Text>
             <Text as="p" {...textStyles}>
+                Do you want a transcript of our chat?
+            </Text>
+            <Button variant="secondary" data-test="download-transcript-button" onClick={handleClick}>
+                Download transcript
+            </Button>
+            <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.
             </Text>
             <Button variant="primary" data-test="start-new-chat-button" onClick={handleClick}>
