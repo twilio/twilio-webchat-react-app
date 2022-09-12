@@ -44,6 +44,12 @@ export const ConversationEnded = () => {
             )}  ${message.author}: ${message.body}\n\n`;
             transcript = transcript.concat(messageText);
         }
+        const transcriptBlob = new Blob([transcript], { type: "text/plain" });
+        const transcriptURL = URL.createObjectURL(transcriptBlob);
+        const hiddenLink = document.createElement("a");
+        hiddenLink.download = "transcript.txt";
+        hiddenLink.href = transcriptURL;
+        hiddenLink.click();
     };
 
     return (
