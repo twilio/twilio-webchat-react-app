@@ -2,6 +2,7 @@ import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
+import { Media } from "@twilio/conversations";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase } from "../store/actions/genericActions";
@@ -21,9 +22,10 @@ export const ConversationEnded = () => {
     };
 
     interface Transcript {
-        author: string | undefined;
+        author?: string;
         body: string;
         timeStamp: Date;
+        attachedMedia?: Media[] | null;
     }
 
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
@@ -36,7 +38,8 @@ export const ConversationEnded = () => {
                 transcriptData.push({
                     author: message.author === "Concierge" ? message.author : currentUser?.friendlyName,
                     body: message.body,
-                    timeStamp: message.dateCreated
+                    timeStamp: message.dateCreated,
+                    attachedMedia: message.attachedMedia
                 });
             }
         }
@@ -71,10 +74,13 @@ export const ConversationEnded = () => {
         let transcript = `Conversation with ${customerName}\n\nDate: ${conversationStartDate}\nDuration: ${duration}\n\n`;
         for (const message of transcriptData) {
             const bulletPoint = message.author === customerName ? "*" : "+";
-            const messageText = `${bulletPoint} ${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
+            let messageText = `${bulletPoint} ${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
                 message.timeStamp.getMinutes()
-            )}  ${message.author}: ${message.body}\n\n`;
-            transcript = transcript.concat(messageText);
+            )}  ${message.author}: ${message.body}`;
+            if (message.attachedMedia) {
+                messageText = messageText.concat(` (** Attached file ${message.attachedMedia[0].filename} **)`);
+            }
+            transcript = transcript.concat(`${messageText}\n\n`);
         }
         return transcript;
     };
@@ -82,7 +88,6 @@ export const ConversationEnded = () => {
     const handleDownloadTranscript = () => {
         const transcriptData = getTranscriptData();
         const transcript = generateTranscript(transcriptData);
-
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const transcriptURL = URL.createObjectURL(transcriptBlob);
         const hiddenLink = document.createElement("a");
