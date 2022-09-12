@@ -20,9 +20,15 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
+    interface Transcript {
+        author: string | undefined;
+        body: string;
+        timeStamp: Date;
+    }
+
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
 
-    const handleDownloadTranscript = () => {
+    const getTranscriptData = (): Transcript[] => {
         const transcriptData = [];
         if (messages && users) {
             for (const message of messages) {
@@ -34,9 +40,35 @@ export const ConversationEnded = () => {
                 });
             }
         }
+        return transcriptData;
+    };
+
+    const generateDuration = (transcriptData: Transcript[]) => {
+        let deltaInSeconds =
+            (transcriptData[transcriptData.length - 1].timeStamp.getTime() - transcriptData[0].timeStamp.getTime()) /
+            1000;
+
+        const days = Math.floor(deltaInSeconds / (24 * 60 * 60));
+        deltaInSeconds -= days * (24 * 60 * 60);
+        const hours = Math.floor(deltaInSeconds / (60 * 60)) % 24;
+        deltaInSeconds -= hours * (60 * 60);
+        const minutes = Math.floor(deltaInSeconds / 60) % 60;
+        deltaInSeconds -= minutes * 60;
+        const seconds = Math.round(deltaInSeconds % 60);
+
+        const displayedDays = days > 0 ? `${days} ${days === 1 ? "day" : "days"} ` : "";
+        const displayedHours = hours > 0 ? `${hours} ${hours === 1 ? "hour" : "hours"} ` : "";
+        const displayedSeconds = seconds > 0 ? `${seconds} ${seconds === 1 ? "second" : "seconds"} ` : "";
+
+        return `${displayedDays}${displayedHours}${displayedSeconds}`;
+    };
+
+    const generateTranscript = (transcriptData: Transcript[]) => {
         const customerName = transcriptData[0].author;
         const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
-        let transcript = `Conversation with ${customerName}\n\nDate: ${conversationStartDate}\n\n`;
+        const duration = generateDuration(transcriptData);
+
+        let transcript = `Conversation with ${customerName}\n\nDate: ${conversationStartDate}\nDuration: ${duration}\n\n`;
         for (const message of transcriptData) {
             const bulletPoint = message.author === customerName ? "*" : "+";
             const messageText = `${bulletPoint} ${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
@@ -44,6 +76,13 @@ export const ConversationEnded = () => {
             )}  ${message.author}: ${message.body}\n\n`;
             transcript = transcript.concat(messageText);
         }
+        return transcript;
+    };
+
+    const handleDownloadTranscript = () => {
+        const transcriptData = getTranscriptData();
+        const transcript = generateTranscript(transcriptData);
+
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const transcriptURL = URL.createObjectURL(transcriptBlob);
         const hiddenLink = document.createElement("a");
