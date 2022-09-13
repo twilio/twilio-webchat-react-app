@@ -6,6 +6,7 @@ import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
 import { Media, Message, User } from "@twilio/conversations";
+import { useState } from "react";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase } from "../store/actions/genericActions";
@@ -63,6 +64,8 @@ export const ConversationEnded = () => {
         users: state.chat.users
     }));
 
+    const [downloadingTranscript, setdownloadingTranscript] = useState(false);
+
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
@@ -90,6 +93,7 @@ export const ConversationEnded = () => {
     };
 
     const handleDownloadTranscript = async () => {
+        setdownloadingTranscript(true);
         const transcriptData = getTranscriptData(messages, users);
         const transcript = generateTranscript(transcriptData);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
@@ -113,6 +117,7 @@ export const ConversationEnded = () => {
         } else {
             saveAs(transcriptBlob, "transcript.txt");
         }
+        setdownloadingTranscript(false);
     };
 
     return (
@@ -123,7 +128,12 @@ export const ConversationEnded = () => {
             <Text as="p" {...textStyles}>
                 Do you want a transcript of our chat?
             </Text>
-            <Button variant="secondary" data-test="download-transcript-button" onClick={handleDownloadTranscript}>
+            <Button
+                variant="secondary"
+                data-test="download-transcript-button"
+                onClick={handleDownloadTranscript}
+                loading={downloadingTranscript}
+            >
                 Download transcript
             </Button>
             <Text as="p" {...textStyles}>
