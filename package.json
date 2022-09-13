@@ -11,6 +11,7 @@
     "@twilio-paste/icons": "^6.1.0",
     "@twilio-paste/theme": "^5.3.3",
     "@twilio/conversations": "2.1.0-rc.0",
+    "jszip": "3.10.1",
     "lodash.merge": "^4.6.2",
     "lodash.throttle": "^4.1.1",
     "loglevel": "^1.7.1",
