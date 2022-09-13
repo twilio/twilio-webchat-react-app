@@ -71,28 +71,23 @@ export const ConversationEnded = () => {
     const getMediaUrls = async () => {
         const mediaMessages = messages?.filter((message) => message.attachedMedia);
         const mediaURLs = [];
-        if (mediaMessages) {
-            for (const message of mediaMessages) {
-                if (message.attachedMedia) {
-                    for (const media of message.attachedMedia) {
-                        try {
-                            const file = {
-                                name: media.filename,
-                                type: media.contentType,
-                                size: media.size
-                            } as File;
-                            const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-                            mediaURLs.push({ url, filename: media.filename });
-                        } catch (e) {
-                            log.error(`Failed downloading message attachment: ${e}`);
-                        }
-                    }
+        for (const message of mediaMessages || []) {
+            for (const media of message.attachedMedia || []) {
+                try {
+                    const file = {
+                        name: media.filename,
+                        type: media.contentType,
+                        size: media.size
+                    } as File;
+                    const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
+                    mediaURLs.push({ url, filename: media.filename });
+                } catch (e) {
+                    log.error(`Failed downloading message attachment: ${e}`);
                 }
             }
         }
         return mediaURLs;
     };
-
 
     const handleDownloadTranscript = async () => {
         const transcriptData = getTranscriptData(messages, users);
