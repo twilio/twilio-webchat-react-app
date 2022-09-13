@@ -70,7 +70,6 @@ export const ConversationEnded = () => {
 
     const getMediaUrls = async () => {
         const mediaMessages = messages?.filter((message) => message.attachedMedia);
-        console.log("mediaMessages", mediaMessages)
         const mediaURLs = [];
         if (mediaMessages) {
             for (const message of mediaMessages) {
@@ -83,7 +82,7 @@ export const ConversationEnded = () => {
                                 size: media.size
                             } as File;
                             const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-                            mediaURLs.push([url, media.filename]);
+                            mediaURLs.push({ url, filename: media.filename });
                         } catch (e) {
                             log.error(`Failed downloading message attachment: ${e}`);
                         }
@@ -94,29 +93,28 @@ export const ConversationEnded = () => {
         return mediaURLs;
     };
 
+
     const handleDownloadTranscript = async () => {
         const transcriptData = getTranscriptData(messages, users);
         const transcript = generateTranscript(transcriptData);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
-        // const transcriptURL = URL.createObjectURL(transcriptBlob);
         const mediaURLs = await getMediaUrls();
-        console.log(mediaURLs);
 
         if (mediaURLs.length > 0) {
             const zip = new JSZip();
             const folder = zip.folder("transcript");
             folder?.file("transcript.txt", transcriptBlob);
-            mediaURLs.forEach((url) => {
-                const blobPromise = fetch(url[0]).then(async (response) => {
+            mediaURLs.forEach((mediaURL) => {
+                const blobPromise = fetch(mediaURL.url).then(async (response) => {
                     if (response.status === 200) return response.blob();
                     return Promise.reject(new Error(response.statusText));
                 });
-                folder?.file(url[1], blobPromise);
+                folder?.file(mediaURL.filename, blobPromise);
             });
 
             zip.generateAsync({ type: "blob" })
                 .then((blob) => saveAs(blob, "transcript.zip"))
-                .catch((e) => console.log(e));
+                .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
         } else {
             saveAs(transcriptBlob, "transcript.txt");
         }
