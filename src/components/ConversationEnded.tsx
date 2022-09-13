@@ -1,3 +1,6 @@
+import log from "loglevel";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
@@ -65,72 +68,58 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
-    /*
-     * const getMediaUrls = async () => {
-     *     const mediaMessages = messages?.filter((message) => message.attachedMedia);
-     *     const mediaURLs = []
-     *     if (mediaMessages) {
-     *         for (const message of mediaMessages) {
-     *             // TODO: Check why FilePreview has a backup option?
-     *             if (message.attachedMedia) {
-     *                 for (const media of message.attachedMedia) {
-     *                     try {
-     *                         const file = {
-     *                             name: media.filename,
-     *                             type: media.contentType,
-     *                             size: media.size
-     *                         } as File;
-     *                         const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-     *                         mediaURLs.push(url);
-     *                     } catch (e) {
-     *                         log.error(`Failed downloading message attachment: ${e}`);
-     *                     }
-     *                 }
-     *             }
-     *         }
-     *     }
-     *     return mediaURLs;
-     * };
-     */
+    const getMediaUrls = async () => {
+        const mediaMessages = messages?.filter((message) => message.attachedMedia);
+        console.log("mediaMessages", mediaMessages)
+        const mediaURLs = [];
+        if (mediaMessages) {
+            for (const message of mediaMessages) {
+                if (message.attachedMedia) {
+                    for (const media of message.attachedMedia) {
+                        try {
+                            const file = {
+                                name: media.filename,
+                                type: media.contentType,
+                                size: media.size
+                            } as File;
+                            const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
+                            mediaURLs.push([url, media.filename]);
+                        } catch (e) {
+                            log.error(`Failed downloading message attachment: ${e}`);
+                        }
+                    }
+                }
+            }
+        }
+        return mediaURLs;
+    };
 
     const handleDownloadTranscript = async () => {
         const transcriptData = getTranscriptData(messages, users);
         const transcript = generateTranscript(transcriptData);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
-        const transcriptURL = URL.createObjectURL(transcriptBlob);
+        // const transcriptURL = URL.createObjectURL(transcriptBlob);
+        const mediaURLs = await getMediaUrls();
+        console.log(mediaURLs);
 
-        // const mediaURLs = await getMediaUrls();
-        /*
-         * if (mediaURLs.length > 0) {
-         *     const zip = new JSZip()
-         *     const folder = zip.folder('attachments')
-         *     mediaURLs.forEach((url)=> {
-         *         const blobPromise = fetch(url).then(r => {
-         *             if (r.status === 200) return r.blob()
-         *             return Promise.reject(new Error(r.statusText))
-         *         })
-         *         const name = url.substring(url.lastIndexOf('/'))
-         *         if (folder) {
-         *             folder.file(name, blobPromise)
-         *         }
-         *     )
-         *     zip.generateAsync({type:"blob"})
-         *     .then(blob => {
-         *         const hiddenLink = document.createElement("a");
-         *         hiddenLink.download = "transcript.txt";
-         *         hiddenLink.href = transcriptURL;
-         *         hiddenLink.setAttribute("data-testid", "hidden-download-link");
-         *         hiddenLink.click();
-         *     })
-         *     .catch(e => console.log(e));
-         * }
-         */
+        if (mediaURLs.length > 0) {
+            const zip = new JSZip();
+            const folder = zip.folder("transcript");
+            folder?.file("transcript.txt", transcriptBlob);
+            mediaURLs.forEach((url) => {
+                const blobPromise = fetch(url[0]).then(async (response) => {
+                    if (response.status === 200) return response.blob();
+                    return Promise.reject(new Error(response.statusText));
+                });
+                folder?.file(url[1], blobPromise);
+            });
 
-        const hiddenLink = document.createElement("a");
-        hiddenLink.download = "transcript.txt";
-        hiddenLink.href = transcriptURL;
-        hiddenLink.setAttribute("data-testid", "hidden-download-link");
-        hiddenLink.click();
+            zip.generateAsync({ type: "blob" })
+                .then((blob) => saveAs(blob, "transcript.zip"))
+                .catch((e) => console.log(e));
+        } else {
+            saveAs(transcriptBlob, "transcript.txt");
+        }
     };
 
     return (
