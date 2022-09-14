@@ -3,6 +3,7 @@ import JSZip from "jszip";
 import slugify from "slugify";
 import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
+import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -77,6 +78,7 @@ export const ConversationEnded = () => {
     }));
 
     const [downloadingTranscript, setdownloadingTranscript] = useState(false);
+    const [emailingTranscript, setEmailingTranscript] = useState(false);
 
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
@@ -140,6 +142,11 @@ export const ConversationEnded = () => {
         setdownloadingTranscript(false);
     };
 
+    const handleEmailTranscript = async () => {
+        setEmailingTranscript(true);
+        setEmailingTranscript(false);
+    };
+
     return (
         <Box {...containerStyles}>
             <Text as="h3" {...titleStyles}>
@@ -148,14 +155,26 @@ export const ConversationEnded = () => {
             <Text as="p" {...textStyles}>
                 Do you want a transcript of our chat?
             </Text>
-            <Button
-                variant="secondary"
-                data-test="download-transcript-button"
-                onClick={handleDownloadTranscript}
-                loading={downloadingTranscript}
-            >
-                Download transcript
-            </Button>
+            <Flex>
+                <Button
+                    variant="secondary"
+                    data-test="download-transcript-button"
+                    onClick={handleDownloadTranscript}
+                    loading={downloadingTranscript}
+                >
+                    Download
+                </Button>
+                <Box marginLeft="space40">
+                    <Button
+                        variant="secondary"
+                        data-test="email-transcript-button"
+                        onClick={handleEmailTranscript}
+                        loading={emailingTranscript}
+                    >
+                        Send to my email
+                    </Button>
+                </Box>
+            </Flex>
             <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.
             </Text>
