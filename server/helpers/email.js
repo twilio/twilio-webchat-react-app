@@ -6,8 +6,8 @@ function createMessage(emailData) {
     return {
         to: emailData.recipientAddress,
         from: process.env.FROM_EMAIL,
-        subject: "Test Email",
-        text: "Test Email"
+        subject: emailData.subject,
+        text: emailData.text
     };
 }
 

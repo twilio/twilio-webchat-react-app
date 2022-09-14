@@ -10,8 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Media, Message, User } from "@twilio/conversations";
 import { useState } from "react";
 
-import { sessionDataHandler } from "../sessionDataHandler";
-import { changeEngagementPhase } from "../store/actions/genericActions";
+import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
+import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase, AppState } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
 import { generateDuration } from "../utils/generateDuration";
@@ -72,16 +72,20 @@ export const generateTranscript = (transcriptData: Transcript[]) => {
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
-    const { messages, users } = useSelector((state: AppState) => ({
+    const { messages, users, preEngagementData } = useSelector((state: AppState) => ({
         messages: state.chat.messages,
-        users: state.chat.users
+        users: state.chat.users,
+        preEngagementData: state.session.preEngagementData
     }));
+
+    console.log(preEngagementData);
 
     const [downloadingTranscript, setdownloadingTranscript] = useState(false);
     const [emailingTranscript, setEmailingTranscript] = useState(false);
 
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
+        dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
@@ -144,6 +148,20 @@ export const ConversationEnded = () => {
 
     const handleEmailTranscript = async () => {
         setEmailingTranscript(true);
+        if (preEngagementData) {
+            const transcriptData = getTranscriptData(messages, users);
+            const { customerName, agentNames } = getNames(transcriptData);
+            let subject = `Transcript of your chat`;
+            if (agentNames.length > 0) {
+                subject = subject.concat(` with ${agentNames[0]}`);
+                agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
+            }
+            await contactBackend("/email", {
+                recipientAddress: preEngagementData.email,
+                subject,
+                text: `Hello ${customerName}.\n\nPlease see attached your transcript and any associated files, as requested.\n`
+            });
+        }
         setEmailingTranscript(false);
     };
 

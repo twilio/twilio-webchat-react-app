@@ -7,7 +7,7 @@ import { MessageInput } from "./MessageInput";
 import { AppState } from "../store/definitions";
 import { ConversationEnded } from "./ConversationEnded";
 import { NotificationBar } from "./NotificationBar";
-import { removeNotification, updatePreEngagementData } from "../store/actions/genericActions";
+import { removeNotification } from "../store/actions/genericActions";
 import { notifications } from "../notifications";
 import { AttachFileDropArea } from "./AttachFileDropArea";
 
@@ -16,7 +16,7 @@ export const MessagingCanvasPhase = () => {
     const conversationState = useSelector((state: AppState) => state.chat.conversationState);
 
     useEffect(() => {
-        dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
+        // dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
     }, [dispatch]);
 
