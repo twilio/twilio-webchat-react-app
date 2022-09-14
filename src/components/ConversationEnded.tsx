@@ -1,5 +1,6 @@
 import log from "loglevel";
 import JSZip from "jszip";
+import slugify from "slugify";
 import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
@@ -37,13 +38,24 @@ export const getTranscriptData = (messages: Message[] | undefined, users: User[]
     return transcriptData;
 };
 
+const getNames = (transcriptData: Transcript[]) => {
+    const names = transcriptData.map((message) => message.author);
+    const customerName = transcriptData[0].author;
+    const agentNames = names.filter((name) => name !== customerName && name !== "Concierge");
+    return { customerName, agentNames };
+};
+
 export const generateTranscript = (transcriptData: Transcript[]) => {
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
-    const customerName = transcriptData[0].author;
+    const { customerName, agentNames } = getNames(transcriptData);
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
     const duration = generateDuration(transcriptData);
 
-    let transcript = `Conversation with ${customerName}\n\nDate: ${conversationStartDate}\nDuration: ${duration}\n\n`;
+    let conversationTitle = `Conversation with ${customerName}`;
+    if (agentNames.length > 0) {
+        agentNames.forEach((name) => (conversationTitle = conversationTitle.concat(` and ${name}`)));
+    }
+    let transcript = `${conversationTitle}\n\nDate: ${conversationStartDate}\nDuration: ${duration}\n\n`;
     for (const message of transcriptData) {
         const bulletPoint = message.author === customerName ? "*" : "+";
         let messageText = `${bulletPoint} ${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
@@ -99,10 +111,18 @@ export const ConversationEnded = () => {
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaURLs = await getMediaUrls();
 
+        const { customerName, agentNames } = getNames(transcriptData);
+        let fileName = `chat with ${customerName}`;
+        if (agentNames.length > 0) {
+            agentNames.forEach((name) => (fileName = fileName.concat(` and ${name}`)));
+        }
+        fileName = fileName.concat(`-${transcriptData[0].timeStamp.toDateString()}`);
+        fileName = slugify(fileName).toLowerCase();
+
         if (mediaURLs.length > 0) {
             const zip = new JSZip();
-            const folder = zip.folder("transcript");
-            folder?.file("transcript.txt", transcriptBlob);
+            const folder = zip.folder(fileName);
+            folder?.file(`${fileName}.txt`, transcriptBlob);
             mediaURLs.forEach((mediaURL) => {
                 const blobPromise = fetch(mediaURL.url).then(async (response) => {
                     if (response.status === 200) return response.blob();
@@ -112,10 +132,10 @@ export const ConversationEnded = () => {
             });
 
             zip.generateAsync({ type: "blob" })
-                .then((blob) => saveAs(blob, "transcript.zip"))
+                .then((blob) => saveAs(blob, `${fileName}.zip`))
                 .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
         } else {
-            saveAs(transcriptBlob, "transcript.txt");
+            saveAs(transcriptBlob, `${fileName}.txt`);
         }
         setdownloadingTranscript(false);
     };
