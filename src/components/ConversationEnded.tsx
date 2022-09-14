@@ -38,7 +38,7 @@ export const getTranscriptData = (messages: Message[] | undefined, users: User[]
     return transcriptData;
 };
 
-const getNames = (transcriptData: Transcript[]) => {
+export const getNames = (transcriptData: Transcript[]) => {
     const names = transcriptData.map((message) => message.author);
     const customerName = transcriptData[0].author;
     const agentNames = names.filter((name) => name !== customerName && name !== "Concierge");
