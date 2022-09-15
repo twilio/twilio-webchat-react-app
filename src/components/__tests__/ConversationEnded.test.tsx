@@ -53,12 +53,20 @@ const defaultState = {
         messages: [message1, message2],
         participants: [],
         users: [user1, user2]
+    },
+    session: {
+        preEngagementData: {
+            email: "test@email.com",
+            name: "test",
+            query: "test query"
+        }
     }
 };
 
 describe("Conversation Ended", () => {
     const newChatButtonText = "Start new chat";
-    const downloadTranscriptButtonText = "Download transcript";
+    const downloadTranscriptButtonText = "Download";
+    const emailTranscriptButtonText = "Send to my email";
 
     beforeEach(() => {
         (useSelector as jest.Mock).mockImplementation((callback: any) => callback(defaultState));
@@ -79,9 +87,16 @@ describe("Conversation Ended", () => {
 
     it("renders the download transcript button", () => {
         const { queryByText } = render(<ConversationEnded />);
-        const newTranscriptButton = queryByText(downloadTranscriptButtonText);
+        const downloadTranscriptButton = queryByText(downloadTranscriptButtonText);
 
-        expect(newTranscriptButton).toBeInTheDocument();
+        expect(downloadTranscriptButton).toBeInTheDocument();
+    });
+
+    it("renders the email transcript button", () => {
+        const { queryByText } = render(<ConversationEnded />);
+        const emailTranscriptButton = queryByText(emailTranscriptButtonText);
+
+        expect(emailTranscriptButton).toBeInTheDocument();
     });
 
     it("clears session data on new chat button click", () => {

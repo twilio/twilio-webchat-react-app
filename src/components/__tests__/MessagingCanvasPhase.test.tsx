@@ -49,12 +49,6 @@ describe("Messaging Canvas Phase", () => {
         expect(container).toBeInTheDocument();
     });
 
-    it("resets pre-engagement data on render", () => {
-        render(<MessagingCanvasPhase />);
-
-        expect(dispatchSpy).toHaveBeenCalledWith(updatePreEngagementData({ email: "", name: "", query: "" }));
-    });
-
     it("dismisses any 'failedToInitSessionNotification'", () => {
         const removeNotificationSpy = jest.spyOn(genericActions, "removeNotification");
 
