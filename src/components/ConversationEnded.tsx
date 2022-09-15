@@ -101,7 +101,7 @@ export const ConversationEnded = () => {
                         size: media.size
                     } as File;
                     const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-                    mediaURLs.push({ url, filename: media.filename });
+                    mediaURLs.push({ url, filename: media.filename, type: media.contentType });
                 } catch (e) {
                     log.error(`Failed downloading message attachment: ${e}`);
                 }
@@ -150,6 +150,9 @@ export const ConversationEnded = () => {
         setEmailingTranscript(true);
         if (preEngagementData) {
             const transcriptData = getTranscriptData(messages, users);
+            const mediaURLs = await getMediaUrls();
+            const transcript = generateTranscript(transcriptData);
+
             const { customerName, agentNames } = getNames(transcriptData);
             let subject = `Transcript of your chat`;
             if (agentNames.length > 0) {
@@ -159,7 +162,8 @@ export const ConversationEnded = () => {
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
                 subject,
-                text: `Hello ${customerName}.\n\nPlease see attached your transcript and any associated files, as requested.\n`
+                text: `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`,
+                urls: mediaURLs
             });
         }
         setEmailingTranscript(false);
