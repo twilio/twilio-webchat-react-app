@@ -73,6 +73,7 @@ const defaultState = {
 
 describe("Conversation Ended", () => {
     const newChatButtonText = "Start new chat";
+    const transcriptQueryText = "Do you want a transcript of our chat?"
     const downloadTranscriptButtonText = "Download";
     const emailTranscriptButtonText = "Send to my email";
 
@@ -91,6 +92,40 @@ describe("Conversation Ended", () => {
         const newChatButton = queryByText(newChatButtonText);
 
         expect(newChatButton).toBeInTheDocument();
+    });
+
+    it("renders the transcript query text if download or email transcript enabled in config", () => {
+        const { queryByText } = render(<ConversationEnded />);
+        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
+        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
+            callback({
+                ...defaultState,
+                config: { ...defaultState.config, transcript: { ...transcriptConfig, downloadEnabled: false } }
+            })
+        );
+        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
+        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
+            callback({
+                ...defaultState,
+                config: { ...defaultState.config, transcript: { ...transcriptConfig, emailEnabled: false } }
+            })
+        );
+        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
+    });
+
+    it("does not render the transcript query text if download and email transcript disabled in config", () => {
+        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
+            callback({
+                ...defaultState,
+                config: {
+                    ...defaultState.config,
+                    transcript: { ...transcriptConfig, downloadEnabled: false, emailEnabled: false }
+                }
+            })
+        );
+        const { queryByText } = render(<ConversationEnded />);
+
+        expect(queryByText(transcriptQueryText)).not.toBeInTheDocument();
     });
 
     it("renders the download transcript button if enabled in config", () => {
