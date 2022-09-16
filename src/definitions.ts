@@ -14,5 +14,6 @@ export type FileAttachmentConfig = {
 export type TranscriptConfig = {
     downloadEnabled?: boolean;
     emailEnabled?: boolean;
+    emailSubject?: (agentNames: (string | undefined)[]) => string;
     emailContent?: (customerName: string | undefined, transcript: string) => string;
 };

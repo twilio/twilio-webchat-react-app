@@ -153,14 +153,9 @@ export const ConversationEnded = () => {
             const transcript = generateTranscript(transcriptData);
 
             const { customerName, agentNames } = getNames(transcriptData);
-            let subject = `Transcript of your chat`;
-            if (agentNames.length > 0) {
-                subject = subject.concat(` with ${agentNames[0]}`);
-                agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
-            }
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
-                subject,
+                subject: transcriptConfig?.emailSubject?.(agentNames),
                 text: transcriptConfig?.emailContent?.(customerName, transcript),
                 urls: mediaURLs
             });

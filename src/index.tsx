@@ -22,6 +22,14 @@ const defaultConfig: ConfigState = {
     transcript: {
         downloadEnabled: true,
         emailEnabled: true,
+        emailSubject: (agentNames) => {
+            let subject = "Transcript of your chat";
+            if (agentNames.length > 0) {
+                subject = subject.concat(` with ${agentNames[0]}`);
+                agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
+            }
+            return subject;
+        },
         emailContent: (customerName, transcript) => {
             return `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`;
         }
