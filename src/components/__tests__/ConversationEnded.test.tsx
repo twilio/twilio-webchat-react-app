@@ -7,6 +7,7 @@ import {
     ConversationEnded,
     getTranscriptData,
     generateDownloadTranscript,
+    generateEmailTranscript,
     Transcript,
     getAgentNames
 } from "../ConversationEnded";
@@ -79,9 +80,17 @@ const defaultState = {
 
 describe("Conversation Ended", () => {
     const newChatButtonText = "Start new chat";
-    const transcriptQueryText = "Do you want a transcript of our chat?"
+    const transcriptQueryText = "Do you want a transcript of our chat?";
     const downloadTranscriptButtonText = "Download";
     const emailTranscriptButtonText = "Send to my email";
+    const transcriptData: Transcript[] = [
+        { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
+        { author: "Concierge", body: "hi", timeStamp: new Date("December 18, 2022 04:30:10"), attachedMedia: null },
+        { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null },
+        { author: "Samantha", body: "hi", timeStamp: new Date("December 21, 2022 03:24:00"), attachedMedia: null }
+    ];
+    const customerName = "John";
+    const agentNames = ["Ben", "Samantha"];
 
     beforeEach(() => {
         (useSelector as jest.Mock).mockImplementation((callback: any) => callback(defaultState));
@@ -189,34 +198,40 @@ describe("Conversation Ended", () => {
         expect(changeEngagementPhaseSpy).toHaveBeenCalledWith({ phase: EngagementPhase.PreEngagementForm });
     });
 
+    it("resets pre-engagement data on new chat button click", () => {
+        const updatePreEngagementDataSpy = jest.spyOn(genericActions, "updatePreEngagementData");
+
+        const { queryByText } = render(<ConversationEnded />);
+        const newChatButton = queryByText(newChatButtonText) as Element;
+        fireEvent.click(newChatButton);
+
+        expect(updatePreEngagementDataSpy).toHaveBeenCalledWith({ email: "", name: "", query: "" });
+    });
+
     it("retrieves transcript data from store", () => {
         const expectedResult = [
             { attachedMedia: undefined, author: "name 1", body: "message 1", timeStamp: new Date("01/01/2021") },
             { attachedMedia: undefined, author: "name 2", body: "message 2", timeStamp: new Date("01/02/2021") }
         ];
-        expect(getTranscriptData(defaultState.chat.messages as Message[], defaultState.chat.users as User[])).toEqual(expectedResult);
-    });
-
-    it("generates transcript", () => {
-        const transcriptData: Transcript[] = [
-            { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
-            { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null }
-        ];
-        const customerName = "John";
-        const agentNames = ["Ben"];
-        expect(generateDownloadTranscript(customerName, agentNames, transcriptData)).toEqual(
-            `Conversation with John and Ben\n\nDate: 17 December 2022\nDuration: 2 days 22 hours 50 seconds \n\n* 04:30  John: hi\n\n+ 03:24  Ben: hi\n\n`
+        expect(getTranscriptData(defaultState.chat.messages as Message[], defaultState.chat.users as User[])).toEqual(
+            expectedResult
         );
     });
 
+    it("generates transcript for download", () => {
+        expect(generateDownloadTranscript(customerName, agentNames, transcriptData)).toEqual(
+            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 50 seconds \n\n* 04:30  ${customerName}: hi\n\n+ 04:30  Concierge: hi\n\n+ 03:24  ${agentNames[0]}: hi\n\n+ 03:24  ${agentNames[1]}: hi\n\n`
+        );
+    });
+
+    it("generates transcript for email", () => {
+        expect(generateEmailTranscript(customerName, agentNames, transcriptData)).toEqual(
+            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 50 seconds <br><br>04:30 <i>${customerName}</i>: hi<br><br>04:30 <i>Concierge</i>: hi<br><br>03:24 <i>${agentNames[0]}</i>: hi<br><br>03:24 <i>${agentNames[1]}</i>: hi<br><br>`
+        );
+    });
+
+
     it("gets agent names from transcript data", () => {
-        const transcriptData: Transcript[] = [
-            { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
-            { author: "Concierge", body: "hi", timeStamp: new Date("December 18, 2022 04:30:10"), attachedMedia: null },
-            { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null },
-            { author: "Samantha", body: "hi", timeStamp: new Date("December 21, 2022 03:24:00"), attachedMedia: null }
-        ];
-        const customerName = "John";
-        expect(getAgentNames(customerName, transcriptData)).toEqual(["Ben", "Samantha"]);
+        expect(getAgentNames(customerName, transcriptData)).toEqual([agentNames[0], agentNames[1]]);
     });
 });

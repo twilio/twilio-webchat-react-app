@@ -75,7 +75,7 @@ export const generateDownloadTranscript = (
     return transcript;
 };
 
-const generateEmailTranscript = (
+export const generateEmailTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],
     transcriptData: Transcript[]
