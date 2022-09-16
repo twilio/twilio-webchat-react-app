@@ -2,6 +2,8 @@
  * @type {Cypress.PluginConfig}
  */
 
+import * as fs from "fs";
+
 import { config } from "dotenv";
 
 import {
@@ -15,6 +17,7 @@ import {
     getLastMessageText
 } from "./helpers/interactionHandler";
 
+
 config();
 
 module.exports = (on: any, _config: any) => {
@@ -26,7 +29,15 @@ module.exports = (on: any, _config: any) => {
         completeReservation,
         getCustomerName,
         getLastMessageMediaData,
-        getLastMessageText
+        getLastMessageText,
+        downloads: (downloadspath) => {
+            try {
+                return fs.readdirSync(downloadspath);
+            } catch (e) {
+                fs.mkdirSync(downloadspath, { recursive: true });
+                return fs.readdirSync(downloadspath);
+            }
+        }
     });
 
     return _config;
