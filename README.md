@@ -163,7 +163,10 @@ window.addEventListener("DOMContentLoaded", () => {
         },
         transcript: {
             downloadEnabled: true,
-            emailEnabled: true
+            emailEnabled: true,
+            emailContent: (customerName, transcript) => {
+                return `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`;
+            }
         }
     });
 });
@@ -180,6 +183,7 @@ window.addEventListener("DOMContentLoaded", () => {
 4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
     1. `transcript.downloadEnabled` describes whether customers can download a transcript after a chat has been completed.
     2. `transcript.emailEnabled` describes whether customers can receive a transcript by email after a chat has been completed.
+    3. `transcript.emailContent` configures what email customers receive when they request an emailed transcript.
 
 ## 2. Local Backend Server
 
