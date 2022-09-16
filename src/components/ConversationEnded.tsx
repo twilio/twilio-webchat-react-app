@@ -161,7 +161,7 @@ export const ConversationEnded = () => {
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
                 subject,
-                text: `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`,
+                text: transcriptConfig?.emailContent?.(customerName, transcript),
                 urls: mediaURLs
             });
         }

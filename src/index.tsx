@@ -21,7 +21,10 @@ const defaultConfig: ConfigState = {
     },
     transcript: {
         downloadEnabled: true,
-        emailEnabled: true
+        emailEnabled: true,
+        emailContent: (customerName, transcript) => {
+            return `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`;
+        }
     }
 };
 
