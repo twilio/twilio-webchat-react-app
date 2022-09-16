@@ -8,7 +8,7 @@ import {
     getTranscriptData,
     generateDownloadTranscript,
     Transcript,
-    getNames
+    getAgentNames
 } from "../ConversationEnded";
 import * as genericActions from "../../store/actions/genericActions";
 import { sessionDataHandler } from "../../sessionDataHandler";
@@ -202,18 +202,21 @@ describe("Conversation Ended", () => {
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
             { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null }
         ];
-        expect(generateDownloadTranscript(transcriptData)).toEqual(
+        const customerName = "John";
+        const agentNames = ["Ben"];
+        expect(generateDownloadTranscript(customerName, agentNames, transcriptData)).toEqual(
             `Conversation with John and Ben\n\nDate: 17 December 2022\nDuration: 2 days 22 hours 50 seconds \n\n* 04:30  John: hi\n\n+ 03:24  Ben: hi\n\n`
         );
     });
 
-    it("gets customer and agent names from transcript data", () => {
+    it("gets agent names from transcript data", () => {
         const transcriptData: Transcript[] = [
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
             { author: "Concierge", body: "hi", timeStamp: new Date("December 18, 2022 04:30:10"), attachedMedia: null },
             { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null },
             { author: "Samantha", body: "hi", timeStamp: new Date("December 21, 2022 03:24:00"), attachedMedia: null }
         ];
-        expect(getNames(transcriptData)).toEqual({ customerName: "John", agentNames: ["Ben", "Samantha"] });
+        const customerName = "John";
+        expect(getAgentNames(customerName, transcriptData)).toEqual(["Ben", "Samantha"]);
     });
 });
