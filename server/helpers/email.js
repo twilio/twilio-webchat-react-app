@@ -14,7 +14,7 @@ function createMessage(emailData, files) {
         to: emailData.recipientAddress,
         from: process.env.FROM_EMAIL,
         subject: emailData.subject,
-        text: emailData.text,
+        html: emailData.text,
         attachments: attachmentObjects
   }
 };

@@ -31,7 +31,7 @@ const defaultConfig: ConfigState = {
             return subject;
         },
         emailContent: (customerName, transcript) => {
-            return `Hello ${customerName}.\n\nPlease see below your transcript, with any associated files attached, as requested.\n\n${transcript}`;
+            return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
         }
     }
 };

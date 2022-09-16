@@ -41,12 +41,15 @@ export const getTranscriptData = (messages: Message[] | undefined, users: User[]
 
 export const getNames = (transcriptData: Transcript[]) => {
     const names = transcriptData.map((message) => message.author);
-    const customerName = transcriptData[0].author;
-    const agentNames = names.filter((name) => name !== customerName && name !== "Concierge");
+    const customerName = transcriptData[0].author?.trim();
+    let agentNames = Array.from(
+        new Set(names.filter((name) => name?.trim() !== customerName && name?.trim() !== "Concierge"))
+    );
+    agentNames = agentNames.map((name) => name?.trim());
     return { customerName, agentNames };
 };
 
-export const generateTranscript = (transcriptData: Transcript[]) => {
+export const generateDownloadTranscript = (transcriptData: Transcript[]) => {
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
     const { customerName, agentNames } = getNames(transcriptData);
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
@@ -66,6 +69,30 @@ export const generateTranscript = (transcriptData: Transcript[]) => {
             messageText = messageText.concat(` (** Attached file ${message.attachedMedia[0].filename} **)`);
         }
         transcript = transcript.concat(`${messageText}\n\n`);
+    }
+    return transcript;
+};
+
+const generateEmailTranscript = (transcriptData: Transcript[]) => {
+    const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
+    const { customerName, agentNames } = getNames(transcriptData);
+    const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
+    const duration = generateDuration(transcriptData);
+
+    let conversationTitle = `Chat with <strong>${customerName}</strong>`;
+    if (agentNames.length > 0) {
+        agentNames.forEach((name) => (conversationTitle = conversationTitle.concat(` and <strong>${name}</strong>`)));
+    }
+
+    let transcript = `${conversationTitle}<br><br><strong>Date:</strong> ${conversationStartDate}<br><strong>Duration:</strong> ${duration}<br><br>`;
+    for (const message of transcriptData) {
+        let messageText = `${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
+            message.timeStamp.getMinutes()
+        )} <i>${message.author}</i>: ${message.body}`;
+        if (message.attachedMedia) {
+            messageText = messageText.concat(` (** Attached file <i>${message.attachedMedia[0].filename}</i> **)`);
+        }
+        transcript = transcript.concat(`${messageText}<br><br>`);
     }
     return transcript;
 };
@@ -112,7 +139,7 @@ export const ConversationEnded = () => {
     const handleDownloadTranscript = async () => {
         setdownloadingTranscript(true);
         const transcriptData = getTranscriptData(messages, users);
-        const transcript = generateTranscript(transcriptData);
+        const transcript = generateDownloadTranscript(transcriptData);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaURLs = await getMediaUrls();
 
@@ -150,7 +177,7 @@ export const ConversationEnded = () => {
         if (preEngagementData) {
             const transcriptData = getTranscriptData(messages, users);
             const mediaURLs = await getMediaUrls();
-            const transcript = generateTranscript(transcriptData);
+            const transcript = generateEmailTranscript(transcriptData);
 
             const { customerName, agentNames } = getNames(transcriptData);
             await contactBackend("/email", {

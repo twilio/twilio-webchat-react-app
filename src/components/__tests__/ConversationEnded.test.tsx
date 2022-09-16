@@ -3,7 +3,13 @@ import "@testing-library/jest-dom";
 import { useSelector } from "react-redux";
 import { Message, User } from "@twilio/conversations";
 
-import { ConversationEnded, getTranscriptData, generateTranscript, Transcript, getNames } from "../ConversationEnded";
+import {
+    ConversationEnded,
+    getTranscriptData,
+    generateDownloadTranscript,
+    Transcript,
+    getNames
+} from "../ConversationEnded";
 import * as genericActions from "../../store/actions/genericActions";
 import { sessionDataHandler } from "../../sessionDataHandler";
 import { EngagementPhase } from "../../store/definitions";
@@ -196,7 +202,7 @@ describe("Conversation Ended", () => {
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
             { author: "Ben", body: "hi", timeStamp: new Date("December 20, 2022 03:24:00"), attachedMedia: null }
         ];
-        expect(generateTranscript(transcriptData)).toEqual(
+        expect(generateDownloadTranscript(transcriptData)).toEqual(
             `Conversation with John and Ben\n\nDate: 17 December 2022\nDuration: 2 days 22 hours 50 seconds \n\n* 04:30  John: hi\n\n+ 03:24  Ben: hi\n\n`
         );
     });
