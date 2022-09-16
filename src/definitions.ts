@@ -10,3 +10,8 @@ export type FileAttachmentConfig = {
     maxFileSize?: number;
     acceptedExtensions?: string[];
 };
+
+export type TranscriptConfig = {
+    downloadEnabled?: boolean;
+    emailEnabled?: boolean;
+};

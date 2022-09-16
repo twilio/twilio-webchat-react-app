@@ -72,13 +72,12 @@ export const generateTranscript = (transcriptData: Transcript[]) => {
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
-    const { messages, users, preEngagementData } = useSelector((state: AppState) => ({
+    const { messages, users, preEngagementData, transcriptConfig } = useSelector((state: AppState) => ({
         messages: state.chat.messages,
         users: state.chat.users,
-        preEngagementData: state.session.preEngagementData
+        preEngagementData: state.session.preEngagementData,
+        transcriptConfig: state.config.transcript
     }));
-
-    console.log(preEngagementData);
 
     const [downloadingTranscript, setdownloadingTranscript] = useState(false);
     const [emailingTranscript, setEmailingTranscript] = useState(false);
@@ -174,29 +173,37 @@ export const ConversationEnded = () => {
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            <Text as="p" {...textStyles}>
-                Do you want a transcript of our chat?
-            </Text>
-            <Flex>
-                <Button
-                    variant="secondary"
-                    data-test="download-transcript-button"
-                    onClick={handleDownloadTranscript}
-                    loading={downloadingTranscript}
-                >
-                    Download
-                </Button>
-                <Box marginLeft="space40">
-                    <Button
-                        variant="secondary"
-                        data-test="email-transcript-button"
-                        onClick={handleEmailTranscript}
-                        loading={emailingTranscript}
-                    >
-                        Send to my email
-                    </Button>
-                </Box>
-            </Flex>
+            {(transcriptConfig?.downloadEnabled || transcriptConfig?.emailEnabled) && (
+                <>
+                    <Text as="p" {...textStyles}>
+                        Do you want a transcript of our chat?
+                    </Text>
+                    <Flex>
+                        {transcriptConfig?.downloadEnabled && (
+                            <Button
+                                variant="secondary"
+                                data-test="download-transcript-button"
+                                onClick={handleDownloadTranscript}
+                                loading={downloadingTranscript}
+                            >
+                                Download
+                            </Button>
+                        )}
+                        {transcriptConfig?.emailEnabled && (
+                            <Box marginLeft="space40">
+                                <Button
+                                    variant="secondary"
+                                    data-test="email-transcript-button"
+                                    onClick={handleEmailTranscript}
+                                    loading={emailingTranscript}
+                                >
+                                    Send to my email
+                                </Button>
+                            </Box>
+                        )}
+                    </Flex>
+                </>
+            )}
             <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.
             </Text>

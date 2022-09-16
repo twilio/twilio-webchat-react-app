@@ -41,6 +41,11 @@ const message2 = {
     body: "message 2"
 };
 
+const transcriptConfig = {
+    downloadEnabled: true,
+    emailEnabled: true
+};
+
 const defaultState = {
     chat: {
         conversation: {
@@ -60,6 +65,9 @@ const defaultState = {
             name: "test",
             query: "test query"
         }
+    },
+    config: {
+        transcript: transcriptConfig
     }
 };
 
@@ -85,18 +93,38 @@ describe("Conversation Ended", () => {
         expect(newChatButton).toBeInTheDocument();
     });
 
-    it("renders the download transcript button", () => {
+    it("renders the download transcript button if enabled in config", () => {
         const { queryByText } = render(<ConversationEnded />);
-        const downloadTranscriptButton = queryByText(downloadTranscriptButtonText);
-
-        expect(downloadTranscriptButton).toBeInTheDocument();
+        expect(queryByText(downloadTranscriptButtonText)).toBeInTheDocument();
     });
 
-    it("renders the email transcript button", () => {
+    it("does not render the download transcript button if disabled in config", () => {
+        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
+            callback({
+                ...defaultState,
+                config: { ...defaultState.config, transcript: { ...transcriptConfig, downloadEnabled: false } }
+            })
+        );
         const { queryByText } = render(<ConversationEnded />);
-        const emailTranscriptButton = queryByText(emailTranscriptButtonText);
 
-        expect(emailTranscriptButton).toBeInTheDocument();
+        expect(queryByText(downloadTranscriptButtonText)).not.toBeInTheDocument();
+    });
+
+    it("renders the email transcript button if enabled in config", () => {
+        const { queryByText } = render(<ConversationEnded />);
+        expect(queryByText(emailTranscriptButtonText)).toBeInTheDocument();
+    });
+
+    it("does not render the email transcript button if disabled in config", () => {
+        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
+            callback({
+                ...defaultState,
+                config: { ...defaultState.config, transcript: { ...transcriptConfig, emailEnabled: false } }
+            })
+        );
+        const { queryByText } = render(<ConversationEnded />);
+
+        expect(queryByText(emailTranscriptButtonText)).not.toBeInTheDocument();
     });
 
     it("clears session data on new chat button click", () => {

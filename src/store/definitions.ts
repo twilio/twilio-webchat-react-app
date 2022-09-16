@@ -2,7 +2,7 @@ import { Client, Conversation, Participant, Message, User } from "@twilio/conver
 import { GenericThemeShape } from "@twilio-paste/theme";
 import { AlertVariants } from "@twilio-paste/core/alert";
 
-import { FileAttachmentConfig } from "../definitions";
+import { FileAttachmentConfig, TranscriptConfig } from "../definitions";
 
 export enum EngagementPhase {
     PreEngagementForm = "PreEngagementForm",
@@ -43,6 +43,7 @@ export type ConfigState = {
         overrides?: Partial<GenericThemeShape>;
     };
     fileAttachment?: FileAttachmentConfig;
+    transcript?: TranscriptConfig;
 };
 
 export type Notification = {

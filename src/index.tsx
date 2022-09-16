@@ -18,6 +18,10 @@ const defaultConfig: ConfigState = {
         enabled: true,
         maxFileSize: 16777216, // 16 MB
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
+    },
+    transcript: {
+        downloadEnabled: true,
+        emailEnabled: true
     }
 };
 
