@@ -7,3 +7,4 @@ build
 .env.stage
 .idea
 yarn-error.log
+cypress/videos/General/WebchatGeneral.spec.ts.mp4
