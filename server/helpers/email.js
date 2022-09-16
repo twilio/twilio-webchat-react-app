@@ -20,15 +20,12 @@ function createMessage(emailData, files) {
 };
 
 async function sendMessage(emailParams) {
-    console.log("emailParams", emailParams)
-
     const files = [];
     for (const mediaURL of emailParams.urls) {
       try {
         const response = await axios.get(mediaURL.url, {responseType: 'arraybuffer'});
         const base64File = Buffer.from(response.data, 'binary').toString('base64')
         files.push({file: base64File, filename: mediaURL.filename, type: mediaURL.type})
-        console.log(`get attached file statusCode: ${response.status}`);
       } catch (error) {
         console.error(error);
       }

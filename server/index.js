@@ -29,6 +29,6 @@ app.post("/email", async (req, res) => {
     try {
         res.json(await sendMessage(req.body));
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 });
