@@ -316,6 +316,10 @@ describe("Webchat Lite general scenario's", () => {
                     .filter((file) => !String(before).split(",").includes(file))[0];
                 cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
                 cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
+                const unzippedFolderName = downloadedFile.split(".")[0];
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`).should(
+                    "exist"
+                );
             });
         });
     });
