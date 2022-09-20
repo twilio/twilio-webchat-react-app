@@ -320,6 +320,11 @@ describe("Webchat Lite general scenario's", () => {
                 cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`).should(
                     "exist"
                 );
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.pdf`).should("exist");
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.png`).should("exist");
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.txt`).should("exist");
+                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
             });
         });
     });
