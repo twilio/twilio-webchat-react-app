@@ -17,7 +17,6 @@ import {
     getLastMessageText
 } from "./helpers/interactionHandler";
 
-
 config();
 
 module.exports = (on: any, _config: any) => {
@@ -37,6 +36,11 @@ module.exports = (on: any, _config: any) => {
                 fs.mkdirSync(downloadspath, { recursive: true });
                 return fs.readdirSync(downloadspath);
             }
+        },
+        log(message) {
+            // eslint-disable-next-line no-console
+            console.log(message);
+            return null;
         }
     });
 

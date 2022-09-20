@@ -301,27 +301,21 @@ describe("Webchat Lite general scenario's", () => {
             });
     });
 
-    // it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
-    //     cy.resumeWebchatSessionCookie();
-    //     PreEngagementChatForm.toggleWebchatExpanded();
-    //     // Create the download folder if it doesn't exists
-    //     const downloadDirectory = Cypress.config().downloadsFolder;
-    //     // Download and verify the transcript
-    //     cy.task("downloads", downloadDirectory).then((before: any[]) => {
-    //         EndChatView.getDownloadTranscriptButton(10000).click();
-    //         cy.wait(3000);
-    //         cy.task("downloads", downloadDirectory).then(() => {
-    //             /*
-    //              * const downloadedFile = `chat-with-${Constants.CUSTOMER_NAME}-and-`
-    //              * cy.readFile(downloadDirectory+"/"+downloadedFile).should("contain", Constants.SDK_DISABLED_REPORT);
-    //              * cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
-    //              */
-    //             cy.task("downloads", downloadDirectory).then((after: any[]) => {
-    //                 const newFile = after[0];
-    //                 console.log(newFile)
-    //                 cy.readFile(`${downloadDirectory}/${newFile}`).should("exist");
-    //             });
-    //         });
-    //     });
-    // });
+    it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        // Create the download folder if it doesn't exists
+        const downloadDirectory = Cypress.config().downloadsFolder;
+        // Download and verify the transcript
+        cy.task("downloads", downloadDirectory).then((before) => {
+            EndChatView.getDownloadTranscriptButton(10000).click();
+            cy.wait(10000);
+            cy.task("downloads", downloadDirectory).then((after) => {
+                const downloadedFile = String(after)
+                    .split(",")
+                    .filter((file) => !String(before).split(",").includes(file))[0];
+                cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
+            });
+        });
+    });
 });
