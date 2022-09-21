@@ -1,8 +1,9 @@
-import { createStore, compose, applyMiddleware, combineReducers } from "redux";
+import { createStore, compose, applyMiddleware, combineReducers, EmptyObject } from "redux";
 import thunk from "redux-thunk";
 
 import { ChatReducer } from "./chat.reducer";
 import { ConfigReducer } from "./config.reducer";
+import { ChatState, ConfigState, NotificationState, SessionState } from "./definitions";
 import { NotificationReducer } from "./notification.reducer";
 import { SessionReducer } from "./session.reducer";
 
@@ -19,7 +20,14 @@ const loadState = () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const saveState = (state: any) => {
+const saveState = (
+    state: EmptyObject & {
+        chat: ChatState;
+        config: ConfigState;
+        notifications: NotificationState;
+        session: SessionState;
+    }
+) => {
     try {
         const serializedState = JSON.stringify(state);
         localStorage.setItem("state", serializedState);
@@ -27,7 +35,7 @@ const saveState = (state: any) => {
         // eslint-disable-next-line no-console
         console.log(err);
     }
-}
+};
 
 const persistedState = loadState();
 
