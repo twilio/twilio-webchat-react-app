@@ -6,6 +6,31 @@ import { ConfigReducer } from "./config.reducer";
 import { NotificationReducer } from "./notification.reducer";
 import { SessionReducer } from "./session.reducer";
 
+const loadState = () => {
+    try {
+        const serializedState = localStorage.getItem("state");
+        if (serializedState === null) {
+            return undefined;
+        }
+        return JSON.parse(serializedState);
+    } catch (err) {
+        return undefined;
+    }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const saveState = (state: any) => {
+    try {
+        const serializedState = JSON.stringify(state);
+        localStorage.setItem("state", serializedState);
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log(err);
+    }
+}
+
+const persistedState = loadState();
+
 const typeWindow = window as unknown as { __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: typeof compose };
 
 const composeEnhancers = typeWindow.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -17,4 +42,9 @@ const reducers = combineReducers({
     session: SessionReducer
 });
 
-export const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
+// eslint-disable-next-line import/no-unused-modules
+export const store = createStore(reducers, persistedState, composeEnhancers(applyMiddleware(thunk)));
+
+store.subscribe(() => {
+    saveState(store.getState());
+});
