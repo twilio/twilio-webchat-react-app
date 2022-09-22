@@ -10,13 +10,6 @@ function createMessage(emailData, files) {
       type: file.type,
       disposition: "attachment"
     }))
-    console.log("createMessage", {
-      to: emailData.recipientAddress,
-      from: process.env.FROM_EMAIL,
-      subject: emailData.subject,
-      html: emailData.text,
-      attachments: attachmentObjects
-});
     return {
         to: emailData.recipientAddress,
         from: process.env.FROM_EMAIL,

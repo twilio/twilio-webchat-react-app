@@ -333,7 +333,7 @@ describe("Webchat Lite general scenario's", () => {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
         EndChatView.getEmailTranscriptButton(10000).click();
-        cy.wait(10000);
+        cy.wait(50000);
         const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
         const gmailToken = Cypress.env("GMAIL_TOKEN");
         console.log("oAuthClientOptions", oAuthClientOptions);

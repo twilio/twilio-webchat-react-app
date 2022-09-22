@@ -70,7 +70,7 @@ module.exports = (on: any, _config: any) => {
             console.log("token", token);
             console.log("count", count);
             const gmailAPIHelper = new GmailAPIHelper(oAuthClientOptions, token);
-            console.log("gmailAPIHelper", gmailAPIHelper)
+            console.log("gmailAPIHelper", gmailAPIHelper);
             return gmailAPIHelper.getReceivedEmails(count);
         }
     });

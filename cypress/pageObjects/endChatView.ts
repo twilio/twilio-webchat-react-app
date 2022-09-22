@@ -25,10 +25,18 @@ const EndChatView = {
     loop(gmailCredentials, retries: number, timestamp: string): void {
         console.log("in loop...");
         console.log("loop gmailCredentials", gmailCredentials);
-        cy.task("getReceivedEmails", { ...gmailCredentials, count: 5 }).then((receivedEmails: any) => {
+        cy.task("getReceivedEmails", { ...gmailCredentials, count: 1 }).then((receivedEmails: any) => {
+            console.log("afterReceivedEmails");
+            console.log("receivedEmails", receivedEmails);
             try {
                 // Find the email that the test sent
-                const receivedEmail = receivedEmails.find((email) => JSON.stringify(email).includes(timestamp));
+                const receivedEmail = receivedEmails.find((email) => {
+                    return (
+                        email.internalDate < Number(timestamp) + 60000 && email.internalDate > Number(timestamp) - 60000
+                    );
+                });
+                console.log("timestamp", timestamp);
+                console.log("receivedEmail", receivedEmail);
                 // Check if the email is received
                 if (!receivedEmail) {
                     throw new Error("Didnt find the email in customers inbox!");
