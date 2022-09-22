@@ -336,6 +336,9 @@ describe("Webchat Lite general scenario's", () => {
         cy.wait(10000);
         const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
         const gmailToken = Cypress.env("GMAIL_TOKEN");
+        console.log("oAuthClientOptions", oAuthClientOptions);
+        console.log("gmailToken", gmailToken);
+        console.log("about to enter loop");
         EndChatView.loop(
             {
                 oAuthClientOptions,

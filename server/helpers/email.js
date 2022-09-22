@@ -10,6 +10,13 @@ function createMessage(emailData, files) {
       type: file.type,
       disposition: "attachment"
     }))
+    console.log("createMessage", {
+      to: emailData.recipientAddress,
+      from: process.env.FROM_EMAIL,
+      subject: emailData.subject,
+      html: emailData.text,
+      attachments: attachmentObjects
+});
     return {
         to: emailData.recipientAddress,
         from: process.env.FROM_EMAIL,
@@ -33,6 +40,7 @@ async function sendMessage(emailParams) {
 
     try {
       await sgMail.send(createMessage(emailParams, files));
+      console.log("sent message...");
       return  { message: `Transcript email sent to: ${emailParams.recipientAddress}`};
     } catch (error) {
       console.error(`Error sending transcript email to: ${emailParams.recipientAddress}`, error);

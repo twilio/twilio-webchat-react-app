@@ -23,6 +23,8 @@ const EndChatView = {
         this.getEmailTranscriptButton(time).should("be.visible");
     },
     loop(gmailCredentials, retries: number, timestamp: string): void {
+        console.log("in loop...");
+        console.log("loop gmailCredentials", gmailCredentials);
         cy.task("getReceivedEmails", { ...gmailCredentials, count: 5 }).then((receivedEmails: any) => {
             try {
                 // Find the email that the test sent

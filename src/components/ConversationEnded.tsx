@@ -107,7 +107,7 @@ export const ConversationEnded = () => {
     const { messages, users, preEngagementData, transcriptConfig } = useSelector((state: AppState) => ({
         messages: state.chat.messages,
         users: state.chat.users,
-        preEngagementData: state.session.preEngagementData,
+        preEngagementData: state.chat.conversation?.attributes.pre_engagement_data,
         transcriptConfig: state.config.transcript
     }));
 
@@ -181,11 +181,13 @@ export const ConversationEnded = () => {
     const handleEmailTranscript = async () => {
         setEmailingTranscript(true);
         if (preEngagementData) {
+            console.log("preEngagementData", preEngagementData);
             const transcriptData = getTranscriptData(messages, users);
             const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
             const mediaURLs = await getMediaUrls();
             const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
+            console.log("contacting backend...");
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
                 subject: transcriptConfig?.emailSubject?.(agentNames),
