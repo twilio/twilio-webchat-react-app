@@ -28,7 +28,7 @@ describe("Webchat Lite general scenario's", () => {
         );
         PreEngagementChatForm.validateEmail();
         PreEngagementChatForm.getEmailInput().clear();
-        PreEngagementChatForm.getEmailInput().type(Constants.CORRECT_EMAIL);
+        PreEngagementChatForm.getEmailInput().type(Cypress.env("TEST_EMAIL"));
         PreEngagementChatForm.getStartChatButton().click();
         PreEngagementChatForm.validateFieldErrorMessage(
             PreEngagementChatForm.getQueryTextarea(),
@@ -327,5 +327,21 @@ describe("Webchat Lite general scenario's", () => {
                 cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
             });
         });
+    });
+
+    it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        EndChatView.getEmailTranscriptButton(10000).click();
+        cy.wait(50000);
+        const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
+        const gmailToken = Cypress.env("GMAIL_TOKEN");
+        EndChatView.loop(
+            {
+                oAuthClientOptions,
+                token: gmailToken
+            },
+            Date.now().toString()
+        );
     });
 });

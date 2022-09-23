@@ -107,7 +107,7 @@ export const ConversationEnded = () => {
     const { messages, users, preEngagementData, transcriptConfig } = useSelector((state: AppState) => ({
         messages: state.chat.messages,
         users: state.chat.users,
-        preEngagementData: state.session.preEngagementData,
+        preEngagementData: state.chat.conversation?.attributes.pre_engagement_data,
         transcriptConfig: state.config.transcript
     }));
 

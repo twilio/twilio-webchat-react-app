@@ -17,6 +17,7 @@ import {
     getLastMessageMediaData,
     getLastMessageText
 } from "./helpers/interactionHandler";
+import { GmailAPIHelper } from "./helpers/gmail-api-helper";
 
 config();
 
@@ -62,6 +63,10 @@ module.exports = (on: any, _config: any) => {
                 return null;
             });
             return null;
+        },
+        async getReceivedEmails({ oAuthClientOptions, token, count }) {
+            const gmailAPIHelper = new GmailAPIHelper(oAuthClientOptions, token);
+            return gmailAPIHelper.getReceivedEmails(count);
         }
     });
 
