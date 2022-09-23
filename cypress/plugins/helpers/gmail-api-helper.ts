@@ -1,4 +1,3 @@
-import parseMessage from "gmail-api-parse-message";
 import { Credentials, OAuth2ClientOptions } from "google-auth-library";
 import { google } from "googleapis";
 import { OAuth2Client } from "googleapis-common";
