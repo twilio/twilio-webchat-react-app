@@ -28,7 +28,7 @@ describe("Webchat Lite general scenario's", () => {
         );
         PreEngagementChatForm.validateEmail();
         PreEngagementChatForm.getEmailInput().clear();
-        PreEngagementChatForm.getEmailInput().type("testingacc112862@gmail.com");
+        PreEngagementChatForm.getEmailInput().type(Cypress.env("TEST_EMAIL"));
         PreEngagementChatForm.getStartChatButton().click();
         PreEngagementChatForm.validateFieldErrorMessage(
             PreEngagementChatForm.getQueryTextarea(),
