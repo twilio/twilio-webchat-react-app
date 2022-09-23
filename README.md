@@ -120,6 +120,50 @@ See how to re-use Paste alert component to build custom notifications in our [Ho
 Twilio Webchat React App comes out-of-the-box with a pre-engagement form. The data gathered on submission will be passed by default to the `initWebchat` endpoint of your server.
 More info [here](#a-note-about-the-pre-engagement-form-data).
 
+## Chat Transcripts
+
+Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested.
+
+### Downloading Transcripts
+
+Customers can download chat transcripts as a plain text file. If attachments are present within the chat conversation, a zip file containing the plain text transcript file and the attached files will be downloaded.
+
+**Setup**
+
+Allowing customers to download transcripts requires no additional setup beyond enabling chat transcript downloads in the configuration object, as described [here](#configuration).
+
+### Emailing Transcripts
+
+Customers can email chat transcripts to the email address provided in the pre-engagement form. The transcript will be provided within the body of the email and any associated files will be added as attachments to the email. Emails will be sent using the [SendGrid](https://sendgrid.com/) API.
+
+**Setup**
+
+1. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
+2. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
+3. Enable email transcripts in the configuration object, as described [here](#configuration).
+
+**Customisation**
+
+The email subject and HTML email content can be customised using the configuration object, as described [here](#configuration).
+
+**Cypress Email Tests**
+
+To allow the email-specific Cypress tests to run, some additional setup beyond the steps listed above is required. Note, that if this setup is not completed the email-specific Cypress tests will fail.
+
+1. Create a `cypress.env.json` file based on the contents of `cypress.env.sample.json`.
+2. Create Gmail API credentials.
+
+    1. Create a OAuth Consent Screen on Google Cloud, with the application type as "Web Application" and add the following URL to the Authorised Redirect URIs: https://developers.google.com/oauthplayground. Copy the Client ID and Client Secret to the relevant key-value pairs in `cypress.env.json`.
+    2. Open the [OAuth Playground](https://developers.google.com/oauthplayground)
+
+        1. Select `https://mail.google.com/` in scopes.
+        2. Click on the gear icon and tick "Use your own OAuth credentials" and enter your Client ID and Client Secret as prompted.
+        3. Click Authorise APIs.
+        4. Sign in with the Google account you wish to use for testing purposes. You may see a screen that says that "Google hasn't verified this app". If so, click on "Advanced" and then click on "Go to your app (unsafe)".
+        5. Review the account access required and click continue.
+
+    3. Once redirected to the [OAuth Playground](https://developers.google.com/oauthplayground), click on "Exchange authorisation code for tokens" and copy the refresh token to the relevant key-value pair in `cypress.env.json`.
+
 # Project Structure
 
 Twilio Webchat React App is an open source repository that includes:
