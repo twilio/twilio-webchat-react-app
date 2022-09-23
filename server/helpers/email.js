@@ -33,7 +33,6 @@ async function sendMessage(emailParams) {
 
     try {
       await sgMail.send(createMessage(emailParams, files));
-      console.log("sent message...");
       return  { message: `Transcript email sent to: ${emailParams.recipientAddress}`};
     } catch (error) {
       console.error(`Error sending transcript email to: ${emailParams.recipientAddress}`, error);

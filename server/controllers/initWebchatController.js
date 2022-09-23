@@ -29,7 +29,6 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
                 password: process.env.AUTH_TOKEN
             }
         });
-        console.log("res", res);
         ({ identity, conversation_sid: conversationSid } = res.data);
     } catch (e) {
         logInterimAction("Something went wrong during the orchestration:", e.response?.data?.message);

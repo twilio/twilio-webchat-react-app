@@ -336,17 +336,12 @@ describe("Webchat Lite general scenario's", () => {
         cy.wait(50000);
         const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
         const gmailToken = Cypress.env("GMAIL_TOKEN");
-        console.log("oAuthClientOptions", oAuthClientOptions);
-        console.log("gmailToken", gmailToken);
-        console.log("about to enter loop");
         EndChatView.loop(
             {
                 oAuthClientOptions,
                 token: gmailToken
             },
-            0,
-            Date.now().toString(),
-            Constants.HTML_TRANSCRIPT_BODY
+            Date.now().toString()
         );
     });
 });

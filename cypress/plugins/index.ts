@@ -65,12 +65,7 @@ module.exports = (on: any, _config: any) => {
             return null;
         },
         async getReceivedEmails({ oAuthClientOptions, token, count }) {
-            console.log("getReceivedEmails...");
-            console.log("oAuthClientOptions", oAuthClientOptions);
-            console.log("token", token);
-            console.log("count", count);
             const gmailAPIHelper = new GmailAPIHelper(oAuthClientOptions, token);
-            console.log("gmailAPIHelper", gmailAPIHelper);
             return gmailAPIHelper.getReceivedEmails(count);
         }
     });
