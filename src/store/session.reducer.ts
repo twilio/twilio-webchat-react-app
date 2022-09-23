@@ -12,11 +12,7 @@ import {
 const initialState: SessionState = {
     currentPhase: EngagementPhase.Loading,
     expanded: false,
-    preEngagementData: {
-        name: localStorage.getItem("name") || "",
-        query: localStorage.getItem("query") || "",
-        email: localStorage.getItem("email") || ""
-    }
+    preEngagementData: { name: "", query: "", email: "" }
 };
 
 export const SessionReducer: Reducer<SessionState, AnyAction> = (
