@@ -38,17 +38,6 @@ export class GmailAPIHelper {
         );
     }
 
-    public async getSentEmails(emailCount: number) {
-        const gmail = google.gmail({ version: "v1", auth: this.oAuth2Client });
-        const response = await gmail.users.messages.list({ userId: "me", labelIds: ["SENT"], maxResults: emailCount });
-        return Promise.all(
-            response.data.messages.map(async (message) => {
-                const messageResponse = await this.getEmail(message.id);
-                return parseMessage(messageResponse);
-            })
-        );
-    }
-
     public async getEmail(messageId) {
         const gmail = google.gmail({ version: "v1", auth: this.oAuth2Client });
         const response = await gmail.users.messages.get({ id: messageId, userId: "me" });

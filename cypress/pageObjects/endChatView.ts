@@ -22,7 +22,7 @@ const EndChatView = {
     validateEmailTranscriptButtonButtonVisible(time) {
         this.getEmailTranscriptButton(time).should("be.visible");
     },
-    loop(gmailCredentials, retries: number, timestamp: string): void {
+    loop(gmailCredentials, retries: number, timestamp: string, transcriptBody: string): void {
         console.log("in loop...");
         console.log("loop gmailCredentials", gmailCredentials);
         cy.task("getReceivedEmails", { ...gmailCredentials, count: 1 }).then((receivedEmails: any) => {
@@ -37,13 +37,37 @@ const EndChatView = {
                 });
                 console.log("timestamp", timestamp);
                 console.log("receivedEmail", receivedEmail);
+
                 // Check if the email is received
                 if (!receivedEmail) {
                     throw new Error("Didnt find the email in customers inbox!");
                 }
                 cy.task("log", "Found the email in customers inbox!");
-                const attachedFiles: string[] = receivedEmail.attachments;
-                // Check if the email contains the sent files
+
+                const htmlParts = receivedEmail.payload.parts.filter((p: { mimeType: string }) => {
+                    return p.mimeType === "text/html";
+                });
+                const html = Buffer.from(
+                    htmlParts[0].body.data.replace(/-/g, "+").replace(/_/g, "/"),
+                    "base64"
+                ).toString();
+
+                console.log("html body", html);
+                console.log("expected body", transcriptBody);
+                // Check if email body is correct
+                /*
+                 * TODO: Fix the time issue so we can do this
+                 * if (html !== transcriptBody) {
+                 *     throw new Error("Received wrong transcript body in email!");
+                 * }
+                 */
+
+                const attachedParts = receivedEmail.payload.parts.filter((p: { mimeType: string }) => {
+                    return p.mimeType !== "text/html";
+                });
+
+                const attachedFiles = Array.from(new Set(attachedParts.map((p) => p.filename)));
+
                 if (attachedFiles.length !== 5) {
                     throw new Error(
                         `The sent email does not contain the correct amount of files! Amount of files found: ${attachedFiles.length}`

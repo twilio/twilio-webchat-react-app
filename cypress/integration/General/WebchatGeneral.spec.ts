@@ -344,8 +344,9 @@ describe("Webchat Lite general scenario's", () => {
                 oAuthClientOptions,
                 token: gmailToken
             },
-            10,
-            Date.now().toString()
+            0,
+            Date.now().toString(),
+            Constants.HTML_TRANSCRIPT_BODY
         );
     });
 });
