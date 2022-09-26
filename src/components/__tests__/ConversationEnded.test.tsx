@@ -59,7 +59,14 @@ const defaultState = {
             dateCreated: message1.dateCreated,
             getMessagesCount: jest.fn(),
             addListener: jest.fn(),
-            removeListener: jest.fn()
+            removeListener: jest.fn(),
+            attributes: {
+                preEngagementData: {
+                    email: "test@email.com",
+                    name: "test",
+                    query: "test query"
+                }
+            }
         },
         conversationsClient: { user: user1 },
         messages: [message1, message2],
