@@ -48,6 +48,33 @@ export const getAgentNames = (customerName: string | undefined, transcriptData: 
     return agentNames;
 };
 
+const handleDuplicateFilenames = (transcriptData: Transcript[]) => {
+    const mediaMessages = transcriptData.filter((message) => message.attachedMedia);
+    const filenames = mediaMessages.map((message) => {
+        if (message.attachedMedia) {
+            return message.attachedMedia[0].filename;
+        }
+        return "";
+    });
+    interface seenFileNamesInfo {
+        [key: string]: number;
+    }
+    const seenFilenames: seenFileNamesInfo = {};
+    const uniqueFilenames = [];
+    for (const filename of filenames) {
+        if (Object.keys(seenFilenames).includes(filename)) {
+            const filenameParts = filename.split(".");
+            filenameParts[0] = `${filenameParts[0]}-${seenFilenames[filename]}`;
+            uniqueFilenames.push(filenameParts.join("."));
+            seenFilenames[filename] += 1;
+        } else {
+            seenFilenames[filename] = 1;
+            uniqueFilenames.push(filename);
+        }
+    }
+    return uniqueFilenames;
+};
+
 export const generateDownloadTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],
@@ -56,7 +83,8 @@ export const generateDownloadTranscript = (
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
     const duration = generateDuration(transcriptData);
-
+    const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+    let mediaMessageIndex = 0;
     let conversationTitle = `Conversation with ${customerName}`;
     if (agentNames.length > 0) {
         agentNames.forEach((name) => (conversationTitle = conversationTitle.concat(` and ${name}`)));
@@ -68,7 +96,8 @@ export const generateDownloadTranscript = (
             message.timeStamp.getMinutes()
         )}  ${message.author}: ${message.body}`;
         if (message.attachedMedia) {
-            messageText = messageText.concat(` (** Attached file ${message.attachedMedia[0].filename} **)`);
+            messageText = messageText.concat(` (** Attached file ${uniqueFilenames[mediaMessageIndex]} **)`);
+            mediaMessageIndex += 1;
         }
         transcript = transcript.concat(`${messageText}\n\n`);
     }
@@ -158,6 +187,8 @@ export const ConversationEnded = () => {
         fileName = slugify(fileName).toLowerCase();
 
         if (mediaURLs.length > 0) {
+            const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+            let mediaMessageIndex = 0;
             const zip = new JSZip();
             const folder = zip.folder(fileName);
             folder?.file(`${fileName}.txt`, transcriptBlob);
@@ -166,7 +197,8 @@ export const ConversationEnded = () => {
                     if (response.status === 200) return response.blob();
                     return Promise.reject(new Error(response.statusText));
                 });
-                folder?.file(mediaURL.filename, blobPromise);
+                folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
+                mediaMessageIndex += 1;
             });
 
             zip.generateAsync({ type: "blob" })
