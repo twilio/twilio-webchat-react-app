@@ -132,6 +132,10 @@ Customers can download chat transcripts as a plain text file. If attachments are
 
 Allowing customers to download transcripts requires no additional setup beyond enabling chat transcript downloads in the configuration object, as described [here](#configuration).
 
+**Cypress Download Transcript Tests**
+
+The download-specific Cypress tests will be skipped if the downloading of transcripts is not enabled.
+
 ### Emailing Transcripts
 
 Customers can email chat transcripts to the email address provided in the pre-engagement form. The transcript will be provided within the body of the email and any associated files will be added as attachments to the email. Emails will be sent using the [SendGrid](https://sendgrid.com/) API.
@@ -146,7 +150,7 @@ Customers can email chat transcripts to the email address provided in the pre-en
 
 The email subject and HTML email content can be customised using the configuration object, as described [here](#configuration).
 
-**Cypress Email Tests**
+**Cypress Email Transcript Tests**
 
 To allow the email-specific Cypress tests to run, some additional setup beyond the steps listed above is required. Note, that if this setup is not completed the email-specific Cypress tests will fail.
 
@@ -163,6 +167,8 @@ To allow the email-specific Cypress tests to run, some additional setup beyond t
         5. Review the account access required and click continue.
 
     3. Once redirected to the [OAuth Playground](https://developers.google.com/oauthplayground), click on "Exchange authorisation code for tokens" and copy the refresh token to the relevant key-value pair in `cypress.env.json`.
+
+Additionally, the email-specific Cypress tests will be skipped if the emailing of transcripts is not enabled.
 
 # Project Structure
 
