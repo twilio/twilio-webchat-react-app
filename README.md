@@ -122,7 +122,7 @@ More info [here](#a-note-about-the-pre-engagement-form-data).
 
 ## Chat Transcripts
 
-Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested.
+Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested. This feature is disabled by default, but can be enabled by following the steps [here](#configuration).
 
 ### Downloading Transcripts
 
@@ -233,8 +233,8 @@ window.addEventListener("DOMContentLoaded", () => {
     2. `fileAttachment.maxSize` describes the max file size that customers can send (in bytes).
     3. `fileAttachment.acceptedExtensions` is an array describing the file types that customers can send.
 4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
-    1. `transcript.downloadEnabled` describes whether customers can download a transcript after a chat has been completed.
-    2. `transcript.emailEnabled` describes whether customers can receive a transcript by email after a chat has been completed.
+    1. `transcript.downloadEnabled` describes whether customers can download a transcript after a chat has been completed. This is disabled by default.
+    2. `transcript.emailEnabled` describes whether customers can receive a transcript by email after a chat has been completed. This is disabled by default.
     3. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
     4. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
 
