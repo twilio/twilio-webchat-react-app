@@ -112,6 +112,8 @@ export const generateEmailTranscript = (
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
     const duration = generateDuration(transcriptData);
+    const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+    let mediaMessageIndex = 0;
 
     let conversationTitle = `Chat with <strong>${customerName}</strong>`;
     if (agentNames.length > 0) {
@@ -124,7 +126,8 @@ export const generateEmailTranscript = (
             message.timeStamp.getMinutes()
         )} <i>${message.author}</i>: ${message.body}`;
         if (message.attachedMedia) {
-            messageText = messageText.concat(` (** Attached file <i>${message.attachedMedia[0].filename}</i> **)`);
+            messageText = messageText.concat(` (** Attached file <i>${uniqueFilenames[mediaMessageIndex]}</i> **)`);
+            mediaMessageIndex += 1;
         }
         transcript = transcript.concat(`${messageText}<br><br>`);
     }
@@ -214,6 +217,7 @@ export const ConversationEnded = () => {
         setEmailingTranscript(true);
         if (preEngagementData) {
             const transcriptData = getTranscriptData(messages, users);
+            const uniqueFilenames = handleDuplicateFilenames(transcriptData);
             const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
             const mediaURLs = await getMediaUrls();
@@ -222,7 +226,8 @@ export const ConversationEnded = () => {
                 recipientAddress: preEngagementData.email,
                 subject: transcriptConfig?.emailSubject?.(agentNames),
                 text: transcriptConfig?.emailContent?.(customerName, transcript),
-                urls: mediaURLs
+                urls: mediaURLs,
+                uniqueFilenames
             });
         }
         setEmailingTranscript(false);

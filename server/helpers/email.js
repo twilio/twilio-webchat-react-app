@@ -21,11 +21,14 @@ function createMessage(emailData, files) {
 
 async function sendMessage(emailParams) {
     const files = [];
+    const uniqueFilenames = emailParams.uniqueFilenames;
+    let mediaMessageIndex = 0;
     for (const mediaURL of emailParams.urls) {
       try {
         const response = await axios.get(mediaURL.url, {responseType: 'arraybuffer'});
         const base64File = Buffer.from(response.data, 'binary').toString('base64')
-        files.push({file: base64File, filename: mediaURL.filename, type: mediaURL.type})
+        files.push({file: base64File, filename: uniqueFilenames[mediaMessageIndex], type: mediaURL.type});
+        mediaMessageIndex += 1;
       } catch (error) {
         console.error(error);
       }
