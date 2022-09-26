@@ -48,7 +48,7 @@ export const getAgentNames = (customerName: string | undefined, transcriptData: 
     return agentNames;
 };
 
-const handleDuplicateFilenames = (transcriptData: Transcript[]) => {
+const getUniqueFilenames = (transcriptData: Transcript[]) => {
     const mediaMessages = transcriptData.filter((message) => message.attachedMedia);
     const filenames = mediaMessages.map((message) => {
         if (message.attachedMedia) {
@@ -56,10 +56,10 @@ const handleDuplicateFilenames = (transcriptData: Transcript[]) => {
         }
         return "";
     });
-    interface seenFileNamesInfo {
+    interface seenFilenamesInfo {
         [key: string]: number;
     }
-    const seenFilenames: seenFileNamesInfo = {};
+    const seenFilenames: seenFilenamesInfo = {};
     const uniqueFilenames = [];
     for (const filename of filenames) {
         if (Object.keys(seenFilenames).includes(filename)) {
@@ -83,7 +83,7 @@ export const generateDownloadTranscript = (
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
     const duration = generateDuration(transcriptData);
-    const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+    const uniqueFilenames = getUniqueFilenames(transcriptData);
     let mediaMessageIndex = 0;
     let conversationTitle = `Conversation with ${customerName}`;
     if (agentNames.length > 0) {
@@ -112,7 +112,7 @@ export const generateEmailTranscript = (
     const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
     const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
     const duration = generateDuration(transcriptData);
-    const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+    const uniqueFilenames = getUniqueFilenames(transcriptData);
     let mediaMessageIndex = 0;
 
     let conversationTitle = `Chat with <strong>${customerName}</strong>`;
@@ -190,7 +190,7 @@ export const ConversationEnded = () => {
         fileName = slugify(fileName).toLowerCase();
 
         if (mediaURLs.length > 0) {
-            const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+            const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
             const zip = new JSZip();
             const folder = zip.folder(fileName);
@@ -217,7 +217,7 @@ export const ConversationEnded = () => {
         setEmailingTranscript(true);
         if (preEngagementData) {
             const transcriptData = getTranscriptData(messages, users);
-            const uniqueFilenames = handleDuplicateFilenames(transcriptData);
+            const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
             const mediaURLs = await getMediaUrls();
