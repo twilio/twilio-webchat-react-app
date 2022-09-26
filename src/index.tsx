@@ -20,8 +20,8 @@ const defaultConfig: ConfigState = {
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
     },
     transcript: {
-        downloadEnabled: true,
-        emailEnabled: true,
+        downloadEnabled: false,
+        emailEnabled: false,
         emailSubject: (agentNames) => {
             let subject = "Transcript of your chat";
             if (agentNames.length > 0) {
@@ -49,6 +49,10 @@ const initWebchat = async (config: ConfigState) => {
         </Provider>,
         rootElement
     );
+
+    if (window.Cypress) {
+        window.store = store;
+    }
 };
 
 declare global {
@@ -56,6 +60,8 @@ declare global {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
         };
+        Cypress: Cypress.Cypress;
+        store: typeof store;
     }
 }
 

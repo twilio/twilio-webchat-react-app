@@ -296,52 +296,77 @@ describe("Webchat Lite general scenario's", () => {
                 cy.task("wrapReservation", { conversationSid: this.convoSid });
                 cy.task("completeReservation", { conversationSid: this.convoSid });
                 EndChatView.validateStartNewChatButtonVisible(10000);
-                EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
-                EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
             });
     });
 
     it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
-        cy.resumeWebchatSessionCookie();
-        PreEngagementChatForm.toggleWebchatExpanded();
-        // Create the download folder if it doesn't exists
-        const downloadDirectory = Cypress.config().downloadsFolder;
-        // Download and verify the transcript
-        cy.task("downloads", downloadDirectory).then((before) => {
-            EndChatView.getDownloadTranscriptButton(10000).click();
-            cy.wait(10000);
-            cy.task("downloads", downloadDirectory).then((after) => {
-                const downloadedFile = String(after)
-                    .split(",")
-                    .filter((file) => !String(before).split(",").includes(file))[0];
-                cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
-                cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
-                const unzippedFolderName = downloadedFile.split(".")[0];
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`).should(
-                    "exist"
-                );
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.pdf`).should("exist");
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.png`).should("exist");
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.txt`).should("exist");
-                cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
+        cy.window()
+            .its("store")
+            .invoke("getState")
+            .its("config")
+            .its("transcript")
+            .its("downloadEnabled")
+            .then((isDownloadEnabled) => {
+                if (isDownloadEnabled) {
+                    cy.resumeWebchatSessionCookie();
+                    PreEngagementChatForm.toggleWebchatExpanded();
+                    EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
+                    // Create the download folder if it doesn't exists
+                    const downloadDirectory = Cypress.config().downloadsFolder;
+                    // Download and verify the transcript
+                    cy.task("downloads", downloadDirectory).then((before) => {
+                        EndChatView.getDownloadTranscriptButton(10000).click();
+                        cy.wait(10000);
+                        cy.task("downloads", downloadDirectory).then((after) => {
+                            const downloadedFile = String(after)
+                                .split(",")
+                                // eslint-disable-next-line max-nested-callbacks
+                                .filter((file) => !String(before).split(",").includes(file))[0];
+                            cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
+                            cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
+                            const unzippedFolderName = downloadedFile.split(".")[0];
+                            cy.readFile(
+                                `${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`
+                            ).should("exist");
+                            cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
+                            cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.pdf`).should("exist");
+                            cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.png`).should("exist");
+                            cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.txt`).should("exist");
+                            cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
+                        });
+                    });
+                } else {
+                    this.skip();
+                }
             });
-        });
     });
 
     it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
-        cy.resumeWebchatSessionCookie();
-        PreEngagementChatForm.toggleWebchatExpanded();
-        EndChatView.getEmailTranscriptButton(10000).click();
-        cy.wait(50000);
-        const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
-        const gmailToken = Cypress.env("GMAIL_TOKEN");
-        EndChatView.loop(
-            {
-                oAuthClientOptions,
-                token: gmailToken
-            },
-            Date.now().toString()
-        );
+        cy.window()
+            .its("store")
+            .invoke("getState")
+            .its("config")
+            .its("transcript")
+            .its("emailEnabled")
+            .then((isemailEnabled) => {
+                if (isemailEnabled) {
+                    cy.resumeWebchatSessionCookie();
+                    PreEngagementChatForm.toggleWebchatExpanded();
+                    EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
+                    EndChatView.getEmailTranscriptButton(10000).click();
+                    cy.wait(50000);
+                    const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
+                    const gmailToken = Cypress.env("GMAIL_TOKEN");
+                    EndChatView.loop(
+                        {
+                            oAuthClientOptions,
+                            token: gmailToken
+                        },
+                        Date.now().toString()
+                    );
+                } else {
+                    this.skip();
+                }
+            });
     });
 });
