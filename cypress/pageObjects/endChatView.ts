@@ -22,10 +22,14 @@ const EndChatView = {
     validateEmailTranscriptButtonButtonVisible(time) {
         this.getEmailTranscriptButton(time).should("be.visible");
     },
-    loop(gmailCredentials, timestamp: string): void {
+    checkEmails(gmailCredentials, timestamp: string, expectedAttachments: number): void {
         cy.task("getReceivedEmails", { ...gmailCredentials, count: 1 }).then((receivedEmails: any) => {
+            const minInMilliseconds = 60000;
             const receivedEmail = receivedEmails.find((email) => {
-                return email.internalDate < Number(timestamp) + 60000 && email.internalDate > Number(timestamp) - 60000;
+                return (
+                    email.internalDate < Number(timestamp) + minInMilliseconds &&
+                    email.internalDate > Number(timestamp) - minInMilliseconds
+                );
             });
 
             if (!receivedEmail) {
@@ -38,7 +42,7 @@ const EndChatView = {
             });
             const attachedFiles = Array.from(new Set(attachedParts.map((p) => p.filename)));
 
-            if (attachedFiles.length !== 9) {
+            if (attachedFiles.length !== expectedAttachments) {
                 throw new Error(
                     `The sent email does not contain the correct amount of files! Amount of files found: ${attachedFiles.length}`
                 );

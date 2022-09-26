@@ -357,12 +357,13 @@ describe("Webchat Lite general scenario's", () => {
                     cy.wait(50000);
                     const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
                     const gmailToken = Cypress.env("GMAIL_TOKEN");
-                    EndChatView.loop(
+                    EndChatView.checkEmails(
                         {
                             oAuthClientOptions,
                             token: gmailToken
                         },
-                        Date.now().toString()
+                        Date.now().toString(),
+                        9
                     );
                 } else {
                     this.skip();
