@@ -27,7 +27,8 @@ app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenControlle
 
 app.post("/email", async (req, res) => {
     try {
-        res.json(await sendMessage(req.body));
+        const message = await sendMessage(req.body);
+        res.json(message);
     } catch (err) {
         console.error(err);
     }
