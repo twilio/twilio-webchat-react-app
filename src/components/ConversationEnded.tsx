@@ -152,9 +152,9 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
-    const getMediaUrls = async () => {
+    const getMediaInfo = async () => {
         const mediaMessages = messages?.filter((message) => message.attachedMedia);
-        const mediaURLs = [];
+        const mediaInfo = [];
         for (const message of mediaMessages || []) {
             for (const media of message.attachedMedia || []) {
                 try {
@@ -164,13 +164,13 @@ export const ConversationEnded = () => {
                         size: media.size
                     } as File;
                     const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-                    mediaURLs.push({ url, filename: media.filename, type: media.contentType });
+                    mediaInfo.push({ url, filename: media.filename, type: media.contentType });
                 } catch (e) {
                     log.error(`Failed downloading message attachment: ${e}`);
                 }
             }
         }
-        return mediaURLs;
+        return mediaInfo;
     };
 
     const handleDownloadTranscript = async () => {
@@ -180,7 +180,7 @@ export const ConversationEnded = () => {
         const agentNames = getAgentNames(customerName, transcriptData);
         const transcript = generateDownloadTranscript(customerName, agentNames, transcriptData);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
-        const mediaURLs = await getMediaUrls();
+        const mediaInfo = await getMediaInfo();
 
         let fileName = `chat with ${customerName}`;
         if (agentNames.length > 0) {
@@ -189,14 +189,14 @@ export const ConversationEnded = () => {
         fileName = fileName.concat(`-${transcriptData[0].timeStamp.toDateString()}`);
         fileName = slugify(fileName).toLowerCase();
 
-        if (mediaURLs.length > 0) {
+        if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
             const zip = new JSZip();
             const folder = zip.folder(fileName);
             folder?.file(`${fileName}.txt`, transcriptBlob);
-            mediaURLs.forEach((mediaURL) => {
-                const blobPromise = fetch(mediaURL.url).then(async (response) => {
+            mediaInfo.forEach((info) => {
+                const blobPromise = fetch(info.url).then(async (response) => {
                     if (response.status === 200) return response.blob();
                     return Promise.reject(new Error(response.statusText));
                 });
@@ -220,13 +220,13 @@ export const ConversationEnded = () => {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
-            const mediaURLs = await getMediaUrls();
+            const mediaInfo = await getMediaInfo();
             const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
                 subject: transcriptConfig?.emailSubject?.(agentNames),
                 text: transcriptConfig?.emailContent?.(customerName, transcript),
-                urls: mediaURLs,
+                mediaInfo,
                 uniqueFilenames
             });
         }
