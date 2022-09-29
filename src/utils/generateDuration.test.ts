@@ -50,4 +50,12 @@ describe("File Preview", () => {
         ];
         expect(generateDuration(transcriptData)).toEqual("1 day 1 hour ");
     });
+
+    it("calculate the duration of the chat lasting a year", () => {
+        const transcriptData: Transcript[] = [
+            { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
+            { author: "John", body: "hi", timeStamp: new Date("December 18, 2023 05:30:10"), attachedMedia: null }
+        ];
+        expect(generateDuration(transcriptData)).toEqual("365 days 1 hour ");
+    });
 });
