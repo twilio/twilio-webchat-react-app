@@ -227,7 +227,7 @@ describe("Conversation Ended", () => {
 
     it("generates transcript for download", () => {
         expect(generateDownloadTranscript(customerName, agentNames, transcriptData)).toEqual(
-            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 50 seconds \n\n* 04:30  ${customerName}: hi\n\n+ 04:30  Concierge: hi\n\n+ 03:24  ${agentNames[0]}: hi\n\n+ 03:24  ${agentNames[1]}: hi\n\n`
+            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 53 minutes 50 seconds \n\n* 04:30  ${customerName}: hi\n\n+ 04:30  Concierge: hi\n\n+ 03:24  ${agentNames[0]}: hi\n\n+ 03:24  ${agentNames[1]}: hi\n\n`
         );
     });
 
@@ -259,13 +259,13 @@ describe("Conversation Ended", () => {
             }
         ];
         expect(generateDownloadTranscript(customerName, agentNames, transcriptMediaData)).toEqual(
-            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 50 seconds \n\n* 04:30  ${customerName}: hi (** Attached file test.txt **)\n\n+ 04:30  Concierge: hi (** Attached file test-1.txt **)\n\n+ 03:24  ${agentNames[0]}: hi (** Attached file blah.jpg **)\n\n+ 03:24  ${agentNames[1]}: hi (** Attached file blah.png **)\n\n`
+            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 53 minutes 50 seconds \n\n* 04:30  ${customerName}: hi (** Attached file test.txt **)\n\n+ 04:30  Concierge: hi (** Attached file test-1.txt **)\n\n+ 03:24  ${agentNames[0]}: hi (** Attached file blah.jpg **)\n\n+ 03:24  ${agentNames[1]}: hi (** Attached file blah.png **)\n\n`
         );
     });
 
     it("generates transcript for email", () => {
         expect(generateEmailTranscript(customerName, agentNames, transcriptData)).toEqual(
-            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 50 seconds <br><br>04:30 <i>${customerName}</i>: hi<br><br>04:30 <i>Concierge</i>: hi<br><br>03:24 <i>${agentNames[0]}</i>: hi<br><br>03:24 <i>${agentNames[1]}</i>: hi<br><br>`
+            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 53 minutes 50 seconds <br><br>04:30 <i>${customerName}</i>: hi<br><br>04:30 <i>Concierge</i>: hi<br><br>03:24 <i>${agentNames[0]}</i>: hi<br><br>03:24 <i>${agentNames[1]}</i>: hi<br><br>`
         );
     });
 
@@ -297,7 +297,7 @@ describe("Conversation Ended", () => {
             }
         ];
         expect(generateEmailTranscript(customerName, agentNames, transcriptMediaData)).toEqual(
-            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 50 seconds <br><br>04:30 <i>${customerName}</i>: hi (** Attached file <i>test.txt</i> **)<br><br>04:30 <i>Concierge</i>: hi (** Attached file <i>test-1.txt</i> **)<br><br>03:24 <i>${agentNames[0]}</i>: hi (** Attached file <i>blah.jpg</i> **)<br><br>03:24 <i>${agentNames[1]}</i>: hi (** Attached file <i>blah.png</i> **)<br><br>`
+            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 53 minutes 50 seconds <br><br>04:30 <i>${customerName}</i>: hi (** Attached file <i>test.txt</i> **)<br><br>04:30 <i>Concierge</i>: hi (** Attached file <i>test-1.txt</i> **)<br><br>03:24 <i>${agentNames[0]}</i>: hi (** Attached file <i>blah.jpg</i> **)<br><br>03:24 <i>${agentNames[1]}</i>: hi (** Attached file <i>blah.png</i> **)<br><br>`
         );
     });
 

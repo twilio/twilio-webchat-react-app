@@ -14,7 +14,8 @@ export const generateDuration = (transcriptData: Transcript[]) => {
 
     const displayedDays = days > 0 ? `${days} ${days === 1 ? "day" : "days"} ` : "";
     const displayedHours = hours > 0 ? `${hours} ${hours === 1 ? "hour" : "hours"} ` : "";
+    const displayedMinutes = minutes > 0 ? `${minutes} ${minutes === 1 ? "minute" : "minutes"} ` : "";
     const displayedSeconds = seconds > 0 ? `${seconds} ${seconds === 1 ? "second" : "seconds"} ` : "";
 
-    return `${displayedDays}${displayedHours}${displayedSeconds}`;
+    return `${displayedDays}${displayedHours}${displayedMinutes}${displayedSeconds}`;
 };
