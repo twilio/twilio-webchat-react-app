@@ -1,6 +1,6 @@
 import { Media, Message } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core/box";
-import { ScreenReaderOnly } from "@twilio-paste/core";
+import { ScreenReaderOnly } from "@twilio-paste/core/screen-reader-only";
 import { useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
 import { Flex } from "@twilio-paste/core/flex";
