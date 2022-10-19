@@ -51,7 +51,7 @@ describe("File Preview", () => {
         expect(generateDuration(transcriptData)).toEqual("1 day 1 hour ");
     });
 
-    it("calculate the duration of the chat lasting a year", () => {
+    it("calculate the duration of the chat lasting a year and 1 hour", () => {
         const transcriptData: Transcript[] = [
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2023 05:30:10"), attachedMedia: null }
