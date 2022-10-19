@@ -67,7 +67,7 @@
     "server": "nodemon server",
     "server:ci": "node server",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
+    "test": "LC_ALL=\"en_GB.UTF-8\" react-app-rewired test --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
     "test:nowatch": "yarn test --watchAll=false --verbose --runInBand",
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
