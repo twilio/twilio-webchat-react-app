@@ -30,6 +30,8 @@ jobs:
   runUnitTests:
     docker:
       - image: cimg/node:14.18.1
+        environment:
+          TZ: "Europe/Belfast"
     steps:
       - checkout
       - node/install-packages:
