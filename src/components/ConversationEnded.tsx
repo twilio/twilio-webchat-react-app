@@ -1,6 +1,5 @@
 import log from "loglevel";
 import JSZip from "jszip";
-import slugify from "slugify";
 import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
@@ -9,6 +8,7 @@ import { Button } from "@twilio-paste/core/button";
 import { useDispatch, useSelector } from "react-redux";
 import { Media, Message, User } from "@twilio/conversations";
 import { useState } from "react";
+import slugify from "slugify";
 
 import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
@@ -182,12 +182,12 @@ export const ConversationEnded = () => {
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaInfo = await getMediaInfo();
 
-        let fileName = `chat with ${customerName}`;
+        let fileName = `chat-with-${customerName}`;
         if (agentNames.length > 0) {
-            agentNames.forEach((name) => (fileName = fileName.concat(` and ${name}`)));
+            agentNames.forEach((name) => (fileName = fileName.concat(`-and-${name}`)));
         }
-        fileName = fileName.concat(`-${transcriptData[0].timeStamp.toDateString()}`);
-        fileName = slugify(fileName).toLowerCase();
+        fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
+        fileName = fileName.toLowerCase();
 
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
