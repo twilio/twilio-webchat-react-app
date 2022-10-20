@@ -4,7 +4,7 @@ kind: cypress
 showConsoleLog: false
 sauce:
     region: us-west-1
-    concurrency: 1
+    concurrency: 5
     sauceignore: .sauceignore
 defaults:
     mode: sauce
