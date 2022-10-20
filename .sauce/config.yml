@@ -3,68 +3,68 @@ apiVersion: v1alpha
 kind: cypress
 showConsoleLog: false
 sauce:
-    region: us-west-1
-    concurrency: 5
-    sauceignore: .sauceignore
+  region: us-west-1
+  concurrency: 60
+  sauceignore: .sauceignore
 defaults:
-    mode: sauce
+  mode: sauce
 rootDir: .
 cypress:
-    configFile: cypress.json
-    version: 9.1.0
+  configFile: cypress.json
+  version: 9.1.0
 suites:
-    - name: cypress - windows 10 - chrome latest
-      browser: chrome
-      extendedDebugging: true
-      browserVersion: latest
-      platformName: windows 10
-      config:
-          testFiles:
-              - "**/*.*"
-    - name: cypress - windows 10 - chrome latest-1
-      browser: chrome
-      extendedDebugging: true
-      browserVersion: latest-1
-      platformName: windows 10
-      config:
-          testFiles:
-              - "**/*.*"
-    #  COMMENTING FIREFOX 101 OUT AS THE SAUCELAB IMAGE IS BUGGY
-    #- name: cypress - windows 10 - firefox latest
-    #  browser: firefox
-    #  extendedDebugging: true
-    #  browserVersion: latest
-    #  platformName: windows 10
-    #  config:
-    #    testFiles:
-    #    - '**/*.*'
-    - name: cypress - windows 10 - firefox 100
-      browser: firefox
-      extendedDebugging: true
-      browserVersion: 100
-      platformName: windows 10
-      config:
-          testFiles:
-              - "**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest
-      browser: microsoftedge
-      extendedDebugging: true
-      browserVersion: latest
-      platformName: windows 10
-      config:
-          testFiles:
-              - "**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest-1
-      browser: microsoftedge
-      extendedDebugging: true
-      browserVersion: latest-1
-      platformName: windows 10
-      config:
-          testFiles:
-              - "**/*.*"
+- name: cypress - windows 10 - chrome latest
+  browser: chrome
+  extendedDebugging: true
+  browserVersion: latest
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
+- name: cypress - windows 10 - chrome latest-1
+  browser: chrome
+  extendedDebugging: true
+  browserVersion: latest-1
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
+#  COMMENTING FIREFOX 101 OUT AS THE SAUCELAB IMAGE IS BUGGY
+#- name: cypress - windows 10 - firefox latest
+#  browser: firefox
+#  extendedDebugging: true
+#  browserVersion: latest
+#  platformName: windows 10
+#  config:
+#    testFiles:
+#    - '**/*.*'
+- name: cypress - windows 10 - firefox 100
+  browser: firefox
+  extendedDebugging: true
+  browserVersion: 100
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
+- name: cypress - windows 10 - microsoftedge latest
+  browser: microsoftedge
+  extendedDebugging: true
+  browserVersion: latest
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
+- name: cypress - windows 10 - microsoftedge latest-1
+  browser: microsoftedge
+  extendedDebugging: true
+  browserVersion: latest-1
+  platformName: windows 10
+  config:
+    testFiles:
+    - '**/*.*'
 artifacts:
-    download:
-        match:
-            - "*"
-        when: always
-        directory: ./artifacts
+  download:
+    match:
+    - '*'
+    when: always
+    directory: ./artifacts
