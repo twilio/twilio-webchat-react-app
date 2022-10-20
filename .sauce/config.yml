@@ -68,3 +68,4 @@ artifacts:
     - '*'
     when: always
     directory: ./artifacts
+    
