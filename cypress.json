@@ -5,5 +5,5 @@
   "supportFile": "cypress/support/index.ts",
   "downloadsFolder": "cypress/downloads",
   "trashAssetsBeforeRuns": true,
-  "defaultCommandTimeout": 90000
+  "defaultCommandTimeout": 100000
 }
