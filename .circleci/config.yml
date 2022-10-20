@@ -4,113 +4,111 @@ version: 2.1
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
-  node: circleci/node@4.7
-  cypress: cypress-io/cypress@1
+    node: circleci/node@4.7
+    cypress: cypress-io/cypress@1
 
 executors:
-  with-chrome:
-    docker:
-      - image: 'cypress/browsers:node14.17.0-chrome91-ff89'
+    with-chrome:
+        docker:
+            - image: "cypress/browsers:node14.17.0-chrome91-ff89"
 
 jobs:
-  cleanUp:
-    docker:
-      - image: cimg/node:14.18.1
-    steps:
-      - checkout
-      - run:
-          command: npm install twilio --no-save
-          name: Install Twilio client
-      - run:
-          command: |
-            yarn e2eCleanupExistingTasks \
-                accountSid=$TWILIO_ACCOUNT_SID \
-                authToken=$TWILIO_AUTH_TOKEN \
-          name: Cleanup existing tasks
-  runUnitTests:
-    docker:
-      - image: cimg/node:14.18.1
-        environment:
-          TZ: "Europe/Belfast"
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          with-cache: true
-      - run:
-          command: yarn test:nowatch
-          name: Run YARN tests
-  cypressTestsOnSauce:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - run:
-          name: "Install dependencies"
-          command: |
-            yarn install --frozen-lockfile
-      - run:
-          name: "Initialize accounts"
-          command: |
-                yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-      - run:
-          name: "Running Application"
-          background: true
-          command: |
-            yarn start & yarn server:ci
-      - run:
-          name: "Set Up Tunnel"
-          background: true
-          command: |
-            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
-            tar -xzf saucelabs.tar.gz
-            cd sc-*
-            bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} --region ${SAUCE_REGION} --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
-      - run:
-          name: "Install Sauce Labs saucectl"
-          command: |
-            curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
-            chmod 700 get_saucectl.sh && \
-            sudo ./get_saucectl.sh -b /usr/local/bin
-      - run:
-          name: "Configure Sauce saucectl"
-          command: |
-            saucectl configure -u ${SAUCE_USERNAME} -a ${SAUCE_ACCESS_KEY}
-      - run:
-          name: "Run Cypress on Sauce"
-          command: |
-            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
+    cleanUp:
+        docker:
+            - image: cimg/node:14.18.1
+        steps:
+            - checkout
+            - run:
+                  command: npm install twilio --no-save
+                  name: Install Twilio client
+            - run:
+                  command: |
+                      yarn e2eCleanupExistingTasks \
+                          accountSid=$TWILIO_ACCOUNT_SID \
+                          authToken=$TWILIO_AUTH_TOKEN \
+                  name: Cleanup existing tasks
+    runUnitTests:
+        docker:
+            - image: cimg/node:14.18.1
+        steps:
+            - checkout
+            - node/install-packages:
+                  pkg-manager: yarn-berry
+                  with-cache: true
+            - run:
+                  command: yarn test:nowatch
+                  name: Run YARN tests
+    cypressTestsOnSauce:
+        docker:
+            - image: cimg/node:lts
+        steps:
+            - checkout
+            - run:
+                  name: "Install dependencies"
+                  command: |
+                      yarn install --frozen-lockfile
+            - run:
+                  name: "Initialize accounts"
+                  command: |
+                      yarn bootstrap \
+                          accountSid=$TWILIO_ACCOUNT_SID \
+                          authToken=$TWILIO_AUTH_TOKEN \
+                          addressSid=$TWILIO_ADDRESS_SID \
+                          apiKey=$TWILIO_API_KEY \
+                          apiSecret=$TWILIO_API_SECRET \
+                          conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
+            - run:
+                  name: "Running Application"
+                  background: true
+                  command: |
+                      yarn start & yarn server:ci
+            - run:
+                  name: "Set Up Tunnel"
+                  background: true
+                  command: |
+                      curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
+                      tar -xzf saucelabs.tar.gz
+                      cd sc-*
+                      bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} --region ${SAUCE_REGION} --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
+            - run:
+                  name: "Install Sauce Labs saucectl"
+                  command: |
+                      curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
+                      chmod 700 get_saucectl.sh && \
+                      sudo ./get_saucectl.sh -b /usr/local/bin
+            - run:
+                  name: "Configure Sauce saucectl"
+                  command: |
+                      saucectl configure -u ${SAUCE_USERNAME} -a ${SAUCE_ACCESS_KEY}
+            - run:
+                  name: "Run Cypress on Sauce"
+                  command: |
+                      saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
 
 workflows:
-  build:
-    jobs:
-      - cleanUp
-      - runUnitTests:
-          requires:
+    build:
+        jobs:
             - cleanUp
-      - cypress/run:
-          requires:
-            - cleanUp
-          executor: with-chrome
-          post-install:
-            - run: "yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-                "
-          browser: chrome
-          yarn: true
-          start: 'yarn start & yarn server:ci' # start server before running tests
-          store_artifacts: true
-      - cypressTestsOnSauce:
-          requires:
-            - cleanUp
+            - runUnitTests:
+                  requires:
+                      - cleanUp
+            - cypress/run:
+                  requires:
+                      - cleanUp
+                  executor: with-chrome
+                  post-install:
+                      - run: "yarn bootstrap \
+                            accountSid=$TWILIO_ACCOUNT_SID \
+                            authToken=$TWILIO_AUTH_TOKEN \
+                            addressSid=$TWILIO_ADDRESS_SID \
+                            apiKey=$TWILIO_API_KEY \
+                            apiSecret=$TWILIO_API_SECRET \
+                            conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
+                            "
+                  browser: chrome
+                  yarn: true
+                  start: "yarn start & yarn server:ci" # start server before running tests
+                  store_artifacts: true
+            - cypressTestsOnSauce:
+                  requires:
+                      - cleanUp
