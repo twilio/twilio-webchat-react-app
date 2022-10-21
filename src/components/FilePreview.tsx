@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
-import { FileIcon } from "@twilio-paste/icons/esm/FileIcon";
-import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
 import { Button } from "@twilio-paste/core/button";
 import { Media } from "@twilio/conversations";
 import { extension as mimeToExtension } from "mime-types";
 import { Truncate } from "@twilio-paste/core/truncate";
+import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
+import { FileIcon } from "@twilio-paste/icons/esm/FileIcon";
 
 import { addNotification, detachFiles } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
@@ -72,7 +72,7 @@ export const FilePreview = (props: FilePreviewProps) => {
 
         try {
             const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
-            window.open(url);
+            window.open(url as string | undefined);
         } catch (e) {
             log.error(`Failed downloading message attachment: ${e}`);
         }

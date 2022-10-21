@@ -71,7 +71,7 @@ export class Client extends ConversationClient {
      * Update the token used by the client and re-register with the Conversations services.
      * @param token New access token.
      */
-    async updateToken(): Promise<Client> {
+    async updateToken(token: string): Promise<Client> {
         return this;
     }
 
