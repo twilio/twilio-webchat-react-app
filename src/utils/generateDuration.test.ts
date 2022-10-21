@@ -1,5 +1,5 @@
 import { generateDuration } from "./generateDuration";
-import { Transcript } from "../components/ConversationEnded"
+import { Transcript } from "../components/GenerateTranscripts";
 
 describe("File Preview", () => {
     it("when supplied transcript data, calculate the duration of the chat", () => {

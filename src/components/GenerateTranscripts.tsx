@@ -9,8 +9,7 @@ interface Transcript {
     attachedMedia?: Media[] | null;
 }
 
-// eslint-disable-next-line import/no-unused-modules
-export const getTranscriptData = (messages: Message[] | undefined, users: User[] | undefined): Transcript[] => {
+const getTranscriptData = (messages: Message[] | undefined, users: User[] | undefined): Transcript[] => {
     const transcriptData = [];
     if (messages && users) {
         for (const message of messages) {
@@ -26,8 +25,7 @@ export const getTranscriptData = (messages: Message[] | undefined, users: User[]
     return transcriptData;
 };
 
-// eslint-disable-next-line import/no-unused-modules
-export const getAgentNames = (customerName: string | undefined, transcriptData: Transcript[]) => {
+const getAgentNames = (customerName: string | undefined, transcriptData: Transcript[]) => {
     const names = transcriptData.map((message) => message.author);
     let agentNames = Array.from(
         new Set(names.filter((name) => name?.trim() !== customerName && name?.trim() !== "Concierge"))
@@ -63,8 +61,7 @@ const getUniqueFilenames = (transcriptData: Transcript[]) => {
     return uniqueFilenames;
 };
 
-// eslint-disable-next-line import/no-unused-modules
-export const generateDownloadTranscript = (
+const generateDownloadTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],
     transcriptData: Transcript[]
@@ -93,8 +90,7 @@ export const generateDownloadTranscript = (
     return transcript;
 };
 
-// eslint-disable-next-line import/no-unused-modules
-export const generateEmailTranscript = (
+const generateEmailTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],
     transcriptData: Transcript[]
@@ -124,4 +120,7 @@ export const generateEmailTranscript = (
     return transcript;
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export type { Transcript };
+// eslint-disable-next-line import/no-unused-modules
+export { getTranscriptData, getAgentNames, generateDownloadTranscript, generateEmailTranscript, getUniqueFilenames };

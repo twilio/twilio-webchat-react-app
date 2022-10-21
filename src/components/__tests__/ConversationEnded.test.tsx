@@ -3,17 +3,17 @@ import "@testing-library/jest-dom";
 import { useSelector } from "react-redux";
 import { Media, Message, User } from "@twilio/conversations";
 
-import {
-    ConversationEnded,
-    getTranscriptData,
-    generateDownloadTranscript,
-    generateEmailTranscript,
-    Transcript,
-    getAgentNames
-} from "../ConversationEnded";
+import { ConversationEnded } from "../ConversationEnded";
 import * as genericActions from "../../store/actions/genericActions";
 import { sessionDataHandler } from "../../sessionDataHandler";
 import { EngagementPhase } from "../../store/definitions";
+import {
+    Transcript,
+    getTranscriptData,
+    getAgentNames,
+    generateDownloadTranscript,
+    generateEmailTranscript
+} from "../GenerateTranscripts";
 
 jest.mock("react-redux", () => ({
     ...jest.requireActual("react-redux"),
