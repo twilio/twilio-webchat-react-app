@@ -1,7 +1,12 @@
 const sgMail = require("@sendgrid/mail");
 const axios = require("axios");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const getSendgridHelper = () => {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    return sgMail;
+ }
+
+ const sendgridHelper = getSendgridHelper();
 
 function createMessage(emailData, files) {
     const attachmentObjects = files.map((file) => ({
@@ -37,7 +42,7 @@ async function sendMessage(emailParams) {
     });
 
     try {
-        await sgMail.send(createMessage(emailParams, files));
+        await sendgridHelper.send(createMessage(emailParams, files));
         return { message: `Transcript email sent to: ${emailParams.recipientAddress}` };
     } catch (error) {
         console.error(`Error sending transcript email to: ${emailParams.recipientAddress}`, error);
