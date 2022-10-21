@@ -112,4 +112,3 @@ workflows:
       - cypressTestsOnSauce:
           requires:
             - cleanUp
-            

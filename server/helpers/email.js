@@ -1,5 +1,5 @@
-const axios = require("axios");
 const sgMail = require("@sendgrid/mail");
+const axios = require("axios");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
