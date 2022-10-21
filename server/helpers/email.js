@@ -1,34 +1,8 @@
-const sgMail = require("@sendgrid/mail");
 const axios = require("axios");
+const sendgrid = require("./sendgridHelper");
 
-// const getSendgridHelper = () => {
-//     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-//     return sgMail;
-//  }
 
-//  const sendgridHelper = getSendgridHelper();
-
- const SingletonFactory = (function(){
-    class SingletonClass {
-        sgMailInstance;
-        init() {
-            sgMailInstance = sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        }
-    }
-    let instance;
-    return {
-        getInstance: function(){
-            if (instance == null) {
-                instance = new SingletonClass();
-                // Hide the constructor so the returned object can't be new'd...
-                instance.constructor = null;
-            }
-            return instance;
-        }
-   };
-})();
-
-var sendgridHelper = SingletonFactory.getInstance().sgMailInstance;
+console.log(sendgrid);
 
 function createMessage(emailData, files) {
     const attachmentObjects = files.map((file) => ({
@@ -64,7 +38,7 @@ async function sendMessage(emailParams) {
     });
 
     try {
-        await sendgridHelper.send(createMessage(emailParams, files));
+        await sendgrid.sendgrid.sgMailInstance.send(createMessage(emailParams, files));
         return { message: `Transcript email sent to: ${emailParams.recipientAddress}` };
     } catch (error) {
         console.error(`Error sending transcript email to: ${emailParams.recipientAddress}`, error);
