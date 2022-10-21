@@ -28,7 +28,7 @@ export const MessageListSeparator = ({
             } else if (daysOld === 1) {
                 separatorText = "Yesterday";
             } else {
-                separatorText = message.dateCreated.toLocaleDateString();
+                separatorText = message?.dateCreated?.toLocaleDateString();
             }
         }
 
