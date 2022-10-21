@@ -16,6 +16,7 @@ import { EngagementPhase, AppState } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
 import { generateDuration } from "../utils/generateDuration";
 
+// eslint-disable-next-line import/no-unused-modules
 export interface Transcript {
     author?: string;
     body: string;
@@ -23,6 +24,7 @@ export interface Transcript {
     attachedMedia?: Media[] | null;
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export const getTranscriptData = (messages: Message[] | undefined, users: User[] | undefined): Transcript[] => {
     const transcriptData = [];
     if (messages && users) {
@@ -39,6 +41,7 @@ export const getTranscriptData = (messages: Message[] | undefined, users: User[]
     return transcriptData;
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export const getAgentNames = (customerName: string | undefined, transcriptData: Transcript[]) => {
     const names = transcriptData.map((message) => message.author);
     let agentNames = Array.from(
@@ -75,6 +78,7 @@ const getUniqueFilenames = (transcriptData: Transcript[]) => {
     return uniqueFilenames;
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export const generateDownloadTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],
@@ -104,6 +108,7 @@ export const generateDownloadTranscript = (
     return transcript;
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export const generateEmailTranscript = (
     customerName: string | undefined,
     agentNames: (string | undefined)[],

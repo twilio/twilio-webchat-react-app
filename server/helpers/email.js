@@ -1,12 +1,34 @@
 const sgMail = require("@sendgrid/mail");
 const axios = require("axios");
 
-const getSendgridHelper = () => {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    return sgMail;
- }
+// const getSendgridHelper = () => {
+//     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+//     return sgMail;
+//  }
 
- const sendgridHelper = getSendgridHelper();
+//  const sendgridHelper = getSendgridHelper();
+
+ const SingletonFactory = (function(){
+    class SingletonClass {
+        sgMailInstance;
+        init() {
+            sgMailInstance = sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        }
+    }
+    let instance;
+    return {
+        getInstance: function(){
+            if (instance == null) {
+                instance = new SingletonClass();
+                // Hide the constructor so the returned object can't be new'd...
+                instance.constructor = null;
+            }
+            return instance;
+        }
+   };
+})();
+
+var sendgridHelper = SingletonFactory.getInstance().sgMailInstance;
 
 function createMessage(emailData, files) {
     const attachmentObjects = files.map((file) => ({

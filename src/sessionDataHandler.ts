@@ -6,6 +6,7 @@ const LOCAL_STORAGE_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
 let _endpoint = "";
 
+// eslint-disable-next-line import/no-unused-modules
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
