@@ -5,6 +5,7 @@ import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import slugify from "slugify";
@@ -20,6 +21,7 @@ import {
     getUniqueFilenames,
     generateEmailTranscript
 } from "./GenerateTranscripts";
+import { ProgressContainer, ButtonContainer } from "./ConversationEnded.components";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
@@ -138,7 +140,22 @@ export const ConversationEnded = () => {
                                 onClick={handleDownloadTranscript}
                                 loading={downloadingTranscript}
                             >
-                                Download
+                                <ButtonContainer>
+                                    <CircularProgress size={22} variant="determinate" value={25} />
+                                    <ProgressContainer>
+                                        <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
+                                            Download
+                                        </Text>
+                                        <Text
+                                            as="span"
+                                            fontSize="fontSize10"
+                                            fontWeight="fontWeightLight"
+                                            color="colorTextWeak"
+                                        >
+                                            Generating
+                                        </Text>
+                                    </ProgressContainer>
+                                </ButtonContainer>
                             </Button>
                         )}
                         {transcriptConfig?.emailEnabled && (
