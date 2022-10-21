@@ -6,5 +6,6 @@
   "downloadsFolder": "cypress/downloads",
   "trashAssetsBeforeRuns": true,
   "defaultCommandTimeout": 1000000,
-  "pageLoadTimeout": 1000000
+  "pageLoadTimeout": 1000000,
+  "responseTimeout": 100000
 }
