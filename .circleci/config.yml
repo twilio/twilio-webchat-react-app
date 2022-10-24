@@ -83,7 +83,7 @@ jobs:
       - run:
           name: "Run Cypress on Sauce"
           command: |
-            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
+            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e ${TEST_EMAIL}
 
 workflows:
   build:
