@@ -33,6 +33,7 @@ export const ConversationEnded = () => {
     }));
 
     const [downloadingTranscriptProgress, setdownloadingTranscriptProgress] = useState(0);
+    const [isGeneratingTranscript, setIsGeneratingTranscript] = useState(false);
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
     const [emailingTranscript, setEmailingTranscript] = useState(false);
 
@@ -65,6 +66,7 @@ export const ConversationEnded = () => {
 
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
+        setIsGeneratingTranscript(true);
         setdownloadingTranscriptProgress(10);
         const transcriptData = getTranscriptData(messages, users);
         const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
@@ -81,7 +83,7 @@ export const ConversationEnded = () => {
         }
         fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
         fileName = fileName.toLowerCase();
-
+        setIsGeneratingTranscript(false);
         setdownloadingTranscriptProgress(75);
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
@@ -138,9 +140,25 @@ export const ConversationEnded = () => {
                                 {" "}
                                 Download
                             </Text>
-                            <Text as="span" fontSize="fontSize10" fontWeight="fontWeightLight" color="colorTextWeak">
-                                Generating...
-                            </Text>
+                            {isGeneratingTranscript ? (
+                                <Text
+                                    as="span"
+                                    fontSize="fontSize10"
+                                    fontWeight="fontWeightLight"
+                                    color="colorTextWeak"
+                                >
+                                    Generating...
+                                </Text>
+                            ) : (
+                                <Text
+                                    as="span"
+                                    fontSize="fontSize10"
+                                    fontWeight="fontWeightLight"
+                                    color="colorTextWeak"
+                                >
+                                    Downloading...
+                                </Text>
+                            )}
                         </ProgressContainer>
                     </ButtonContainer>
                 ) : (
