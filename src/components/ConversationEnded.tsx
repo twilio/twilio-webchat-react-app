@@ -154,7 +154,7 @@ export const ConversationEnded = () => {
                                     fontWeight="fontWeightLight"
                                     color="colorTextWeak"
                                 >
-                                    Generating...
+                                    Generating transcript...
                                 </Text>
                             ) : (
                                 <Text
@@ -163,7 +163,7 @@ export const ConversationEnded = () => {
                                     fontWeight="fontWeightLight"
                                     color="colorTextWeak"
                                 >
-                                    Downloading...
+                                    Downloading transcript...
                                 </Text>
                             )}
                         </ProgressContainer>
@@ -194,7 +194,7 @@ export const ConversationEnded = () => {
                                         fontWeight="fontWeightLight"
                                         color="colorTextWeak"
                                     >
-                                        Generating...
+                                        Generating transcript...
                                     </Text>
                                 ) : (
                                     <Text
@@ -203,7 +203,7 @@ export const ConversationEnded = () => {
                                         fontWeight="fontWeightLight"
                                         color="colorTextWeak"
                                     >
-                                        Sending...
+                                        Sending transcript...
                                     </Text>
                                 )}
                             </ProgressContainer>
