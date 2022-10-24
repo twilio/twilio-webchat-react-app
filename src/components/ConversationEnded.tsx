@@ -32,10 +32,11 @@ export const ConversationEnded = () => {
         transcriptConfig: state.config.transcript
     }));
 
-    const [downloadingTranscriptProgress, setdownloadingTranscriptProgress] = useState(0);
+    const [downloadingTranscriptProgress, setDownloadingTranscriptProgress] = useState(0);
     const [isGeneratingTranscript, setIsGeneratingTranscript] = useState(false);
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
-    const [emailingTranscript, setEmailingTranscript] = useState(false);
+    const [emailingTranscriptProgress, setEmailingTranscriptProgress] = useState(0);
+    const [isEmailingTranscript, setEmailingTranscript] = useState(false);
 
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
@@ -67,15 +68,15 @@ export const ConversationEnded = () => {
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
         setIsGeneratingTranscript(true);
-        setdownloadingTranscriptProgress(10);
+        setDownloadingTranscriptProgress(10);
         const transcriptData = getTranscriptData(messages, users);
         const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
         const agentNames = getAgentNames(customerName, transcriptData);
         const transcript = generateDownloadTranscript(customerName, agentNames, transcriptData);
-        setdownloadingTranscriptProgress(25);
+        setDownloadingTranscriptProgress(25);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaInfo = await getMediaInfo();
-        setdownloadingTranscriptProgress(50);
+        setDownloadingTranscriptProgress(50);
 
         let fileName = `chat-with-${customerName}`;
         if (agentNames.length > 0) {
@@ -84,7 +85,7 @@ export const ConversationEnded = () => {
         fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
         fileName = fileName.toLowerCase();
         setIsGeneratingTranscript(false);
-        setdownloadingTranscriptProgress(75);
+        setDownloadingTranscriptProgress(75);
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
@@ -105,19 +106,24 @@ export const ConversationEnded = () => {
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }
-        setdownloadingTranscriptProgress(100);
+        setDownloadingTranscriptProgress(100);
         setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
 
     const handleEmailTranscript = async () => {
         setEmailingTranscript(true);
+        setIsGeneratingTranscript(true);
+        setEmailingTranscriptProgress(10);
         if (preEngagementData) {
             const transcriptData = getTranscriptData(messages, users);
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
             const mediaInfo = await getMediaInfo();
+            setEmailingTranscriptProgress(50);
             const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
+            setEmailingTranscriptProgress(75)
+            setIsGeneratingTranscript(false);
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
                 subject: transcriptConfig?.emailSubject?.(agentNames),
@@ -126,7 +132,8 @@ export const ConversationEnded = () => {
                 uniqueFilenames
             });
         }
-        setEmailingTranscript(false);
+        setEmailingTranscriptProgress(100);
+        setTimeout(() => setEmailingTranscript(false), 1000);
     };
 
     const renderDownloadingButton = () => {
@@ -166,7 +173,47 @@ export const ConversationEnded = () => {
                 )}
             </Button>
         );
+    };
 
+    const renderEmailButton = () => {
+        return (
+            <Box marginLeft="space40">
+                <Button variant="secondary" data-test="email-transcript-button" onClick={handleEmailTranscript}>
+                    {isEmailingTranscript ? (
+                        <ButtonContainer>
+                            <CircularProgress size={22} variant="determinate" value={emailingTranscriptProgress} />
+                            <ProgressContainer>
+                                <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
+                                    {" "}
+                                    Send to my email
+                                </Text>
+                                {isGeneratingTranscript ? (
+                                    <Text
+                                        as="span"
+                                        fontSize="fontSize10"
+                                        fontWeight="fontWeightLight"
+                                        color="colorTextWeak"
+                                    >
+                                        Generating...
+                                    </Text>
+                                ) : (
+                                    <Text
+                                        as="span"
+                                        fontSize="fontSize10"
+                                        fontWeight="fontWeightLight"
+                                        color="colorTextWeak"
+                                    >
+                                        Sending...
+                                    </Text>
+                                )}
+                            </ProgressContainer>
+                        </ButtonContainer>
+                    ) : (
+                        <span>Send to my email</span>
+                    )}
+                </Button>
+            </Box>
+        );
     };
 
     return (
@@ -180,19 +227,8 @@ export const ConversationEnded = () => {
                         Do you want a transcript of our chat?
                     </Text>
                     <Flex>
-                        {transcriptConfig?.downloadEnabled && renderDownloadingButton()}
-                        {transcriptConfig?.emailEnabled && (
-                            <Box marginLeft="space40">
-                                <Button
-                                    variant="secondary"
-                                    data-test="email-transcript-button"
-                                    onClick={handleEmailTranscript}
-                                    loading={emailingTranscript}
-                                >
-                                    Send to my email
-                                </Button>
-                            </Box>
-                        )}
+                        {transcriptConfig?.downloadEnabled && !isEmailingTranscript && renderDownloadingButton()}
+                        {transcriptConfig?.emailEnabled && !isDownloadingTranscript && renderEmailButton()}
                     </Flex>
                 </>
             )}
