@@ -32,7 +32,8 @@ export const ConversationEnded = () => {
         transcriptConfig: state.config.transcript
     }));
 
-    const [downloadingTranscript, setdownloadingTranscript] = useState(false);
+    const [downloadingTranscriptProgress, setdownloadingTranscriptProgress] = useState(0);
+    const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
     const [emailingTranscript, setEmailingTranscript] = useState(false);
 
     const handleStartNewChat = () => {
@@ -63,13 +64,16 @@ export const ConversationEnded = () => {
     };
 
     const handleDownloadTranscript = async () => {
-        setdownloadingTranscript(true);
+        setIsDownloadingTranscript(true);
+        setdownloadingTranscriptProgress(10);
         const transcriptData = getTranscriptData(messages, users);
         const customerName = preEngagementData?.name || transcriptData[0].author?.trim();
         const agentNames = getAgentNames(customerName, transcriptData);
         const transcript = generateDownloadTranscript(customerName, agentNames, transcriptData);
+        setdownloadingTranscriptProgress(25);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaInfo = await getMediaInfo();
+        setdownloadingTranscriptProgress(50);
 
         let fileName = `chat-with-${customerName}`;
         if (agentNames.length > 0) {
@@ -78,6 +82,7 @@ export const ConversationEnded = () => {
         fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
         fileName = fileName.toLowerCase();
 
+        setdownloadingTranscriptProgress(75);
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
@@ -92,14 +97,14 @@ export const ConversationEnded = () => {
                 folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
                 mediaMessageIndex += 1;
             });
-
             zip.generateAsync({ type: "blob" })
                 .then((blob) => saveAs(blob, `${fileName}.zip`))
                 .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }
-        setdownloadingTranscript(false);
+        setdownloadingTranscriptProgress(100);
+        setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
 
     const handleEmailTranscript = async () => {
@@ -122,6 +127,30 @@ export const ConversationEnded = () => {
         setEmailingTranscript(false);
     };
 
+    const renderDownloadingButton = () => {
+        return (
+            <Button variant="secondary" data-test="download-transcript-button" onClick={handleDownloadTranscript}>
+                {isDownloadingTranscript ? (
+                    <ButtonContainer>
+                        <CircularProgress size={22} variant="determinate" value={downloadingTranscriptProgress} />
+                        <ProgressContainer>
+                            <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
+                                {" "}
+                                Download
+                            </Text>
+                            <Text as="span" fontSize="fontSize10" fontWeight="fontWeightLight" color="colorTextWeak">
+                                Generating...
+                            </Text>
+                        </ProgressContainer>
+                    </ButtonContainer>
+                ) : (
+                    <span>Download</span>
+                )}
+            </Button>
+        );
+
+    };
+
     return (
         <Box {...containerStyles}>
             <Text as="h3" {...titleStyles}>
@@ -133,31 +162,7 @@ export const ConversationEnded = () => {
                         Do you want a transcript of our chat?
                     </Text>
                     <Flex>
-                        {transcriptConfig?.downloadEnabled && (
-                            <Button
-                                variant="secondary"
-                                data-test="download-transcript-button"
-                                onClick={handleDownloadTranscript}
-                                loading={downloadingTranscript}
-                            >
-                                <ButtonContainer>
-                                    <CircularProgress size={22} variant="determinate" value={25} />
-                                    <ProgressContainer>
-                                        <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
-                                            Download
-                                        </Text>
-                                        <Text
-                                            as="span"
-                                            fontSize="fontSize10"
-                                            fontWeight="fontWeightLight"
-                                            color="colorTextWeak"
-                                        >
-                                            Generating
-                                        </Text>
-                                    </ProgressContainer>
-                                </ButtonContainer>
-                            </Button>
-                        )}
+                        {transcriptConfig?.downloadEnabled && renderDownloadingButton()}
                         {transcriptConfig?.emailEnabled && (
                             <Box marginLeft="space40">
                                 <Button
