@@ -1,8 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+
 const { validateRequestOriginMiddleware } = require("./middlewares/validateRequestOriginMiddleware");
 const { initWebchatController } = require("./controllers/initWebchatController");
 const { refreshTokenController } = require("./controllers/refreshTokenController");
+const { sendMessage } = require("./helpers/email");
+
 const cors = require("cors");
 const { allowedOrigins } = require("./helpers/getAllowedOrigins");
 
@@ -21,3 +24,12 @@ app.listen(port, () => {
 
 app.post("/initWebchat", validateRequestOriginMiddleware, initWebchatController);
 app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
+
+app.post("/email", async (req, res) => {
+    try {
+        const message = await sendMessage(req.body);
+        res.json(message);
+    } catch (err) {
+        console.error(err);
+    }
+});

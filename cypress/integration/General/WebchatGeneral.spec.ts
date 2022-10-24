@@ -28,7 +28,7 @@ describe("Webchat Lite general scenario's", () => {
         );
         PreEngagementChatForm.validateEmail();
         PreEngagementChatForm.getEmailInput().clear();
-        PreEngagementChatForm.getEmailInput().type(Constants.CORRECT_EMAIL);
+        PreEngagementChatForm.getEmailInput().type(Cypress.env("TEST_EMAIL"));
         PreEngagementChatForm.getStartChatButton().click();
         PreEngagementChatForm.validateFieldErrorMessage(
             PreEngagementChatForm.getQueryTextarea(),
@@ -296,6 +296,78 @@ describe("Webchat Lite general scenario's", () => {
                 cy.task("wrapReservation", { conversationSid: this.convoSid });
                 cy.task("completeReservation", { conversationSid: this.convoSid });
                 EndChatView.validateStartNewChatButtonVisible(10000);
+            });
+    });
+
+    it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
+        function performDownload() {
+            const downloadDirectory = Cypress.config().downloadsFolder;
+            cy.task("downloads", downloadDirectory).then((before) => {
+                EndChatView.getDownloadTranscriptButton(10000).click();
+                cy.wait(10000);
+                cy.task("downloads", downloadDirectory).then((after) => {
+                    const downloadedFile = String(after)
+                        .split(",")
+                        .filter((file) => !String(before).split(",").includes(file))[0];
+                    cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
+                    cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
+                    const unzippedFolderName = downloadedFile.split(".")[0];
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`).should(
+                        "exist"
+                    );
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.pdf`).should("exist");
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.png`).should("exist");
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.txt`).should("exist");
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
+                });
+            });
+        }
+        cy.window()
+            .its("store")
+            .invoke("getState")
+            .its("config")
+            .its("transcript")
+            .its("downloadEnabled")
+            .then((isDownloadEnabled) => {
+                if (isDownloadEnabled) {
+                    cy.resumeWebchatSessionCookie();
+                    PreEngagementChatForm.toggleWebchatExpanded();
+                    EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
+                    performDownload();
+                } else {
+                    this.skip();
+                }
+            });
+    });
+
+    it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
+        cy.window()
+            .its("store")
+            .invoke("getState")
+            .its("config")
+            .its("transcript")
+            .its("emailEnabled")
+            .then((isemailEnabled) => {
+                if (isemailEnabled) {
+                    cy.resumeWebchatSessionCookie();
+                    PreEngagementChatForm.toggleWebchatExpanded();
+                    EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
+                    EndChatView.getEmailTranscriptButton(10000).click();
+                    cy.wait(50000);
+                    const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
+                    const gmailToken = Cypress.env("GMAIL_TOKEN");
+                    EndChatView.checkEmails(
+                        {
+                            oAuthClientOptions,
+                            token: gmailToken
+                        },
+                        Date.now().toString(),
+                        9
+                    );
+                } else {
+                    this.skip();
+                }
             });
     });
 });
