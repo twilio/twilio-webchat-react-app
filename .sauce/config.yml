@@ -12,8 +12,6 @@ rootDir: .
 cypress:
     configFile: cypress.json
     version: 9.1.0
-env:
-    TEST_EMAIL: $TEST_EMAIL
 suites:
     - name: cypress - windows 10 - chrome latest
       browser: chrome
