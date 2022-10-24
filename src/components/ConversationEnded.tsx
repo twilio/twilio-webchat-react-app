@@ -122,7 +122,7 @@ export const ConversationEnded = () => {
             const mediaInfo = await getMediaInfo();
             setEmailingTranscriptProgress(50);
             const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
-            setEmailingTranscriptProgress(75)
+            setEmailingTranscriptProgress(75);
             setIsGeneratingTranscript(false);
             await contactBackend("/email", {
                 recipientAddress: preEngagementData.email,
