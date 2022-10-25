@@ -9,10 +9,7 @@ jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn()
 }));
 
-export const queryByPasteElement = queryHelpers.queryByAttribute.bind(
-  null,
-  'data-paste-element',
-);
+export const queryByPasteElement = queryHelpers.queryByAttribute.bind(null, "data-paste-element");
 
 describe("Notification Bar Item", () => {
     const notification: Notification = {
@@ -38,7 +35,7 @@ describe("Notification Bar Item", () => {
     });
 
     it("renders a dismiss button if dismissible is true", () => {
-        const { container } = render(<NotificationBarItem {...notification} dismissible={true} />);
+        const { container } = render(<NotificationBarItem {...notification} dismissible={true} />);
 
         expect(queryByPasteElement(container, dismissPasteElementName)).toBeInTheDocument();
     });

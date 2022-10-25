@@ -131,7 +131,13 @@ export const MessageBubble = ({
                 )}
                 <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
                     <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={author as unknown as (string | undefined)}>
+                        <Text
+                            {...authorStyles}
+                            as="p"
+                            aria-hidden
+                            style={{ textOverflow: "ellipsis" }}
+                            title={author as unknown as string | undefined}
+                        >
                             {author}
                         </Text>
                         <ScreenReaderOnly as="p">
