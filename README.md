@@ -1,18 +1,16 @@
-
 # Twilio Webchat React App
-
 
 _Twilio Webchat React App_ is an application that demonstrates a website chat widget built for Flex Conversations. It uses Twilio's Conversations JS SDK, Twilio Paste Design library, the Flex WebChats endpoint, and the Create React App.
 
 ---
 
 1. [Getting started](#Getting-started)
-   1. [Setup](#Setup)
-   2. [Work locally](#Work-locally)
+    1. [Setup](#Setup)
+    2. [Work locally](#Work-locally)
 2. [Features](#Features)
 3. [Project structure](#Project-structure)
-   1. [React App](#1-react-app)
-   2. [Local backend server](#2-local-backend-server)
+    1. [React App](#1-react-app)
+    2. [Local backend server](#2-local-backend-server)
 4. [Working in production](#working-in-production)
 5. [Browser support](#Browser-support)
 6. [Accessibility](#Accessibility)
@@ -57,6 +55,7 @@ apiSecret=YOUR_API_SECRET \
 addressSid=YOUR_ADDRESS_SID \
 conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
 ```
+
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
 
 For more info on how to create an **API key** and an **API secret**, please check the [documentation](https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys).
@@ -68,14 +67,15 @@ For the Address Sid, click on the edit button of your address and the edit scree
 ## Working Locally
 
 ### 1. Start the Local Backend Server
+
 ```shell
 yarn server
 
 # or with npm
 npm run server
 ```
-Your server will be served at http://localhost:3001/.
 
+Your server will be served at http://localhost:3001/.
 
 ### 2. Start the Local React App Server
 
@@ -88,15 +88,16 @@ npm run start
 
 Your app will be served at http://localhost:3000/.
 
-
 # Features
 
-## Core Messaging Features 
+## Core Messaging Features
+
 Twilio Webchat React App is built entirely with Twilio Conversations SDK and provides UI for most of its features:
-- Typing indicator
-- Read receipt
-- Attachments
-- Unread messages
+
+-   Typing indicator
+-   Read receipt
+-   Attachments
+-   Unread messages
 
 This app also makes use of the v2 WebChats endpoint which creates a Conversation, an anonymous user, and configures the conversation as per the Address Sid.
 
@@ -105,6 +106,7 @@ This app also makes use of the v2 WebChats endpoint which creates a Conversation
 Twilio Webchat React App will persist user session, if the user closes and reopens the tab. The customer will achieve it by potentially storing the JWT token in their user's local storage. This JWT token will expire after an amount of time.
 
 ## Connectivity Notification
+
 Twilio Webchat React App monitors user internet connectivity and will inform them with a notification if their connection has been lost.
 Once the connection has been re-established,
 the user again will be informed and the list of messages will be updated with any missed messages during the connectivity loss.
@@ -118,12 +120,62 @@ See how to re-use Paste alert component to build custom notifications in our [Ho
 Twilio Webchat React App comes out-of-the-box with a pre-engagement form. The data gathered on submission will be passed by default to the `initWebchat` endpoint of your server.
 More info [here](#a-note-about-the-pre-engagement-form-data).
 
+## Chat Transcripts
+
+Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested. This feature is disabled by default, but can be enabled by following the steps [here](#configuration).
+
+### Downloading Transcripts
+
+Customers can download chat transcripts as a plain text file. If attachments are present within the chat conversation, a zip file containing the plain text transcript file and the attached files will be downloaded.
+
+**Setup**
+
+Allowing customers to download transcripts requires no additional setup beyond enabling chat transcript downloads in the configuration object, as described [here](#configuration).
+
+**Cypress Download Transcript Tests**
+
+The download-specific Cypress tests will be skipped if the downloading of transcripts is not enabled.
+
+### Emailing Transcripts
+
+Customers can email chat transcripts to the email address provided in the pre-engagement form. The transcript will be provided within the body of the email and any associated files will be added as attachments to the email. Emails will be sent using the [SendGrid](https://sendgrid.com/) API.
+
+**Setup**
+
+1. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
+2. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
+3. Enable email transcripts in the configuration object, as described [here](#configuration).
+
+**Customisation**
+
+The email subject and HTML email content can be customised using the configuration object, as described [here](#configuration).
+
+**Cypress Email Transcript Tests**
+
+To allow the email-specific Cypress tests to run, some additional setup beyond the steps listed above is required. Note, that if this setup is not completed the email-specific Cypress tests will fail.
+
+1. Create a `cypress.env.json` file based on the contents of `cypress.env.sample.json`.
+2. Create Gmail API credentials.
+
+    1. Create a OAuth Consent Screen on Google Cloud, with the application type as "Web Application" and add the following URL to the Authorised Redirect URIs: https://developers.google.com/oauthplayground. Copy the Client ID and Client Secret to the relevant key-value pairs in `cypress.env.json`.
+    2. Open the [OAuth Playground](https://developers.google.com/oauthplayground)
+
+        1. Select `https://mail.google.com/` in scopes.
+        2. Click on the gear icon and tick "Use your own OAuth credentials" and enter your Client ID and Client Secret as prompted.
+        3. Click Authorise APIs.
+        4. Sign in with the Google account you wish to use for testing purposes. You may see a screen that says that "Google hasn't verified this app". If so, click on "Advanced" and then click on "Go to your app (unsafe)".
+        5. Review the account access required and click continue.
+
+    3. Once redirected to the [OAuth Playground](https://developers.google.com/oauthplayground), click on "Exchange authorisation code for tokens" and copy the refresh token to the relevant key-value pair in `cypress.env.json`.
+
+Additionally, the email-specific Cypress tests will be skipped if the emailing of transcripts is not enabled.
+
 # Project Structure
 
 Twilio Webchat React App is an open source repository that includes:
+
 1. A React App
 2. A local backend server
-
 
 ## 1. React App
 
@@ -143,35 +195,54 @@ Here's an example of how to use this config object in your `index.html` template
 
 ```javascript
 window.addEventListener("DOMContentLoaded", () => {
-   Twilio.initWebchat({
-      serverUrl: "%YOUR_SERVER_URL%",
-      theme: {
-         isLight: true,
-         overrides: {
-            backgroundColors: {
-               colorBackgroundBody: "#faebd7",
-               // .. other Paste tokens
+    Twilio.initWebchat({
+        serverUrl: "%YOUR_SERVER_URL%",
+        theme: {
+            isLight: true,
+            overrides: {
+                backgroundColors: {
+                    colorBackgroundBody: "#faebd7"
+                    // .. other Paste tokens
+                }
             }
-         }
-      },
-      fileAttachment: {
-         enabled: true,
-         maxFileSize: 16777216, // 16 MB
-         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf"]
-      }
-   });
+        },
+        fileAttachment: {
+            enabled: true,
+            maxFileSize: 16777216, // 16 MB
+            acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf"]
+        },
+        transcript: {
+            downloadEnabled: true,
+            emailEnabled: true,
+            emailSubject: (agentNames) => {
+                let subject = "Transcript of your chat";
+                if (agentNames.length > 0) {
+                    subject = subject.concat(` with ${agentNames[0]}`);
+                    agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
+                }
+                return subject;
+            },
+            emailContent: (customerName, transcript) => {
+                return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
+            }
+        }
+    });
 });
 ```
 
 1. `serverUrl` represents the base server url that the app will hit to initialise the session or refresh the token.
 2. `theme` can be used to quickly customise the look and feel of the app.
-   1. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
-   2. `theme.overrides` is an object that you can fill with all the theme tokens you want to customise. Here's the full [list of tokens](https://paste.twilio.design/tokens/). **Note** remember to change the keys from `kebab-case` to `camelCase`.
+    1. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
+    2. `theme.overrides` is an object that you can fill with all the theme tokens you want to customise. Here's the full [list of tokens](https://paste.twilio.design/tokens/). **Note** remember to change the keys from `kebab-case` to `camelCase`.
 3. `fileAttachment` allows you to enable and configure what files your customers can send to your agents.
-   1. `fileAttachment.enabled` describes whether customers can send agents any file at all.
-   2. `fileAttachment.maxSize` describes the max file size that customers can send (in bytes).
-   3. `fileAttachment.acceptedExtensions` is an array describing the file types that customers can send.
-
+    1. `fileAttachment.enabled` describes whether customers can send agents any file at all.
+    2. `fileAttachment.maxSize` describes the max file size that customers can send (in bytes).
+    3. `fileAttachment.acceptedExtensions` is an array describing the file types that customers can send.
+4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
+    1. `transcript.downloadEnabled` describes whether customers can download a transcript after a chat has been completed. This is disabled by default.
+    2. `transcript.emailEnabled` describes whether customers can receive a transcript by email after a chat has been completed. This is disabled by default.
+    3. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
+    4. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
 
 ## 2. Local Backend Server
 
@@ -186,13 +257,11 @@ This first controller, hit by the application when the pre-engagement form is su
 2. Creates a token with the correct grants for the provided participant identity
 3. (optional) Programmatically send a message in behalf of the user with their query and then a welcome message
 
-
 #### A note about the pre-engagement form data
 
 By default, this endpoint takes the `friendlyName` field of the form and uses it to set the customer User's name via the webchat orchestration endpoint.
 
 In addition to that, all the fields (including `friendlyName`) will be saved as the conversation `attributes`, under the `pre_engagement_data` key. You can find additional information on the Conversation object [here](https://www.twilio.com/docs/conversations/api/conversation-resource#conversation-properties).
-
 
 ### 2. RefreshToken
 
@@ -201,6 +270,7 @@ This second controller is in charge of refreshing a token that is about to expir
 # Working in Production
 
 In order to use this widget in production you will need to follow these three steps:
+
 1. Create remote server endpoints.
 2. Upload compiled and minimised React App code.
 3. Update your website template.
@@ -210,15 +280,19 @@ In order to use this widget in production you will need to follow these three st
 It is necessary to create two endpoints on a remote server or as serverless functions, for [initWebchat](#1-initwebchat) and [refreshToken](#2-refreshtoken) logic.
 
 ### Security Best Practises
+
 We highly recommend that you implement as many of the following security controls as possible, in order to have a more secure backend.
-1. **Create an allow-list on the server side.**  It is necessary to verify on the server side that all the requests are sent from an allowed domain (by checking the origin header).
-2. **Configure the Access-Control-Allow-Origin header** using the allow-list described above. This will prevent browsers from sending requests from malicious websites. 
+
+1. **Create an allow-list on the server side.** It is necessary to verify on the server side that all the requests are sent from an allowed domain (by checking the origin header).
+2. **Configure the Access-Control-Allow-Origin header** using the allow-list described above. This will prevent browsers from sending requests from malicious websites.
 3. **Create logs to detect and find anomalous behaviors.**
 4. **Block requests by IP, by geolocation/country and by URL**. Thanks to the logs created, it is possible to detect suspicious behaviours, depending on those behaviours it is possible to block requests for specific IP addresses, domains and even geolocations.
 5. **Include a fingerprint in the token.** Generate a fingerprint to try to identify the client and include it in the token. When the token is sent, the fingerprint is generated again and compared with the token's fingerprint.
 
 ## 2. Upload Compiled and Minimised React App Code
+
 To create a bundle file for the whole Webchat React App.
+
 ```shell
 yarn build
 
@@ -226,7 +300,7 @@ yarn build
 npm run build
 ```
 
-Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain. 
+Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
 
 ## 3. Update Your Website Template
 
@@ -240,27 +314,27 @@ Finally, add the code to initialize the webchat widget as per following example.
 The React App will then target `/initWebchat` and `/refreshToken` endpoints. If you want to use different endpoint urls, make sure to upload the code in `src/sessionDataHandler.ts`.
 
 For more information about the available options, please check the [Configuration section](#configuration).
+
 ```html
 <script>
-     window.addEventListener("DOMContentLoaded", () => {
-         Twilio.initWebchat({
-             serverUrl: "%SERVER_URL%" // IMPORTANT, UPDATE THIS!!
-         })
-     })
+    window.addEventListener("DOMContentLoaded", () => {
+        Twilio.initWebchat({
+            serverUrl: "%SERVER_URL%" // IMPORTANT, UPDATE THIS!!
+        });
+    });
 </script>
 ```
 
 # Browser Support
+
 Twilio Webchat React App is built entirely on two main libraries Twilio Paste Design System and Twilio Conversations SDK, and it supports the same set up browsers.
 For more information please refer to [Twilio Conversations SDK browser support](http://media.twiliocdn.com/sdk/js/conversations/releases/2.0.1/docs/#changelog) and [Twilio Paste browser support FAQ](https://paste.twilio.design/getting-started/faqs/#engineering)
-
 
 # Accessibility
 
 Twilio Webchat React App is built using [Twilio Paste Design System](https://paste.twilio.design/) and follows accessibility standards.
 Using Webchat app as a foundation for your website chat widget will make it easier to stay WCAG compliant with your website.
 Find out more about [Twilio UX principles](https://paste.twilio.design/principles) and [inclusive design guidelines](https://paste.twilio.design/inclusive-design).
-
 
 # FAQs
 

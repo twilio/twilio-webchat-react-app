@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { MessagingCanvasPhase } from "../MessagingCanvasPhase";
-import { updatePreEngagementData } from "../../store/actions/genericActions";
 import { notifications } from "../../notifications";
 import * as genericActions from "../../store/actions/genericActions";
 
@@ -47,12 +46,6 @@ describe("Messaging Canvas Phase", () => {
         const { container } = render(<MessagingCanvasPhase />);
 
         expect(container).toBeInTheDocument();
-    });
-
-    it("resets pre-engagement data on render", () => {
-        render(<MessagingCanvasPhase />);
-
-        expect(dispatchSpy).toHaveBeenCalledWith(updatePreEngagementData({ email: "", name: "", query: "" }));
     });
 
     it("dismisses any 'failedToInitSessionNotification'", () => {
