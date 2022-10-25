@@ -18,6 +18,21 @@ const defaultConfig: ConfigState = {
         enabled: true,
         maxFileSize: 16777216, // 16 MB
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
+    },
+    transcript: {
+        downloadEnabled: false,
+        emailEnabled: false,
+        emailSubject: (agentNames) => {
+            let subject = "Transcript of your chat";
+            if (agentNames.length > 0) {
+                subject = subject.concat(` with ${agentNames[0]}`);
+                agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
+            }
+            return subject;
+        },
+        emailContent: (customerName, transcript) => {
+            return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
+        }
     }
 };
 
@@ -34,6 +49,10 @@ const initWebchat = async (config: ConfigState) => {
         </Provider>,
         rootElement
     );
+
+    if (window.Cypress) {
+        window.store = store;
+    }
 };
 
 declare global {
@@ -41,6 +60,8 @@ declare global {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
         };
+        Cypress: Cypress.Cypress;
+        store: typeof store;
     }
 }
 

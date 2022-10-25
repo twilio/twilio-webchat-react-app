@@ -11,6 +11,13 @@ export type FileAttachmentConfig = {
     acceptedExtensions?: string[];
 };
 
+export type TranscriptConfig = {
+    downloadEnabled?: boolean;
+    emailEnabled?: boolean;
+    emailSubject?: (agentNames: (string | undefined)[]) => string;
+    emailContent?: (customerName: string | undefined, transcript: string) => string;
+};
+
 export interface ParticipantResponse {
     account_sid: string;
     chat_service_sid: string;
