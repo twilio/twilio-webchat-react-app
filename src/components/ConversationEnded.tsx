@@ -13,7 +13,13 @@ import slugify from "slugify";
 import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase, AppState } from "../store/definitions";
-import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
+import {
+    containerStyles,
+    textStyles,
+    titleStyles,
+    buttonStyles,
+    progressStyles
+} from "./styles/ConversationEnded.styles";
 import {
     getTranscriptData,
     getAgentNames,
@@ -21,7 +27,6 @@ import {
     getUniqueFilenames,
     generateEmailTranscript
 } from "./GenerateTranscripts";
-import { ProgressContainer, ButtonContainer } from "./ConversationEnded.components";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
@@ -140,9 +145,9 @@ export const ConversationEnded = () => {
         return (
             <Button variant="secondary" data-test="download-transcript-button" onClick={handleDownloadTranscript}>
                 {isDownloadingTranscript ? (
-                    <ButtonContainer>
+                    <Box {...buttonStyles}>
                         <CircularProgress size={22} variant="determinate" value={downloadingTranscriptProgress} />
-                        <ProgressContainer>
+                        <Box {...progressStyles}>
                             <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
                                 {" "}
                                 Download
@@ -166,8 +171,8 @@ export const ConversationEnded = () => {
                                     Downloading transcript...
                                 </Text>
                             )}
-                        </ProgressContainer>
-                    </ButtonContainer>
+                        </Box>
+                    </Box>
                 ) : (
                     <span>Download</span>
                 )}
@@ -180,9 +185,9 @@ export const ConversationEnded = () => {
             <Box marginLeft="space40">
                 <Button variant="secondary" data-test="email-transcript-button" onClick={handleEmailTranscript}>
                     {isEmailingTranscript ? (
-                        <ButtonContainer>
+                        <Box {...buttonStyles}>
                             <CircularProgress size={22} variant="determinate" value={emailingTranscriptProgress} />
-                            <ProgressContainer>
+                            <Box {...progressStyles}>
                                 <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
                                     {" "}
                                     Send to my email
@@ -206,8 +211,8 @@ export const ConversationEnded = () => {
                                         Sending transcript...
                                     </Text>
                                 )}
-                            </ProgressContainer>
-                        </ButtonContainer>
+                            </Box>
+                        </Box>
                     ) : (
                         <span>Send to my email</span>
                     )}
