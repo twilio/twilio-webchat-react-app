@@ -28,6 +28,8 @@ import {
     generateEmailTranscript
 } from "./GenerateTranscripts";
 
+// TODO: Extract the transcript logic component buttons to be a separate component and then import these components. 
+// This makes everything much simpler in ConversationEnded. 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
     const { messages, users, preEngagementData, transcriptConfig } = useSelector((state: AppState) => ({
@@ -105,7 +107,7 @@ export const ConversationEnded = () => {
                 folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
                 mediaMessageIndex += 1;
             });
-            zip.generateAsync({ type: "blob" })
+            await zip.generateAsync({ type: "blob" })
                 .then((blob) => saveAs(blob, `${fileName}.zip`))
                 .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
         } else {
@@ -136,8 +138,8 @@ export const ConversationEnded = () => {
                 mediaInfo,
                 uniqueFilenames
             });
+            setEmailingTranscriptProgress(100);
         }
-        setEmailingTranscriptProgress(100);
         setTimeout(() => setEmailingTranscript(false), 1000);
     };
 
