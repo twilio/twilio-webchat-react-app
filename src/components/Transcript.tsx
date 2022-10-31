@@ -11,7 +11,8 @@ import { Button } from "@twilio-paste/core/button";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { contactBackend } from "../sessionDataHandler";
-import { textStyles, buttonStyles, progressStyles } from "./styles/ConversationEnded.styles";
+import { textStyles } from "./styles/ConversationEnded.styles";
+import { buttonStyles, progressStyles } from "./styles/Transcript.styles";
 import {
     getTranscriptData,
     getAgentNames,
