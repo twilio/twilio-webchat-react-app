@@ -110,17 +110,21 @@ describe("Transcript", () => {
                 author: "Ben",
                 body: "hi",
                 timeStamp: new Date("December 20, 2022 03:24:00"),
-                attachedMedia: [{ filename: "blah.jpg" } as Media]
+                attachedMedia: [
+                    { filename: "blah.jpg" } as Media,
+                    { filename: "foo.png" } as Media,
+                    { filename: "booo.png" } as Media
+                ]
             },
             {
                 author: "Samantha",
                 body: "hi",
                 timeStamp: new Date("December 21, 2022 03:24:00"),
-                attachedMedia: [{ filename: "blah.png" } as Media]
+                attachedMedia: [{ filename: "blah.png" } as Media, { filename: "blah.png" } as Media]
             }
         ];
         expect(generateDownloadTranscript(customerName, agentNames, transcriptMediaData)).toEqual(
-            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 53 minutes 50 seconds \n\n* 04:30  ${customerName}: hi (** Attached file test.txt **)\n\n+ 04:30  Concierge: hi (** Attached file test-1.txt **)\n\n+ 03:24  ${agentNames[0]}: hi (** Attached file blah.jpg **)\n\n+ 03:24  ${agentNames[1]}: hi (** Attached file blah.png **)\n\n`
+            `Conversation with ${customerName} and ${agentNames[0]} and ${agentNames[1]}\n\nDate: 17 December 2022\nDuration: 3 days 22 hours 53 minutes 50 seconds \n\n* 04:30  ${customerName}: hi (** Attached file test.txt **)\n\n+ 04:30  Concierge: hi (** Attached file test-1.txt **)\n\n+ 03:24  ${agentNames[0]}: hi (** Attached file blah.jpg **) (** Attached file foo.png **) (** Attached file booo.png **)\n\n+ 03:24  ${agentNames[1]}: hi (** Attached file blah.png **) (** Attached file blah-1.png **)\n\n`
         );
     });
 
@@ -148,17 +152,21 @@ describe("Transcript", () => {
                 author: "Ben",
                 body: "hi",
                 timeStamp: new Date("December 20, 2022 03:24:00"),
-                attachedMedia: [{ filename: "blah.jpg" } as Media]
+                attachedMedia: [
+                    { filename: "blah.jpg" } as Media,
+                    { filename: "foo.png" } as Media,
+                    { filename: "booo.png" } as Media
+                ]
             },
             {
                 author: "Samantha",
                 body: "hi",
                 timeStamp: new Date("December 21, 2022 03:24:00"),
-                attachedMedia: [{ filename: "blah.png" } as Media]
+                attachedMedia: [{ filename: "blah.png" } as Media, { filename: "blah.png" } as Media]
             }
         ];
         expect(generateEmailTranscript(customerName, agentNames, transcriptMediaData)).toEqual(
-            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 53 minutes 50 seconds <br><br>04:30 <i>${customerName}</i>: hi (** Attached file <i>test.txt</i> **)<br><br>04:30 <i>Concierge</i>: hi (** Attached file <i>test-1.txt</i> **)<br><br>03:24 <i>${agentNames[0]}</i>: hi (** Attached file <i>blah.jpg</i> **)<br><br>03:24 <i>${agentNames[1]}</i>: hi (** Attached file <i>blah.png</i> **)<br><br>`
+            `Chat with <strong>${customerName}</strong> and <strong>${agentNames[0]}</strong> and <strong>${agentNames[1]}</strong><br><br><strong>Date:</strong> 17 December 2022<br><strong>Duration:</strong> 3 days 22 hours 53 minutes 50 seconds <br><br>04:30 <i>${customerName}</i>: hi (** Attached file <i>test.txt</i> **)<br><br>04:30 <i>Concierge</i>: hi (** Attached file <i>test-1.txt</i> **)<br><br>03:24 <i>${agentNames[0]}</i>: hi (** Attached file <i>blah.jpg</i> **) (** Attached file <i>foo.png</i> **) (** Attached file <i>booo.png</i> **)<br><br>03:24 <i>${agentNames[1]}</i>: hi (** Attached file <i>blah.png</i> **) (** Attached file <i>blah-1.png</i> **)<br><br>`
         );
     });
 
