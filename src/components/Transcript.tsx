@@ -19,7 +19,7 @@ import {
     generateDownloadTranscript,
     getUniqueFilenames,
     generateEmailTranscript
-} from "./GenerateTranscripts";
+} from "../utils/generateTranscripts";
 import { TranscriptConfig } from "../definitions";
 import { PreEngagementData } from "../store/definitions";
 

@@ -1,6 +1,6 @@
 import { Media, Message, User } from "@twilio/conversations";
 
-import { generateDuration } from "../utils/generateDuration";
+import { generateDuration } from "./generateDuration";
 
 interface Transcript {
     author?: string;
@@ -36,7 +36,6 @@ const getAgentNames = (customerName: string | undefined, transcriptData: Transcr
 
 const getUniqueFilenames = (transcriptData: Transcript[]) => {
     const mediaMessages = transcriptData.filter((message) => message.attachedMedia);
-    console.log("mediaMessages in getUniqueFilenames", mediaMessages);
     const filenames = [];
     for (const message of mediaMessages || []) {
         for (const media of message.attachedMedia || []) {

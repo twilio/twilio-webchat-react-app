@@ -13,7 +13,7 @@ import {
     getAgentNames,
     generateDownloadTranscript,
     generateEmailTranscript
-} from "../GenerateTranscripts";
+} from "../../utils/generateTranscripts";
 
 jest.mock("react-redux", () => ({
     ...jest.requireActual("react-redux"),
