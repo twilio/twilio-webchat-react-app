@@ -177,6 +177,15 @@ export const getLastMessageMediaData = async ({ conversationSid }: { conversatio
     return messageIM[0].media[0].filename;
 };
 
+export const getLastMessageAllMediaFilenames = async ({ conversationSid }: { conversationSid: string }) => {
+    await new Promise((res) => setTimeout(res, 2000)); // Add buffer to avoid api calls being made too close together
+    const client = await getTwilioClient();
+    const messageIM = await client.conversations
+        .conversations(conversationSid)
+        .messages.list({ order: "desc", limit: 1 });
+    return messageIM[0].media.map((m) => m.filename);
+};
+
 export const getLastMessageText = async ({ conversationSid }: { conversationSid: string }) => {
     const client = await getTwilioClient();
     const messageIM = await client.conversations
