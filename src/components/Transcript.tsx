@@ -8,7 +8,7 @@ import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Spinner } from "@twilio-paste/core/spinner";
 
 import { contactBackend } from "../sessionDataHandler";
 import { textStyles } from "./styles/ConversationEnded.styles";
@@ -31,10 +31,8 @@ interface TranscriptProps {
 }
 
 export const Transcript = (props: TranscriptProps) => {
-    const [downloadingTranscriptProgress, setDownloadingTranscriptProgress] = useState(0);
     const [isGeneratingTranscript, setIsGeneratingTranscript] = useState(false);
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
-    const [emailingTranscriptProgress, setEmailingTranscriptProgress] = useState(0);
     const [isEmailingTranscript, setEmailingTranscript] = useState(false);
 
     const getMediaInfo = async () => {
@@ -61,15 +59,12 @@ export const Transcript = (props: TranscriptProps) => {
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
         setIsGeneratingTranscript(true);
-        setDownloadingTranscriptProgress(10);
         const transcriptData = getTranscriptData(props.messages, props.users);
         const customerName = props.preEngagementData?.name || transcriptData[0].author?.trim();
         const agentNames = getAgentNames(customerName, transcriptData);
         const transcript = generateDownloadTranscript(customerName, agentNames, transcriptData);
-        setDownloadingTranscriptProgress(25);
         const transcriptBlob = new Blob([transcript], { type: "text/plain" });
         const mediaInfo = await getMediaInfo();
-        setDownloadingTranscriptProgress(50);
 
         let fileName = `chat-with-${customerName}`;
         if (agentNames.length > 0) {
@@ -78,7 +73,6 @@ export const Transcript = (props: TranscriptProps) => {
         fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
         fileName = fileName.toLowerCase();
         setIsGeneratingTranscript(false);
-        setDownloadingTranscriptProgress(75);
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
@@ -100,23 +94,19 @@ export const Transcript = (props: TranscriptProps) => {
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }
-        setDownloadingTranscriptProgress(100);
         setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
 
     const handleEmailTranscript = async () => {
         setEmailingTranscript(true);
         setIsGeneratingTranscript(true);
-        setEmailingTranscriptProgress(10);
         if (props.preEngagementData) {
             const transcriptData = getTranscriptData(props.messages, props.users);
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = props.preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
             const mediaInfo = await getMediaInfo();
-            setEmailingTranscriptProgress(50);
             const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
-            setEmailingTranscriptProgress(75);
             setIsGeneratingTranscript(false);
             await contactBackend("/email", {
                 recipientAddress: props.preEngagementData.email,
@@ -125,7 +115,6 @@ export const Transcript = (props: TranscriptProps) => {
                 mediaInfo,
                 uniqueFilenames
             });
-            setEmailingTranscriptProgress(100);
         }
         setTimeout(() => setEmailingTranscript(false), 1000);
     };
@@ -135,7 +124,7 @@ export const Transcript = (props: TranscriptProps) => {
             <Button variant="secondary" data-test="download-transcript-button" onClick={handleDownloadTranscript}>
                 {isDownloadingTranscript ? (
                     <Box {...buttonStyles}>
-                        <CircularProgress size={22} variant="determinate" value={downloadingTranscriptProgress} />
+                        <Spinner title="Loading" decorative={false} />
                         <Box {...progressStyles}>
                             <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
                                 {" "}
@@ -175,7 +164,7 @@ export const Transcript = (props: TranscriptProps) => {
                 <Button variant="secondary" data-test="email-transcript-button" onClick={handleEmailTranscript}>
                     {isEmailingTranscript ? (
                         <Box {...buttonStyles}>
-                            <CircularProgress size={22} variant="determinate" value={emailingTranscriptProgress} />
+                            <Spinner title="Loading" decorative={false} />
                             <Box {...progressStyles}>
                                 <Text as="span" fontSize="fontSize20" lineHeight="lineHeight10">
                                     {" "}
