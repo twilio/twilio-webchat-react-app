@@ -35,7 +35,7 @@ npm install
 
 ### 2. Populate Your .env File
 
-We provide a handy `bootstrap` script to set up the environment variables, but you can alternatively copy the `.env.sample` file.
+We provide a handy `bootstrap` script to set up the environment variables required for the essential webchat functionalites, but you can alternatively copy the `.env.sample` file to view all possible environment variables.
 
 ```shell
 yarn bootstrap \
@@ -63,6 +63,8 @@ For more info on how to create an **API key** and an **API secret**, please chec
 You can find your **Conversations Service Sid** on the [services page](https://console.twilio.com/us1/develop/conversations/manage/services?frameUrl=%2Fconsole%2Fconversations%2Fservices%3Fx-target-region%3Dus1). Make sure to pick the one linked to your Flex Account — usually it is named `Flex Chat Service` and it starts with `IS`
 
 For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
+
+The environment variables associated with enabling and configuring customer transcripts can be found in the `.env.sample` file and their use will be covered [here](#chat-transcripts).
 
 ## Working Locally
 
@@ -122,7 +124,7 @@ More info [here](#a-note-about-the-pre-engagement-form-data).
 
 ## Chat Transcripts
 
-Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested. This feature is disabled by default, but can be enabled by following the steps [here](#configuration).
+Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested. This feature is disabled by default, but can be enabled by following the steps below.
 
 ### Downloading Transcripts
 
@@ -130,7 +132,11 @@ Customers can download chat transcripts as a plain text file. If attachments are
 
 **Setup**
 
-Allowing customers to download transcripts requires no additional setup beyond enabling chat transcript downloads in the configuration object, as described [here](#configuration).
+Allowing customers to download transcripts requires no additional setup beyond adding the below entry to the `.env` file. This is also described in the `.env.sample` file.
+
+```
+REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
+```
 
 **Cypress Download Transcript Tests**
 
@@ -142,9 +148,14 @@ Customers can email chat transcripts to the email address provided in the pre-en
 
 **Setup**
 
-1. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
-2. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
-3. Enable email transcripts in the configuration object, as described [here](#configuration).
+1. Add the following entry to the `.env` file. This is also described in the `.env.sample` file.
+    ```
+    REACT_APP_EMAIL_TRANSCRIPT_ENABLED=true
+    ```
+2. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
+3. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
+
+The email subject and content can be customised in the configuration object, as described [here](#configuration).
 
 **Customisation**
 
@@ -212,8 +223,6 @@ window.addEventListener("DOMContentLoaded", () => {
             acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf"]
         },
         transcript: {
-            downloadEnabled: true,
-            emailEnabled: true,
             emailSubject: (agentNames) => {
                 let subject = "Transcript of your chat";
                 if (agentNames.length > 0) {
@@ -239,10 +248,8 @@ window.addEventListener("DOMContentLoaded", () => {
     2. `fileAttachment.maxSize` describes the max file size that customers can send (in bytes).
     3. `fileAttachment.acceptedExtensions` is an array describing the file types that customers can send.
 4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
-    1. `transcript.downloadEnabled` describes whether customers can download a transcript after a chat has been completed. This is disabled by default.
-    2. `transcript.emailEnabled` describes whether customers can receive a transcript by email after a chat has been completed. This is disabled by default.
-    3. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
-    4. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
+    1. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
+    2. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
 
 ## 2. Local Backend Server
 
