@@ -83,11 +83,10 @@ const generateDownloadTranscript = (
             message.timeStamp.getMinutes()
         )}  ${message.author}: ${message.body}`;
         if (message.attachedMedia) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            for (const media of message.attachedMedia || []) {
-                messageText = messageText.concat(` (** Attached file ${uniqueFilenames[mediaMessageIndex]} **)`);
-                mediaMessageIndex += 1;
+            for (let i = 0; i < message.attachedMedia.length; i++) {
+                messageText = messageText.concat(` (** Attached file ${uniqueFilenames[mediaMessageIndex + i]} **)`);
             }
+            mediaMessageIndex += message.attachedMedia.length;
         }
         transcript = transcript.concat(`${messageText}\n\n`);
     }
@@ -116,11 +115,12 @@ const generateEmailTranscript = (
             message.timeStamp.getMinutes()
         )} <i>${message.author}</i>: ${message.body}`;
         if (message.attachedMedia) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            for (const media of message.attachedMedia || []) {
-                messageText = messageText.concat(` (** Attached file <i>${uniqueFilenames[mediaMessageIndex]}</i> **)`);
-                mediaMessageIndex += 1;
+            for (let i = 0; i < message.attachedMedia.length; i++) {
+                messageText = messageText.concat(
+                    ` (** Attached file <i>${uniqueFilenames[mediaMessageIndex + i]}</i> **)`
+                );
             }
+            mediaMessageIndex += message.attachedMedia.length;
         }
         transcript = transcript.concat(`${messageText}<br><br>`);
     }
