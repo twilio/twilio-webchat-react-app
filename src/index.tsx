@@ -38,9 +38,6 @@ const defaultConfig: ConfigState = {
 
 const initWebchat = async (config: ConfigState) => {
     const mergedConfig = merge({}, defaultConfig, config);
-    console.log("REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED", process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED);
-    console.log("REACT_APP_EMAIL_TRANSCRIPT_ENABLED", process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED);
-    console.log("mergedConfig", mergedConfig);
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     initLogger();
