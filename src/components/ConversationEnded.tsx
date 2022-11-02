@@ -24,21 +24,17 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
-    console.log("REACT_APP_TRANSCRIPT_ENABLED", process.env.REACT_APP_TRANSCRIPT_ENABLED);
-
     return (
         <Box {...containerStyles}>
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            {process.env.REACT_APP_TRANSCRIPT_ENABLED === "true" && (
-                <Transcript
-                    messages={messages}
-                    preEngagementData={preEngagementData}
-                    users={users}
-                    transcriptConfig={transcriptConfig}
-                />
-            )}
+            <Transcript
+                messages={messages}
+                preEngagementData={preEngagementData}
+                users={users}
+                transcriptConfig={transcriptConfig}
+            />
             <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.
             </Text>

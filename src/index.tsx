@@ -20,8 +20,8 @@ const defaultConfig: ConfigState = {
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
     },
     transcript: {
-        downloadEnabled: false,
-        emailEnabled: false,
+        downloadEnabled: process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" || false,
+        emailEnabled: process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" || false,
         emailSubject: (agentNames) => {
             let subject = "Transcript of your chat";
             if (agentNames.length > 0) {
@@ -38,6 +38,9 @@ const defaultConfig: ConfigState = {
 
 const initWebchat = async (config: ConfigState) => {
     const mergedConfig = merge({}, defaultConfig, config);
+    console.log("REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED", process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED);
+    console.log("REACT_APP_EMAIL_TRANSCRIPT_ENABLED", process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED);
+    console.log("mergedConfig", mergedConfig);
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     initLogger();
