@@ -29,12 +29,14 @@ export const ConversationEnded = () => {
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            <Transcript
-                messages={messages}
-                preEngagementData={preEngagementData}
-                users={users}
-                transcriptConfig={transcriptConfig}
-            />
+            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" || process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
+                <Transcript
+                    messages={messages}
+                    preEngagementData={preEngagementData}
+                    users={users}
+                    transcriptConfig={transcriptConfig}
+                />
+            )}
             <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.
             </Text>

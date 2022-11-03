@@ -201,14 +201,18 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            {(props.transcriptConfig?.downloadEnabled || props.transcriptConfig?.emailEnabled) && (
+            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" || process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
                 <>
                     <Text as="p" {...textStyles}>
                         Do you want a transcript of our chat?
                     </Text>
                     <Flex>
-                        {props.transcriptConfig?.downloadEnabled && !isEmailingTranscript && renderDownloadingButton()}
-                        {props.transcriptConfig?.emailEnabled && !isDownloadingTranscript && renderEmailButton()}
+                        {process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
+                            !isEmailingTranscript &&
+                            renderDownloadingButton()}
+                        {process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" &&
+                            !isDownloadingTranscript &&
+                            renderEmailButton()}
                     </Flex>
                 </>
             )}

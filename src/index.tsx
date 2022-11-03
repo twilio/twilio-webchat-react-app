@@ -20,8 +20,8 @@ const defaultConfig: ConfigState = {
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
     },
     transcript: {
-        downloadEnabled: process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" || false,
-        emailEnabled: process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" || false,
+        downloadEnabled: false,
+        emailEnabled: false,
         emailSubject: (agentNames) => {
             let subject = "Transcript of your chat";
             if (agentNames.length > 0) {
