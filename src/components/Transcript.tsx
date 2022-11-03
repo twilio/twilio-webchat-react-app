@@ -1,8 +1,6 @@
 import { Message, User } from "@twilio/conversations";
 import { useState } from "react";
 import log from "loglevel";
-import slugify from "slugify";
-import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
@@ -73,14 +71,16 @@ export const Transcript = (props: TranscriptProps) => {
         if (agentNames.length > 0) {
             agentNames.forEach((name) => (fileName = fileName.concat(`-and-${name}`)));
         }
-        fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
-        fileName = fileName.toLowerCase();
-        setIsGeneratingTranscript(false);
-        if (mediaInfo.length > 0) {
-            const uniqueFilenames = getUniqueFilenames(transcriptData);
-            let mediaMessageIndex = 0;
-            if (transcriptsEnabled) {
-                const { default: JSZip } = await import("jszip");
+        if (transcriptsEnabled) {
+            const { default: slugify } = await import("slugify");
+            const { default: JSZip } = await import("jszip");
+            const { default: saveAs } = await import("file-saver");
+            fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
+            fileName = fileName.toLowerCase();
+            setIsGeneratingTranscript(false);
+            if (mediaInfo.length > 0) {
+                const uniqueFilenames = getUniqueFilenames(transcriptData);
+                let mediaMessageIndex = 0;
                 const zip = new JSZip();
                 const folder = zip.folder(fileName);
                 folder?.file(`${fileName}.txt`, transcriptBlob);
@@ -96,9 +96,9 @@ export const Transcript = (props: TranscriptProps) => {
                     .generateAsync({ type: "blob" })
                     .then((blob) => saveAs(blob, `${fileName}.zip`))
                     .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
+            } else {
+                saveAs(transcriptBlob, `${fileName}.txt`);
             }
-        } else {
-            saveAs(transcriptBlob, `${fileName}.txt`);
         }
         setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
