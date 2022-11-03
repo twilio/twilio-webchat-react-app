@@ -2,7 +2,6 @@ import { Message, User } from "@twilio/conversations";
 import { useState } from "react";
 import log from "loglevel";
 import slugify from "slugify";
-import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
@@ -56,6 +55,10 @@ export const Transcript = (props: TranscriptProps) => {
         return mediaInfo;
     };
 
+    const transcriptsEnabled =
+        process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
+        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
+
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
         setIsGeneratingTranscript(true);
@@ -76,21 +79,24 @@ export const Transcript = (props: TranscriptProps) => {
         if (mediaInfo.length > 0) {
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             let mediaMessageIndex = 0;
-            const zip = new JSZip();
-            const folder = zip.folder(fileName);
-            folder?.file(`${fileName}.txt`, transcriptBlob);
-            mediaInfo.forEach((info) => {
-                const blobPromise = fetch(info.url).then(async (response) => {
-                    if (response.status === 200) return response.blob();
-                    return Promise.reject(new Error(response.statusText));
+            if (transcriptsEnabled) {
+                const { default: JSZip } = await import("jszip");
+                const zip = new JSZip();
+                const folder = zip.folder(fileName);
+                folder?.file(`${fileName}.txt`, transcriptBlob);
+                mediaInfo.forEach((info) => {
+                    const blobPromise = fetch(info.url).then(async (response) => {
+                        if (response.status === 200) return response.blob();
+                        return Promise.reject(new Error(response.statusText));
+                    });
+                    folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
+                    mediaMessageIndex += 1;
                 });
-                folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
-                mediaMessageIndex += 1;
-            });
-            await zip
-                .generateAsync({ type: "blob" })
-                .then((blob) => saveAs(blob, `${fileName}.zip`))
-                .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
+                await zip
+                    .generateAsync({ type: "blob" })
+                    .then((blob) => saveAs(blob, `${fileName}.zip`))
+                    .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
+            }
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }
@@ -201,7 +207,8 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" || process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
+            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
+                process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
                 <>
                     <Text as="p" {...textStyles}>
                         Do you want a transcript of our chat?
