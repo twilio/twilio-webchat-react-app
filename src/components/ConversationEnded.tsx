@@ -24,13 +24,16 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
+    const transcriptsEnabled =
+        process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
+        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
+
     return (
         <Box {...containerStyles}>
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-                process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
+            {transcriptsEnabled && (
                 <Transcript
                     messages={messages}
                     preEngagementData={preEngagementData}

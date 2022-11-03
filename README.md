@@ -140,7 +140,7 @@ REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
 
 **Cypress Download Transcript Tests**
 
-The download-specific Cypress tests will be skipped if they are not enabled. You can enable them by creating a `cypress.env.json` file and adding the following line:
+The download-specific Cypress tests will be skipped if they are not enabled. You can enable them by creating a `cypress.env.json` file based on the contents of `cypress.env.sample.json` and adding the following line:
 
 ```
 "DOWNLOAD_TRANSCRIPT_ENABLED": "false"

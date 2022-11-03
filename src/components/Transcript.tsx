@@ -27,6 +27,10 @@ interface TranscriptProps {
     transcriptConfig: TranscriptConfig | undefined;
 }
 
+const transcriptsEnabled =
+    process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
+    process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
+
 export const Transcript = (props: TranscriptProps) => {
     const [isGeneratingTranscript, setIsGeneratingTranscript] = useState(false);
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
@@ -52,10 +56,6 @@ export const Transcript = (props: TranscriptProps) => {
         }
         return mediaInfo;
     };
-
-    const transcriptsEnabled =
-        process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
 
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
@@ -207,8 +207,7 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            {(process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-                process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true") && (
+            {transcriptsEnabled && (
                 <>
                     <Text as="p" {...textStyles}>
                         Do you want a transcript of our chat?
