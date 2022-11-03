@@ -140,7 +140,13 @@ REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
 
 **Cypress Download Transcript Tests**
 
-The download-specific Cypress tests will be skipped if the downloading of transcripts is not enabled.
+The download-specific Cypress tests will be skipped if they are not enabled. You can enable them by creating a `cypress.env.json` file and adding the following line:
+
+```
+"DOWNLOAD_TRANSCRIPT_ENABLED": "false"
+```
+
+Note, for the download-specific Cypress tests to pass, you must enable the transcript download functionality.
 
 ### Emailing Transcripts
 
@@ -163,10 +169,21 @@ The email subject and HTML email content can be customised using the configurati
 
 **Cypress Email Transcript Tests**
 
+The email-specific Cypress tests will be skipped if they are not enabled. You can enable them by adding the following line to your `cypress.env.json` file:
+
+```
+"DOWNLOAD_TRANSCRIPT_ENABLED": "false"
+```
+
 To allow the email-specific Cypress tests to run, some additional setup beyond the steps listed above is required. Note, that if this setup is not completed the email-specific Cypress tests will fail.
 
-1. Create a `cypress.env.json` file based on the contents of `cypress.env.sample.json`.
-2. Create Gmail API credentials.
+1. Enable the email transcripts functionality.
+2. Create a `cypress.env.json` file based on the contents of `cypress.env.sample.json`.
+3. Add the following line to the `cypress.env.json` file.
+    ```
+    "EMAIL_TRANSCRIPT_ENABLED": "false"
+    ```
+4. Create Gmail API credentials.
 
     1. Create a OAuth Consent Screen on Google Cloud, with the application type as "Web Application" and add the following URL to the Authorised Redirect URIs: https://developers.google.com/oauthplayground. Copy the Client ID and Client Secret to the relevant key-value pairs in `cypress.env.json`.
     2. Open the [OAuth Playground](https://developers.google.com/oauthplayground)
