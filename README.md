@@ -138,16 +138,6 @@ Allowing customers to download transcripts requires no additional setup beyond a
 REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
 ```
 
-**Cypress Download Transcript Tests**
-
-The download-specific Cypress tests will be skipped if they are not enabled. You can enable them by creating a `cypress.env.json` file based on the contents of `cypress.env.sample.json` and adding the following line:
-
-```
-"DOWNLOAD_TRANSCRIPT_ENABLED": "false"
-```
-
-Note, for the download-specific Cypress tests to pass, you must enable the transcript download functionality.
-
 ### Emailing Transcripts
 
 Customers can email chat transcripts to the email address provided in the pre-engagement form. The transcript will be provided within the body of the email and any associated files will be added as attachments to the email. Emails will be sent using the [SendGrid](https://sendgrid.com/) API.
@@ -166,37 +156,6 @@ The email subject and content can be customised in the configuration object, as 
 **Customisation**
 
 The email subject and HTML email content can be customised using the configuration object, as described [here](#configuration).
-
-**Cypress Email Transcript Tests**
-
-The email-specific Cypress tests will be skipped if they are not enabled. You can enable them by adding the following line to your `cypress.env.json` file:
-
-```
-"DOWNLOAD_TRANSCRIPT_ENABLED": "false"
-```
-
-To allow the email-specific Cypress tests to run, some additional setup beyond the steps listed above is required. Note, that if this setup is not completed the email-specific Cypress tests will fail.
-
-1. Enable the email transcripts functionality.
-2. Create a `cypress.env.json` file based on the contents of `cypress.env.sample.json`.
-3. Add the following line to the `cypress.env.json` file.
-    ```
-    "EMAIL_TRANSCRIPT_ENABLED": "false"
-    ```
-4. Create Gmail API credentials.
-
-    1. Create a OAuth Consent Screen on Google Cloud, with the application type as "Web Application" and add the following URL to the Authorised Redirect URIs: https://developers.google.com/oauthplayground. Copy the Client ID and Client Secret to the relevant key-value pairs in `cypress.env.json`.
-    2. Open the [OAuth Playground](https://developers.google.com/oauthplayground)
-
-        1. Select `https://mail.google.com/` in scopes.
-        2. Click on the gear icon and tick "Use your own OAuth credentials" and enter your Client ID and Client Secret as prompted.
-        3. Click Authorise APIs.
-        4. Sign in with the Google account you wish to use for testing purposes. You may see a screen that says that "Google hasn't verified this app". If so, click on "Advanced" and then click on "Go to your app (unsafe)".
-        5. Review the account access required and click continue.
-
-    3. Once redirected to the [OAuth Playground](https://developers.google.com/oauthplayground), click on "Exchange authorisation code for tokens" and copy the refresh token to the relevant key-value pair in `cypress.env.json`.
-
-Additionally, the email-specific Cypress tests will be skipped if the emailing of transcripts is not enabled.
 
 # Project Structure
 
