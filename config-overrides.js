@@ -15,7 +15,7 @@ module.exports = function override(config) {
 
     config.plugins = [
         ...config.plugins,
-        /* new BundleAnalyzerPlugin(),*/ new webpack.EnvironmentPlugin(["REACT_APP_EMAIL_TRANSCRIPT_ENABLED"])
+        /* new BundleAnalyzerPlugin(),*/ new webpack.EnvironmentPlugin(["REACT_APP_EMAIL_TRANSCRIPT_ENABLED", "REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED"])
     ];
 
     return config;
