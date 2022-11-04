@@ -35,7 +35,7 @@ npm install
 
 ### 2. Populate Your .env File
 
-We provide a handy `bootstrap` script to set up the environment variables required for the essential webchat functionalites, but you can alternatively copy the `.env.sample` file to view all possible environment variables.
+We provide a handy `bootstrap` script to set up the environment variables required, but you can alternatively copy the `.env.sample` file.
 
 ```shell
 yarn bootstrap \
@@ -132,7 +132,7 @@ Customers can download chat transcripts as a plain text file. If attachments are
 
 **Setup**
 
-Allowing customers to download transcripts requires no additional setup beyond adding the below entry to the `.env` file. This is also described in the `.env.sample` file.
+Allowing customers to download transcripts requires no additional setup beyond adding the below entry to the `.env` file.
 
 ```
 REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
@@ -154,7 +154,7 @@ Customers can email chat transcripts to the email address provided in the pre-en
 
 **Setup**
 
-1. Add the following entry to the `.env` file. This is also described in the `.env.sample` file.
+1. Add the following entry to the `.env` file.
     ```
     REACT_APP_EMAIL_TRANSCRIPT_ENABLED=true
     ```
