@@ -6,6 +6,9 @@ import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { Spinner } from "@twilio-paste/core/spinner";
+import slugify from "slugify";
+import JSZip from "jszip";
+import saveAs from "file-saver";
 
 import { contactBackend } from "../sessionDataHandler";
 import { textStyles } from "./styles/ConversationEnded.styles";
@@ -26,10 +29,6 @@ interface TranscriptProps {
     preEngagementData: PreEngagementData;
     transcriptConfig: TranscriptConfig | undefined;
 }
-
-const transcriptsEnabled =
-    process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-    process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
 
 export const Transcript = (props: TranscriptProps) => {
     const [isGeneratingTranscript, setIsGeneratingTranscript] = useState(false);
@@ -71,35 +70,32 @@ export const Transcript = (props: TranscriptProps) => {
         if (agentNames.length > 0) {
             agentNames.forEach((name) => (fileName = fileName.concat(`-and-${name}`)));
         }
-        if (transcriptsEnabled) {
-            const { default: slugify } = await import("slugify");
-            const { default: JSZip } = await import("jszip");
-            const { default: saveAs } = await import("file-saver");
-            fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
-            fileName = fileName.toLowerCase();
-            setIsGeneratingTranscript(false);
-            if (mediaInfo.length > 0) {
-                const uniqueFilenames = getUniqueFilenames(transcriptData);
-                let mediaMessageIndex = 0;
-                const zip = new JSZip();
-                const folder = zip.folder(fileName);
-                folder?.file(`${fileName}.txt`, transcriptBlob);
-                mediaInfo.forEach((info) => {
-                    const blobPromise = fetch(info.url).then(async (response) => {
-                        if (response.status === 200) return response.blob();
-                        return Promise.reject(new Error(response.statusText));
-                    });
-                    folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
-                    mediaMessageIndex += 1;
+
+        fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
+        fileName = fileName.toLowerCase();
+        setIsGeneratingTranscript(false);
+        if (mediaInfo.length > 0) {
+            const uniqueFilenames = getUniqueFilenames(transcriptData);
+            let mediaMessageIndex = 0;
+            const zip = new JSZip();
+            const folder = zip.folder(fileName);
+            folder?.file(`${fileName}.txt`, transcriptBlob);
+            mediaInfo.forEach((info) => {
+                const blobPromise = fetch(info.url).then(async (response) => {
+                    if (response.status === 200) return response.blob();
+                    return Promise.reject(new Error(response.statusText));
                 });
-                await zip
-                    .generateAsync({ type: "blob" })
-                    .then((blob) => saveAs(blob, `${fileName}.zip`))
-                    .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
-            } else {
-                saveAs(transcriptBlob, `${fileName}.txt`);
-            }
+                folder?.file(uniqueFilenames[mediaMessageIndex], blobPromise);
+                mediaMessageIndex += 1;
+            });
+            await zip
+                .generateAsync({ type: "blob" })
+                .then((blob) => saveAs(blob, `${fileName}.zip`))
+                .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
+        } else {
+            saveAs(transcriptBlob, `${fileName}.txt`);
         }
+
         setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
 
@@ -207,21 +203,17 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            {transcriptsEnabled && (
-                <>
-                    <Text as="p" {...textStyles}>
-                        Do you want a transcript of our chat?
-                    </Text>
-                    <Flex>
-                        {process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
-                            !isEmailingTranscript &&
-                            renderDownloadingButton()}
-                        {process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" &&
-                            !isDownloadingTranscript &&
-                            renderEmailButton()}
-                    </Flex>
-                </>
-            )}
+            <Text as="p" {...textStyles}>
+                Do you want a transcript of our chat?
+            </Text>
+            <Flex>
+                {process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
+                    !isEmailingTranscript &&
+                    renderDownloadingButton()}
+                {process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" &&
+                    !isDownloadingTranscript &&
+                    renderEmailButton()}
+            </Flex>
         </>
     );
 };
