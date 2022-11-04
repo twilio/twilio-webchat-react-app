@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
@@ -7,7 +8,7 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase, AppState } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
-import { Transcript } from "./Transcript";
+import type { Transcript as TType } from "./Transcript";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
@@ -24,22 +25,31 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
-    const transcriptsEnabled =
+    let Transcript: typeof TType | undefined = undefined;
+
+    // This file and its related dependencies are only bundled if transcripts are enabled in .env file
+    if (
         process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true";
+        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true"
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,global-require
+        ({ Transcript } = require("./Transcript"));
+    }
 
     return (
         <Box {...containerStyles}>
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            {transcriptsEnabled && (
+            {Transcript ? (
                 <Transcript
                     messages={messages}
                     preEngagementData={preEngagementData}
                     users={users}
                     transcriptConfig={transcriptConfig}
                 />
+            ) : (
+                <Fragment />
             )}
             <Text as="p" {...textStyles}>
                 If you have any more questions, feel free to reach out again.

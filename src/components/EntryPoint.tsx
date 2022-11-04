@@ -10,6 +10,7 @@ import { containerStyles } from "./styles/EntryPoint.styles";
 export const EntryPoint = () => {
     const dispatch = useDispatch();
     const expanded = useSelector((state: AppState) => state.session.expanded);
+
     return (
         <Box
             as="button"
