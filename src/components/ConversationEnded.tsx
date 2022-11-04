@@ -8,7 +8,7 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase, AppState } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
-import type { Transcript as TType } from "./Transcript";
+import type { Transcript } from "./Transcript";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export const ConversationEnded = () => {
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
 
-    let Transcript: typeof TType | undefined = undefined;
+    let TranscriptComponent: typeof Transcript | undefined = undefined;
 
     // This file and its related dependencies are only bundled if transcripts are enabled in .env file
     if (
@@ -33,7 +33,7 @@ export const ConversationEnded = () => {
         process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true"
     ) {
         // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,global-require
-        ({ Transcript } = require("./Transcript"));
+        ({ Transcript: TranscriptComponent } = require("./Transcript"));
     }
 
     return (
@@ -41,8 +41,8 @@ export const ConversationEnded = () => {
             <Text as="h3" {...titleStyles}>
                 Thanks for chatting with us!
             </Text>
-            {Transcript ? (
-                <Transcript
+            {TranscriptComponent ? (
+                <TranscriptComponent
                     messages={messages}
                     preEngagementData={preEngagementData}
                     users={users}
