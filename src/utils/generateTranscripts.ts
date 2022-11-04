@@ -50,7 +50,7 @@ const getUniqueFilenames = (transcriptData: Transcript[]) => {
     for (const filename of filenames) {
         if (Object.keys(seenFilenames).includes(filename)) {
             const fileExtension = filename.split(".").pop() || "";
-            let filenameStart = filename.split(fileExtension)[0].split(".")[0];
+            let filenameStart = filename.split(fileExtension)[0].slice(0, -1);
             filenameStart = `${filenameStart}-${seenFilenames[filename]}`;
             uniqueFilenames.push(`${filenameStart}.${fileExtension}`);
             seenFilenames[filename] += 1;
