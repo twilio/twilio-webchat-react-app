@@ -87,6 +87,13 @@ describe("Conversation Ended", () => {
         (useSelector as jest.Mock).mockImplementation((callback: any) => callback(defaultState));
     });
 
+    afterEach(() => {
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "true"
+        });
+    });
+
     it("renders conversation ended", () => {
         const { container } = render(<ConversationEnded />);
 
@@ -102,35 +109,24 @@ describe("Conversation Ended", () => {
 
     it("renders the transcript query text if download or email transcript enabled in config", () => {
         const { queryByText } = render(<ConversationEnded />);
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
+        });
         expect(queryByText(transcriptQueryText)).toBeInTheDocument();
-        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
-            callback({
-                ...defaultState,
-                config: { ...defaultState.config, transcript: { ...transcriptConfig, downloadEnabled: false } }
-            })
-        );
-        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
-        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
-            callback({
-                ...defaultState,
-                config: { ...defaultState.config, transcript: { ...transcriptConfig, emailEnabled: false } }
-            })
-        );
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "true"
+        });
         expect(queryByText(transcriptQueryText)).toBeInTheDocument();
     });
 
     it("does not render the transcript query text if download and email transcript disabled in config", () => {
-        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
-            callback({
-                ...defaultState,
-                config: {
-                    ...defaultState.config,
-                    transcript: { ...transcriptConfig, downloadEnabled: false, emailEnabled: false }
-                }
-            })
-        );
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
+        });
         const { queryByText } = render(<ConversationEnded />);
-
         expect(queryByText(transcriptQueryText)).not.toBeInTheDocument();
     });
 
@@ -140,12 +136,10 @@ describe("Conversation Ended", () => {
     });
 
     it("does not render the download transcript button if disabled in config", () => {
-        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
-            callback({
-                ...defaultState,
-                config: { ...defaultState.config, transcript: { ...transcriptConfig, downloadEnabled: false } }
-            })
-        );
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
+        });
         const { queryByText } = render(<ConversationEnded />);
 
         expect(queryByText(downloadTranscriptButtonText)).not.toBeInTheDocument();
@@ -157,12 +151,10 @@ describe("Conversation Ended", () => {
     });
 
     it("does not render the email transcript button if disabled in config", () => {
-        (useSelector as jest.Mock).mockImplementationOnce((callback: any) =>
-            callback({
-                ...defaultState,
-                config: { ...defaultState.config, transcript: { ...transcriptConfig, emailEnabled: false } }
-            })
-        );
+        process.env = Object.assign(process.env, {
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
+        });
         const { queryByText } = render(<ConversationEnded />);
 
         expect(queryByText(emailTranscriptButtonText)).not.toBeInTheDocument();

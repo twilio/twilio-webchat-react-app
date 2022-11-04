@@ -1,14 +1,14 @@
 import { Message, User } from "@twilio/conversations";
 import { useState } from "react";
 import log from "loglevel";
-import slugify from "slugify";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { Spinner } from "@twilio-paste/core/spinner";
+import slugify from "slugify";
+import JSZip from "jszip";
+import saveAs from "file-saver";
 
 import { contactBackend } from "../sessionDataHandler";
 import { textStyles } from "./styles/ConversationEnded.styles";
@@ -70,6 +70,7 @@ export const Transcript = (props: TranscriptProps) => {
         if (agentNames.length > 0) {
             agentNames.forEach((name) => (fileName = fileName.concat(`-and-${name}`)));
         }
+
         fileName = fileName.concat(`-${slugify(transcriptData[0].timeStamp.toDateString())}`);
         fileName = fileName.toLowerCase();
         setIsGeneratingTranscript(false);
@@ -94,6 +95,7 @@ export const Transcript = (props: TranscriptProps) => {
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }
+
         setTimeout(() => setIsDownloadingTranscript(false), 1000);
     };
 
@@ -201,17 +203,15 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            {(props.transcriptConfig?.downloadEnabled || props.transcriptConfig?.emailEnabled) && (
-                <>
-                    <Text as="p" {...textStyles}>
-                        Do you want a transcript of our chat?
-                    </Text>
-                    <Flex>
-                        {props.transcriptConfig?.downloadEnabled && !isEmailingTranscript && renderDownloadingButton()}
-                        {props.transcriptConfig?.emailEnabled && !isDownloadingTranscript && renderEmailButton()}
-                    </Flex>
-                </>
-            )}
+            <Text as="p" {...textStyles}>
+                Do you want a transcript of our chat?
+            </Text>
+            <Flex>
+                {process.env.DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
+                    !isEmailingTranscript &&
+                    renderDownloadingButton()}
+                {process.env.EMAIL_TRANSCRIPT_ENABLED === "true" && !isDownloadingTranscript && renderEmailButton()}
+            </Flex>
         </>
     );
 };
