@@ -207,12 +207,10 @@ export const Transcript = (props: TranscriptProps) => {
                 Do you want a transcript of our chat?
             </Text>
             <Flex>
-                {process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
+                {process.env.DOWNLOAD_TRANSCRIPT_ENABLED === "true" &&
                     !isEmailingTranscript &&
                     renderDownloadingButton()}
-                {process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true" &&
-                    !isDownloadingTranscript &&
-                    renderEmailButton()}
+                {process.env.EMAIL_TRANSCRIPT_ENABLED === "true" && !isDownloadingTranscript && renderEmailButton()}
             </Flex>
         </>
     );

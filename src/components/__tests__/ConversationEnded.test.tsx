@@ -89,8 +89,8 @@ describe("Conversation Ended", () => {
 
     afterEach(() => {
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "true"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "true"
         });
     });
 
@@ -110,21 +110,21 @@ describe("Conversation Ended", () => {
     it("renders the transcript query text if download or email transcript enabled in config", () => {
         const { queryByText } = render(<ConversationEnded />);
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "false"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
         });
         expect(queryByText(transcriptQueryText)).toBeInTheDocument();
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "true"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "true"
         });
         expect(queryByText(transcriptQueryText)).toBeInTheDocument();
     });
 
     it("does not render the transcript query text if download and email transcript disabled in config", () => {
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "false"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
         });
         const { queryByText } = render(<ConversationEnded />);
         expect(queryByText(transcriptQueryText)).not.toBeInTheDocument();
@@ -137,8 +137,8 @@ describe("Conversation Ended", () => {
 
     it("does not render the download transcript button if disabled in config", () => {
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "false"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
         });
         const { queryByText } = render(<ConversationEnded />);
 
@@ -152,8 +152,8 @@ describe("Conversation Ended", () => {
 
     it("does not render the email transcript button if disabled in config", () => {
         process.env = Object.assign(process.env, {
-            REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            REACT_APP_EMAIL_TRANSCRIPT_ENABLED: "false"
+            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
+            EMAIL_TRANSCRIPT_ENABLED: "false"
         });
         const { queryByText } = render(<ConversationEnded />);
 

@@ -28,10 +28,7 @@ export const ConversationEnded = () => {
     let TranscriptComponent: typeof Transcript | undefined = undefined;
 
     // This file and its related dependencies are only bundled if transcripts are enabled in .env file
-    if (
-        process.env.REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED === "true" ||
-        process.env.REACT_APP_EMAIL_TRANSCRIPT_ENABLED === "true"
-    ) {
+    if (process.env.DOWNLOAD_TRANSCRIPT_ENABLED === "true" || process.env.EMAIL_TRANSCRIPT_ENABLED === "true") {
         // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,global-require
         ({ Transcript: TranscriptComponent } = require("./Transcript"));
     }

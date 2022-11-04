@@ -135,7 +135,7 @@ Customers can download chat transcripts as a plain text file. If attachments are
 Allowing customers to download transcripts requires no additional setup beyond adding the below entry to the `.env` file.
 
 ```
-REACT_APP_DOWNLOAD_TRANSCRIPT_ENABLED=true
+DOWNLOAD_TRANSCRIPT_ENABLED=true
 ```
 
 ### Emailing Transcripts
@@ -146,7 +146,7 @@ Customers can email chat transcripts to the email address provided in the pre-en
 
 1. Add the following entry to the `.env` file.
     ```
-    REACT_APP_EMAIL_TRANSCRIPT_ENABLED=true
+    EMAIL_TRANSCRIPT_ENABLED=true
     ```
 2. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
 3. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
