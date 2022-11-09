@@ -10,7 +10,7 @@ _Twilio Webchat React App_ is an application that demonstrates a website chat wi
 2. [Features](#Features)
 3. [Project structure](#Project-structure)
     1. [React App](#1-react-app)
-    2. [Local backend server](#2-local-backend-server)
+    2. [Local backend with Express or Twilio Serverless](#2-local-backend
 4. [Working in production](#working-in-production)
 5. [Browser support](#Browser-support)
 6. [Accessibility](#Accessibility)
@@ -65,8 +65,10 @@ You can find your **Conversations Service Sid** on the [services page](https://c
 For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
 
 ## Working Locally
+There are two ways to run locally, either with an Express server or Twilio Serverless functions
+### 1. Start the Local Backend
 
-### 1. Start the Local Backend Server
+#### Option A - Express
 
 ```shell
 yarn server
@@ -76,6 +78,17 @@ npm run server
 ```
 
 Your server will be served at http://localhost:3001/.
+
+#### Option B - Twilio Serverless
+
+```shell
+yarn serverless:build
+yarn serverless:start
+
+# or with npm
+npm run serverless:build
+npm run serverless:start
+```
 
 ### 2. Start the Local React App Server
 
@@ -175,7 +188,8 @@ Additionally, the email-specific Cypress tests will be skipped if the emailing o
 Twilio Webchat React App is an open source repository that includes:
 
 1. A React App
-2. A local backend server
+2. A local backend (Express Server)
+3. A local backend (Twilio Serverless)
 
 ## 1. React App
 
@@ -244,10 +258,11 @@ window.addEventListener("DOMContentLoaded", () => {
     3. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
     4. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
 
-## 2. Local Backend Server
+## 2. Local Backend
 
 As mentioned before, Twilio Webchat App requires a backend to hit in order to work correctly.
-This server — found in the `server` folder — exposes two main controllers.
+An express server — found in the `server` folder — exposes two main controllers.
+Alternatively a typescript Twilio Serverless implementation - found in the `serverless` folder - exposes the same controllers
 
 ### 1. InitWebchat
 

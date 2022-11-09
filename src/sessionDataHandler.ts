@@ -83,7 +83,7 @@ export const sessionDataHandler = {
         let newTokenData: Token;
 
         try {
-            newTokenData = await contactBackend<Token>("/refreshToken", {
+            newTokenData = await contactBackend<Token>("/api/refreshToken", {
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -107,7 +107,7 @@ export const sessionDataHandler = {
         let newTokenData;
 
         try {
-            newTokenData = await contactBackend<Token>("/initWebchat", { formData });
+            newTokenData = await contactBackend<Token>("/api/initWebchat", { formData });
         } catch (e) {
             throw Error("No results from server");
         }
