@@ -15,6 +15,7 @@ import {
     completeReservation,
     getCustomerName,
     getLastMessageMediaData,
+    getLastMessageAllMediaFilenames,
     getLastMessageText
 } from "./helpers/interactionHandler";
 import { GmailAPIHelper } from "./helpers/gmail-api-helper";
@@ -30,6 +31,7 @@ module.exports = (on: any, _config: any) => {
         completeReservation,
         getCustomerName,
         getLastMessageMediaData,
+        getLastMessageAllMediaFilenames,
         getLastMessageText,
         downloads: (downloadspath) => {
             try {

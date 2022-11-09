@@ -1,6 +1,6 @@
 import { Media, Message, User } from "@twilio/conversations";
 
-import { generateDuration } from "../utils/generateDuration";
+import { generateDuration } from "./generateDuration";
 
 interface Transcript {
     author?: string;
@@ -36,12 +36,12 @@ const getAgentNames = (customerName: string | undefined, transcriptData: Transcr
 
 const getUniqueFilenames = (transcriptData: Transcript[]) => {
     const mediaMessages = transcriptData.filter((message) => message.attachedMedia);
-    const filenames = mediaMessages.map((message) => {
-        if (message.attachedMedia) {
-            return message.attachedMedia[0].filename;
+    const filenames = [];
+    for (const message of mediaMessages || []) {
+        for (const media of message.attachedMedia || []) {
+            filenames.push(media.filename);
         }
-        return "";
-    });
+    }
     interface seenFilenamesInfo {
         [key: string]: number;
     }
@@ -49,9 +49,10 @@ const getUniqueFilenames = (transcriptData: Transcript[]) => {
     const uniqueFilenames = [];
     for (const filename of filenames) {
         if (Object.keys(seenFilenames).includes(filename)) {
-            const filenameParts = filename.split(".");
-            filenameParts[0] = `${filenameParts[0]}-${seenFilenames[filename]}`;
-            uniqueFilenames.push(filenameParts.join("."));
+            const fileExtension = filename.split(".").pop() || "";
+            let filenameStart = filename.split(fileExtension)[0].slice(0, -1);
+            filenameStart = `${filenameStart}-${seenFilenames[filename]}`;
+            uniqueFilenames.push(`${filenameStart}.${fileExtension}`);
             seenFilenames[filename] += 1;
         } else {
             seenFilenames[filename] = 1;
@@ -82,8 +83,10 @@ const generateDownloadTranscript = (
             message.timeStamp.getMinutes()
         )}  ${message.author}: ${message.body}`;
         if (message.attachedMedia) {
-            messageText = messageText.concat(` (** Attached file ${uniqueFilenames[mediaMessageIndex]} **)`);
-            mediaMessageIndex += 1;
+            for (let i = 0; i < message.attachedMedia.length; i++) {
+                messageText = messageText.concat(` (** Attached file ${uniqueFilenames[mediaMessageIndex + i]} **)`);
+            }
+            mediaMessageIndex += message.attachedMedia.length;
         }
         transcript = transcript.concat(`${messageText}\n\n`);
     }
@@ -112,8 +115,12 @@ const generateEmailTranscript = (
             message.timeStamp.getMinutes()
         )} <i>${message.author}</i>: ${message.body}`;
         if (message.attachedMedia) {
-            messageText = messageText.concat(` (** Attached file <i>${uniqueFilenames[mediaMessageIndex]}</i> **)`);
-            mediaMessageIndex += 1;
+            for (let i = 0; i < message.attachedMedia.length; i++) {
+                messageText = messageText.concat(
+                    ` (** Attached file <i>${uniqueFilenames[mediaMessageIndex + i]}</i> **)`
+                );
+            }
+            mediaMessageIndex += message.attachedMedia.length;
         }
         transcript = transcript.concat(`${messageText}<br><br>`);
     }

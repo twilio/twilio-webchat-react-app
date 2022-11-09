@@ -287,6 +287,33 @@ describe("Webchat Lite general scenario's", () => {
         cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
     });
 
+    it("FLEXEXP-1070 Webchat Lite - multiple file attachments - upload file - adding text to message", function flexExp1070() {
+        cy.resumeWebchatSessionCookie();
+        PreEngagementChatForm.toggleWebchatExpanded();
+        cy.addAttachmentFile(Constants.FileTypes.JPG);
+        cy.addAttachmentFile(Constants.FileTypes.PNG);
+        MessageInputBoxView.getMessageInputTextArea().type(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
+        MessageInputBoxView.getMessageSendButton().click();
+        cy.getConversationSid()
+            .as("convoSid")
+            .then(() => {
+                cy.task("getLastMessageAllMediaFilenames", { conversationSid: this.convoSid }).should(
+                    "include",
+                    Constants.FileTypes.PNG
+                );
+                cy.task("getLastMessageAllMediaFilenames", { conversationSid: this.convoSid }).should(
+                    "include",
+                    Constants.FileTypes.JPG
+                );
+                cy.task("getLastMessageText", { conversationSid: this.convoSid }).should(
+                    "include",
+                    Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT
+                );
+            });
+        cy.validateLastAttachmentMessage(Constants.FileTypes.PNG);
+        cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
+    });
+
     it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
@@ -323,51 +350,36 @@ describe("Webchat Lite general scenario's", () => {
                 });
             });
         }
-        cy.window()
-            .its("store")
-            .invoke("getState")
-            .its("config")
-            .its("transcript")
-            .its("downloadEnabled")
-            .then((isDownloadEnabled) => {
-                if (isDownloadEnabled) {
-                    cy.resumeWebchatSessionCookie();
-                    PreEngagementChatForm.toggleWebchatExpanded();
-                    EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
-                    performDownload();
-                } else {
-                    this.skip();
-                }
-            });
+
+        if (Cypress.env("DOWNLOAD_TRANSCRIPT_ENABLED")) {
+            cy.resumeWebchatSessionCookie();
+            PreEngagementChatForm.toggleWebchatExpanded();
+            EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
+            performDownload();
+        } else {
+            this.skip();
+        }
     });
 
     it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
-        cy.window()
-            .its("store")
-            .invoke("getState")
-            .its("config")
-            .its("transcript")
-            .its("emailEnabled")
-            .then((isemailEnabled) => {
-                if (isemailEnabled) {
-                    cy.resumeWebchatSessionCookie();
-                    PreEngagementChatForm.toggleWebchatExpanded();
-                    EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
-                    EndChatView.getEmailTranscriptButton(10000).click();
-                    cy.wait(50000);
-                    const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
-                    const gmailToken = Cypress.env("GMAIL_TOKEN");
-                    EndChatView.checkEmails(
-                        {
-                            oAuthClientOptions,
-                            token: gmailToken
-                        },
-                        Date.now().toString(),
-                        9
-                    );
-                } else {
-                    this.skip();
-                }
-            });
+        if (Cypress.env("EMAIL_TRANSCRIPT_ENABLED")) {
+            cy.resumeWebchatSessionCookie();
+            PreEngagementChatForm.toggleWebchatExpanded();
+            EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
+            EndChatView.getEmailTranscriptButton(10000).click();
+            cy.wait(50000);
+            const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
+            const gmailToken = Cypress.env("GMAIL_TOKEN");
+            EndChatView.checkEmails(
+                {
+                    oAuthClientOptions,
+                    token: gmailToken
+                },
+                Date.now().toString(),
+                11
+            );
+        } else {
+            this.skip();
+        }
     });
 });

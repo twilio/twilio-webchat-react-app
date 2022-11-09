@@ -1,4 +1,4 @@
-import { Transcript } from "../components/GenerateTranscripts";
+import { Transcript } from "./generateTranscripts";
 
 export const generateDuration = (transcriptData: Transcript[]) => {
     let deltaInSeconds =
