@@ -1,0 +1,26 @@
+{
+    "name": "conversations",
+    "version": "1.0.0",
+    "author": "Christopher Connolly",
+    "private": true,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "twilio-run --functions-folder dist/functions --assets-folder dist/assets --live",
+        "deploy": "twilio-run deploy"
+    },
+    "dependencies": {
+        "@twilio/runtime-handler": "1.2.3",
+        "axios": "^1.1.3",
+        "jsonwebtoken": "^8.5.1",
+        "twilio": "^3.56",
+        "@twilio-labs/serverless-runtime-types": "^1.1"
+    },
+    "devDependencies": {
+        "@types/jsonwebtoken": "^8.5.9",
+        "twilio-run": "^3.4.5",
+        "typescript": "^4.8.3"
+    },
+    "engines": {
+        "node": "14"
+    }
+}
