@@ -22,8 +22,8 @@ app.listen(port, () => {
     console.log(`Twilio Webchat App server running on port ${port}`);
 });
 
-app.post("/initWebchat", validateRequestOriginMiddleware, initWebchatController);
-app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
+app.post("/api/initWebchat", validateRequestOriginMiddleware, initWebchatController);
+app.post("/api/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
 
 app.post("/email", async (req, res) => {
     try {
