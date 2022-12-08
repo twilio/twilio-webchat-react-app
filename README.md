@@ -28,9 +28,6 @@ Run the following command
 
 ```shell
 yarn
-
-# or with npm
-npm install
 ```
 
 ### 2. Populate Your .env File
@@ -39,15 +36,6 @@ We provide a handy `bootstrap` script to set up the environment variables requir
 
 ```shell
 yarn bootstrap \
-accountSid=YOUR_ACCOUNT_SID \
-authToken=YOUR_AUTH_TOKEN \
-apiKey=YOUR_API_KEY_SID \
-apiSecret=YOUR_API_SECRET \
-addressSid=YOUR_ADDRESS_SID \
-conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
-
-# or with npm
-npm run bootstrap \
 accountSid=YOUR_ACCOUNT_SID \
 authToken=YOUR_AUTH_TOKEN \
 apiKey=YOUR_API_KEY_SID \
@@ -72,9 +60,6 @@ The environment variables associated with enabling and configuring customer tran
 
 ```shell
 yarn server
-
-# or with npm
-npm run server
 ```
 
 Your server will be served at http://localhost:3001/.
@@ -83,9 +68,6 @@ Your server will be served at http://localhost:3001/.
 
 ```shell
 yarn start
-
-# or with npm
-npm run start
 ```
 
 Your app will be served at http://localhost:3000/.
@@ -278,9 +260,6 @@ To create a bundle file for the whole Webchat React App.
 
 ```shell
 yarn build
-
-# or with npm
-npm run build
 ```
 
 Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
@@ -325,6 +304,10 @@ Find out more about [Twilio UX principles](https://paste.twilio.design/principle
 
 Open your browser console, run `localStorage.clear()` and refresh the page to start anew.
 Alternatively, you can simply wrap up/complete the corresponding task as an agent from your Flex UI instance.
+
+### Can I use npm?
+
+Currently there is a known issue with installing dependencies for this project using npm. We are investigating this and will publish a fix as soon as possible.
 
 # License
 
