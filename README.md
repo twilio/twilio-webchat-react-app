@@ -307,7 +307,7 @@ Alternatively, you can simply wrap up/complete the corresponding task as an agen
 
 ### Can I use npm?
 
-Currently there is a known issue with installing dependencies for this project using npm. We are investigating this and will publish a fix as soon as possible.
+Currently there is a known issue with installing dependencies for this project using npm. We are investigating this and will publish a fix as soon as possible. We recommend using `yarn` instead.
 
 # License
 
