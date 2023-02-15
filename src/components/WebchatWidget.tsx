@@ -49,7 +49,7 @@ export function WebchatWidget() {
                     "&[aria-disabled='true'][color='colorTextLink']": {
                         color: "colorTextLinkWeak"
                     }
-                }
+                },
             }}
             style={{ minHeight: "100%", minWidth: "100%" }}
         >

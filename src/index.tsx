@@ -12,7 +12,19 @@ import { initLogger } from "./logger";
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
     theme: {
-        isLight: true
+        isLight: true,
+        overrides: {
+            backgroundColors: {
+                colorBackgroundPrimary: '#0077b3',
+                colorBackgroundBrandStrong: '#0077b3',
+            },
+            textColors: {
+                colorTextLink: '#0077b3'
+            },
+            shadows: {
+                shadowFocus: '0 0 0 4px #0077b3'
+            }
+        }
     },
     fileAttachment: {
         enabled: true,

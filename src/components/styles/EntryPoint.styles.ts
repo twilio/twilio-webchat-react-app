@@ -4,12 +4,11 @@ export const containerStyles: BoxStyleProps = {
     border: "none",
     backgroundColor: "colorBackgroundPrimary",
     display: "flex",
-    height: "sizeIcon90",
-    width: "sizeIcon90",
-    fontSize: "fontSize50",
+    fontSize: "fontSize30",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: "borderRadiusCircle",
+    borderRadius: "borderRadius0",
+    height: "sizeIcon80",
     color: "colorTextWeakest",
     cursor: "pointer",
     transition: "background-color 0.2s",
@@ -20,5 +19,6 @@ export const containerStyles: BoxStyleProps = {
     _focusVisible: {
         backgroundColor: "colorBackgroundPrimaryStronger",
         boxShadow: "shadowFocus"
-    }
+    },
+    padding: "space10"
 };
