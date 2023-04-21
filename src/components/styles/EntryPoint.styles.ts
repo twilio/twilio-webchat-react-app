@@ -14,6 +14,7 @@ export const containerStyles: BoxStyleProps = {
     cursor: "pointer",
     transition: "background-color 0.2s",
     outline: "0px",
+    padding: "space0",
     _hover: {
         backgroundColor: "colorBackgroundPrimaryStronger"
     },
