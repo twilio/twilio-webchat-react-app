@@ -9,8 +9,6 @@ participant FAS as FederatedAuthService
 participant SAS as ScopedAuthService
 participant FC as FlexConfigurationService
 
-mainframe Webchat Create Token
-
 C ->> FWO : POST /V3/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
