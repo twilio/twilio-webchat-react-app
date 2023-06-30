@@ -1,14 +1,12 @@
 ```mermaid
 %% Example of sequence diagram
 sequenceDiagram
-    actor Customer as C
-    participant Starship as S
-    participant "Flex Webchat Orchestrator" as FWO
-    participant "Federated Auth" as FAS
-    participant "Scoped Auth" as SAS
-    participant "Flex Configuration" as FC
-
-    mainframe "Webchat to create token"
+    actor C as Customer
+    participant S as Starship
+    participant FWO as FlexWebchatOrchestratorService
+    participant FAS as FederatedAuthService
+    participant SAS as ScopedAuthService
+    participant FC as FlexConfigurationService
 
     C -> FWO : "POST /V2/Webchat/Token \nreq.body.deploymentKey=<deployment_key>"
     activate FWO
@@ -49,5 +47,5 @@ sequenceDiagram
     S -> S : "If ACAO header exists, then passes through, else sets to *"
     S -> C : "res.body={token: <generated_token_with_fingerprint>}\nres.header.ACAO='*.twilio.com'"
     destroy S
-    
+
 ```
