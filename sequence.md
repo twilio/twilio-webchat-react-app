@@ -1,13 +1,14 @@
 ```mermaid
 %% Example of sequence diagram
   sequenceDiagram
-    Alice->>Bob: Hello Bob, how are you?
-    alt is sick
-    Bob->>Alice: Not so good :(
-    else is well
-    Bob->>Alice: Feeling fresh like a daisy
-    end
-    opt Extra response
-    Bob->>Alice: Thanks for asking
+    C -> FWO : "POST /V2/Webchat/Token \nreq.body.deploymentKey=<deployment_key>"
+    activate FWO
+    FWO -> FWO : "Fetches accountSid with Deployment Key"
+    FWO -> FC : "GET /V1/Configuration/Public?AccountSid=<ACCOUNT_SID>"
+    activate FC
+    FC -> FWO : "Receives allowedOrigins"
+    destroy FC
+    FWO -> FWO : "Keeps allowedOrigins locally till execution ends"
+
     end
 ```
