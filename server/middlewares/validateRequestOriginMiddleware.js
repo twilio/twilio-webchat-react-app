@@ -7,6 +7,8 @@ const validateRequestOriginMiddleware = (request, response, next) => {
 
     const requestOrigin = request.get("origin");
 
+    console.log(requestOrigin);
+
     // If request origin is not included in the ALLOWED_ORIGINS list, throw an error
     if (!allowedOrigins.includes(requestOrigin)) {
         console.error(`Request origin '${requestOrigin}' not allowed`);

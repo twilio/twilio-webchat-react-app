@@ -1,12 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 
 const { validateRequestOriginMiddleware } = require("./middlewares/validateRequestOriginMiddleware");
 const { initWebchatController } = require("./controllers/initWebchatController");
 const { refreshTokenController } = require("./controllers/refreshTokenController");
 const { emailTranscriptController } = require("./controllers/emailTranscriptController");
-
-const cors = require("cors");
 const { allowedOrigins } = require("./helpers/getAllowedOrigins");
 
 const app = express();

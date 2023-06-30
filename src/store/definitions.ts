@@ -1,6 +1,6 @@
-import { Client, Conversation, Participant, Message, User } from "@twilio/conversations";
+import { AlertVariants } from "@twilio-paste/core";
 import { GenericThemeShape } from "@twilio-paste/theme";
-import { AlertVariants } from "@twilio-paste/core/alert";
+import { Client, Conversation, Message, Participant, User } from "@twilio/conversations";
 
 import { FileAttachmentConfig, TranscriptConfig } from "../definitions";
 

@@ -75,7 +75,6 @@ export const sessionDataHandler = {
     async getUpdatedToken(): Promise<Token> {
         log.debug("sessionDataHandler: trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
-
         if (!storedTokenData) {
             throw Error("Can't update token: current token doesn't exist");
         }

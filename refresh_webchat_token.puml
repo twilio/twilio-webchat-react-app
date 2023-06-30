@@ -1,0 +1,70 @@
+@startuml
+
+actor Customer as C
+participant Starship as S
+participant "Flex Webchat Orchestrator" as FWO
+participant "Federated Auth" as FAS
+participant "Scoped Auth" as SAS
+participant "Flex Configuration" as FC
+
+group "Webchat refreshing valid or invalid token"
+
+  C -> FWO : "POST /V2/Webchat/Token/Refresh \nreq.body.deploymentKey=<deployment_key>"
+  activate FWO
+  FWO -> FWO : "Fetches accountSid with Deployment Key"
+  FWO -> FC : "GET /V1/Configuration \nreq.body.accountSid=<sid>"
+  activate FC
+  FC -> FWO : "Receives allowedOrigins"
+  destroy FC
+  FWO -> FWO : "Keeps allowedOrigins locally till execution ends"
+
+  opt "Feature is on"
+    FWO -> FAS : "/v2/Accounts/ACXXXXX/Tokens/refresh \nreq.body.fingerprint=<generated_finger_print> \nreq.body.token=<token>"
+    activate FAS
+    FAS -> SAS : "POST /v1/ScopedAuthTokens/validate \nreq.body.token=<generated_token> \nreq.body.fingerprint=<generated_finger_print>"
+    activate SAS
+  end
+
+  opt "Feature is off"
+    FWO -> FAS : "/v2/Accounts/ACXXXXX/Tokens/refresh \nreq.body.fingerprint=<generated_finger_print>"
+    FAS -> SAS : "POST /v1/ScopedAuthTokens/validate \nreq.body.token=<generated_token>"
+  end
+
+  opt "Valid token, valid fingerprint and feature is on"
+    SAS -> SAS: "Valid token and valid fingerprint"
+    SAS -> FAS : "{authorized: true, \nauth_account: <account_id, account_sid>}, \ngrants: <grants_array>"
+    FAS -> FWO : "{expiration: <date_time>,\nidentity:random unique ID, \nroles:<grants_array>,\ntoken:<token>}"
+    FWO -> S : "{expiration: <date_time>,\nidentity:random unique ID, \nroles:<grants_array>,\ntoken:<token>}"
+    activate S
+    S -> S : "If ACAO header exists, then passes through, else sets to *"
+    S -> C : "{expiration: <date_time>,\nidentity:random unique ID, \nroles:<grants_array>,\ntoken:<token>}"
+    deactivate S
+  end
+
+  opt "Valid token, invalid fingerprint and feature is on"
+    SAS -> SAS: "Valid token and invalid fingerprint"
+    SAS -> FAS : "{authorized: false, \nmessage: <fingerprint_validation_failed>}"
+    FAS -> FWO : "{valid:false, \ncode:<new_code_indicates_fingerprint_invalid>, \nmessage:<some_msg> }"
+    FWO -> S : "{valid:false, \ncode:<new_code_indicates_fingerprint_invalid>, \nmessage:<some_msg>}"
+    activate S
+    S -> S : "If ACAO header exists, then passes through, else sets to *"
+    S -> C : "{valid:false, \ncode:<new_code_indicates_fingerprint_invalid>, \nmessage:<some_msg> }"
+    deactivate S
+  end
+
+  opt "Invalid token"
+    SAS -> SAS: "Invalid token"
+    SAS -> FAS : "{authorized: false, \nmessage: <token_validation_failed>}"
+    destroy SAS
+    FAS -> FWO : "{valid:false, \ncode:<invalid_token_code>, \nmessage:<some_msg>}"
+    destroy FAS
+    FWO -> S : "{valid:false, \ncode:<invalid_token_code>, \nmessage:<some_msg>}"
+    destroy FWO
+    activate S
+    S -> S : "If ACAO header exists, then passes through, else sets to *"
+    S -> C : "{valid:false, \ncode:<invalid_token_code>, \nmessage:<some_msg>}"
+    destroy S
+  end
+end
+
+@enduml
