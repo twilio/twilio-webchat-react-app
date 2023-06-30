@@ -16,5 +16,6 @@ sequenceDiagram
     FC -> FWO : "Receives allowedOrigins"
     destroy FC
     FWO -> FWO : "Keeps allowedOrigins locally till execution ends"
+    destroy FWO
 
 ```
