@@ -1,12 +1,13 @@
 ```mermaid
 %% Example of sequence diagram
 sequenceDiagram
-    actor C as Customer
-    participant S as Starship
-    participant "Flex Webchat OrchestratorService" as FWO
-    participant FAS as FederatedAuthService
-    participant SAS as ScopedAuthService
-    participant FC as FlexConfigurationService
+    actor Customer as C
+    participant Starship as S
+    participant "Flex Webchat Orchestrator" as FWO
+    participant "Federated Auth" as FAS
+    participant "Scoped Auth" as SAS
+    participant "Flex Configuration" as FC
+
 
     C -> FWO : "POST /V2/Webchat/Token \nreq.body.deploymentKey=<deployment_key>"
 
