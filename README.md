@@ -272,6 +272,12 @@ Once the bundle is uploaded, make sure to have it loaded in your website page, a
 <script src="https://[...]webchat.js"></script>
 ```
 
+Next, declare the root element that the webchat widget will be rendered into:
+
+```html
+<div id="twilio-webchat-widget-root"></div>
+```
+
 Finally, add the code to initialize the webchat widget as per following example. It is crucial that you update the `serverUrl` with the base URL of your endpoints.
 The React App will then target `/initWebchat` and `/refreshToken` endpoints. If you want to use different endpoint urls, make sure to upload the code in `src/sessionDataHandler.ts`.
 
