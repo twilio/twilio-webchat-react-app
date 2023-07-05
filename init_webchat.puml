@@ -17,7 +17,7 @@ FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins, AddressS
 FWO ->> FWO : Keeps configurations locally till execution ends
 
 alt "Webchat Security feature is turned off via Feature Flag"
-  FWO ->> FAS : "POST /v2/Accounts/ACXXXXX/Tokens"
+  FWO ->> FAS : "POST /v1/Accounts/ACXXXXX/Tokens"
   activate FAS
   FAS ->> SAS : "POST /v1/ScopedAuthTokens/generate/internal \nreq.body.accountSid=sid\nreq.body.grants=grants_json\nreq.body.ttl=ttl\nreq.body.encrypt=true"
   activate SAS
@@ -32,7 +32,7 @@ alt "Feature is on and Fingerprint generation failed!"
 end
 
 alt #LightBlue "Feature is turned on & Fingerprint is generated"
-  FWO ->> FAS : "POST /v2/Accounts/ACXXXXX/Tokens \nreq.body.fingerprint=generated_finger_print \nreq.body.token=token"
+  FWO ->> FAS : "POST /v1/Accounts/ACXXXXX/Tokens \nreq.body.fingerprint=generated_finger_print \nreq.body.token=token"
   FAS ->> SAS : "POST /v1/ScopedAuthTokens/generate/internal \nreq.body.fingerprint=generated_finger_print\n..."
   SAS ->> FAS : "{token: generated_token_with_fingerprint, identity: random_generated_uuid}"
   destroy SAS

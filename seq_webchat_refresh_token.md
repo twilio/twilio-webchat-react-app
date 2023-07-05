@@ -15,14 +15,14 @@ FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins, AddressS
 FWO ->> FWO : Keeps configurations locally till execution ends
 
 opt Feature is on
-    FWO ->> FAS : /v2/Accounts/ACXXXXX/Tokens/refresh <br/>req.body.fingerprint=generated_finger_print <br/>req.body.token=token
+    FWO ->> FAS : /v1/Accounts/ACXXXXX/Tokens/refresh <br/>req.body.fingerprint=generated_finger_print <br/>req.body.token=token
     activate FAS
     FAS ->> SAS : POST /v1/ScopedAuthTokens/validate <br/>req.body.token=generated_token <br/>req.body.fingerprint=generated_finger_print
     activate SAS
 end
 
 opt Feature is off
-    FWO ->> FAS : /v2/Accounts/ACXXXXX/Tokens/refresh <br/>req.body.token=generated_token
+    FWO ->> FAS : /v1/Accounts/ACXXXXX/Tokens/refresh <br/>req.body.token=generated_token
     FAS ->> SAS : POST /v1/ScopedAuthTokens/validate <br/>req.body.token=generated_token
 end
 
