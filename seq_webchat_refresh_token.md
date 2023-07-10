@@ -11,7 +11,7 @@ participant SAS as ScopedAuthService
 C ->> FWO : POST /V2/Webchat/Token/Refresh <br/>req.body.deploymentKey=deployment_key
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
-FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins, AddressSid, DeploymentKeys, FingerprintSensitivity
+FWO ->> FWO : Fetches Account Configurations <br/>along with AllowedOrigins, <br/>AddressSid, <br/>DeploymentKeys, <br/>FingerprintSensitivity
 FWO ->> FWO : Keeps configurations locally till execution ends
 
 opt Feature is on
@@ -32,7 +32,7 @@ opt Valid token, valid fingerprint and feature is on
     FAS ->> FWO : {expiration: date_time,<br/>identity:random unique ID, <br/>roles:grants_array,<br/>token:token}
     FWO ->> S : {expiration: date_time,<br/>identity:random unique ID, <br/>roles:grants_array,<br/>token:token}
     activate S
-    S ->> S : If ACAO header exists, then passes through, else sets to *
+    S ->> S : If ACAO header exists, <br/>then passes through,  <br/>else sets to *
     S ->> C : {expiration: <date_time>,<br/>identity:random unique ID, <br/>roles:<grants_array>,<br/>token:<token>}
     deactivate S
 end
@@ -57,7 +57,7 @@ opt Invalid token
     FWO ->> S : {valid:false, <br/>code:invalid_token_code, <br/>message:some_msg}
     deactivate FWO
     activate S
-    S ->> S : If ACAO header exists, then passes through, else sets to *
+    S ->> S : If ACAO header exists, <br/>then passes through, <br/>else sets to *
     S ->> C : {valid:false, <br/>code:invalid_token_code, <br/>message:some_msg}
     deactivate S
 end
