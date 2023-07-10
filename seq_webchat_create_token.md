@@ -11,7 +11,7 @@ participant SAS as ScopedAuthService
 C ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
-FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins, AddressSid, DeploymentKeys, FingerprintSensitivity
+FWO ->> FWO : Fetches Account Configurations <br/>along with AllowedOrigins, <br/>AddressSid, <br/>DeploymentKeys, <br/>FingerprintSensitivity
 FWO ->> FWO : Keeps configurations locally till execution ends
 
 alt Webchat Security feature is turned off via Feature Flag
@@ -24,7 +24,7 @@ end
 
 alt Feature is on and Fingerprint generation failed!
 	FWO ->> FWO: generateFingerPrint throws error
-	FWO ->> FWO : Sets ACAO response header to * if allowedOrigins is  empty. <br/> otherwise sets comma separated value
+	FWO ->> FWO : Sets ACAO response <br/>header to * if allowedOrigins is <br/>empty. otherwise sets <br/>comma separated value
 	FWO ->> S : Returns 403 unauthorised
 	activate S
 end
@@ -38,10 +38,10 @@ alt #LightBlue Feature is turned on & Fingerprint is generated
 	deactivate FAS
 end
 
-FWO ->> FWO : Sets the ACAO response header to * if allowedOrigins is  empty. <br/> otherwise sets comma separated value
+FWO ->> FWO : Sets ACAO response <br/>header to * if allowedOrigins is <br/>empty. otherwise sets <br/>comma separated value
 FWO ->> S : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate FWO
-S ->> S : If ACAO header exists, then passes through, else sets to *
+S ->> S : If ACAO header exists, <br/>then passes through, <br/>else sets to *
 S ->> C : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate S
 

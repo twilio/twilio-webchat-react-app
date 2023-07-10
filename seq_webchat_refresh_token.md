@@ -43,7 +43,7 @@ opt Valid token, invalid fingerprint and feature is on
     FAS ->> FWO : {valid:false, <br/>code:new_code_indicates_fingerprint_invalid, <br/>message:some_msg }
     FWO ->> S : {valid:false, <br/>code:new_code_indicates_fingerprint_invalid, <br/>message:some_msg}
     activate S
-    S ->> S : If ACAO header exists, then passes through, else sets to *
+    S ->> S : If ACAO header exists, <br/>then passes through, <br/>else sets to *
     S ->> C : {valid:false, <br/>code:new_code_indicates_fingerprint_invalid, <br/>message:some_msg }
     deactivate S
 end
