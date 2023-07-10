@@ -11,7 +11,7 @@ participant SAS as ScopedAuthService
 C ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
-FWO ->> FWO : Fetches Account Configurations <br/>along with AllowedOrigins, AddressSid, <br/>DeploymentKeys, <br/>FingerprintSensitivity
+FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins,<br/>AddressSid, DeploymentKeys, FingerprintSensitivity
 FWO ->> FWO : Keeps configurations locally till execution ends
 
 alt Webchat Security feature is turned off via Feature Flag
