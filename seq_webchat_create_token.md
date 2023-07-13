@@ -55,4 +55,5 @@ Note right of B: Calls /V2/WebChannels to create webchat.
 Note right of B: This flow will be shown separateley.
 B ->> C: User Sees Welcome message
 
+
 ```
