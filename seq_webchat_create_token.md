@@ -1,14 +1,18 @@
 ```mermaid
 %% Webchat Create Token
 sequenceDiagram
+autonumber
 
-actor C as Customer
+actor C as Guest User
+actor B as Browser
 participant S as Starship
 participant FWO as FlexWebchatOrchestratorService
 participant FAS as FederatedAuthService
 participant SAS as ScopedAuthService
 
-C ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
+B ->> C: Loads webchat
+C ->> C: Fills Pre Engagement Form
+B ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
 FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins,<br/>AddressSid, DeploymentKeys, FingerprintSensitivity
@@ -42,7 +46,8 @@ FWO ->> FWO : Sets ACAO response <br/>header to * if allowedOrigins is <br/>empt
 FWO ->> S : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate FWO
 S ->> S : If ACAO header exists, then passes through, <br/>else sets to *
-S ->> C : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
+S ->> B : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate S
-
+B ->> B: Receives Token and initiates Webchat
+B ->> C: User Sees Welcome message
 ```
