@@ -43,24 +43,6 @@ end
 SAS ->> FAS : {authorized: true, auth_account: {account_id, account_sid}, grants: grants_array
 FAS ->> FWO : {expiration: date_time,identity:uuid, roles:grants_array,<br/>token:token}
 
-
-%% opt Valid token, invalid fingerprint and feature is on
-%%     SAS ->> SAS: Valid token and invalid fingerprint
-%%     SAS ->> FAS : {authorized: false, <br/>message: fingerprint_validation_failed}
-%%     FAS ->> FWO : {valid:false, <br/>code:new_code_indicates_fingerprint_invalid, <br/>message:some_msg }
-%%     %% FWO ->> S : {valid:false, <br/>code:new_code_indicates_fingerprint_invalid, <br/>message:some_msg}
-%% end
-
-%% opt Invalid token
-%%     SAS ->> SAS: Invalid token
-%%     SAS ->> FAS : {authorized: false, <br/>message: <token_validation_failed>}
-%%     deactivate SAS
-%%     FAS ->> FWO : {valid:false, <br/>code:invalid_token_code, <br/>message:some_msg}
-%%     deactivate FAS
-%%     %% FWO ->> S : {valid:false, <br/>code:invalid_token_code, <br/>message:some_msg}
-%%     %% deactivate FWO
-%% end
-
 FWO ->> S:  {valid: true, token: refreshed_token, expiration: date_time, identity:uuid}
 deactivate FWO
 
