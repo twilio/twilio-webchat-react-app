@@ -10,8 +10,8 @@ participant FWO as FlexWebchatOrchestratorService
 participant FAS as FederatedAuthService
 participant SAS as ScopedAuthService
 
-B ->> C: Loads webchat
-C ->> C: Fills Pre Engagement Form
+B ->> B: Webchat loads on Customer's app
+C ->> B: Fills Pre Engagement Form and submits
 B ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 FWO ->> FWO : Fetches accountSid with Deployment Key
