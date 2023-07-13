@@ -16,6 +16,7 @@ B ->> B: Webchat instantiates and visually appears
 C ->> B: Fills Pre Engagement Form and submits
 B ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
+
 FWO ->> FWO : Fetches accountSid with Deployment Key
 FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins,<br/>AddressSid, DeploymentKeys, FingerprintSensitivity
 FWO ->> FWO : Keeps configurations locally till execution ends
@@ -50,10 +51,10 @@ deactivate FWO
 S ->> S : If ACAO header exists, then passes through, <br/>else sets to *
 S ->> B : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate S
-B ->> B: Receives Token and initiates Webchat
-Note right of B: Calls /V2/WebChannels to create webchat.
-Note right of B: This flow will be shown separateley.
-B ->> C: User Sees Welcome message
 
+B ->> B: Calls /V2/WebChannels to create webchat
+Note right of B: Receives conversationSID
+Note right of B: Saves token and conversation SID on localStorage
+B ->> C: User Sees Welcome message
 
 ```
