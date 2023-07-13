@@ -51,6 +51,8 @@ S ->> S : If ACAO header exists, then passes through, <br/>else sets to *
 S ->> B : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate S
 B ->> B: Receives Token and initiates Webchat
+Note right of B: Calls /V2/WebChannels to create webchat.
+Note left of B: This flow will be shown separateley.
 B ->> C: User Sees Welcome message
 
 ```
