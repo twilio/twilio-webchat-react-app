@@ -10,7 +10,8 @@ participant FWO as FlexWebchatOrchestratorService
 participant FAS as FederatedAuthService
 participant SAS as ScopedAuthService
 
-B ->> B: Webchat loads on Customer's app
+C ->> B: User loads Customer app
+B ->> B: Webchat loads on Customer app
 C ->> B: Fills Pre Engagement Form and submits
 B ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
@@ -50,4 +51,5 @@ S ->> B : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO
 deactivate S
 B ->> B: Receives Token and initiates Webchat
 B ->> C: User Sees Welcome message
+
 ```
