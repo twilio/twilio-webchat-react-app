@@ -76,7 +76,4 @@ B ->> C: User Resumes session
 deactivate B
 deactivate C
 
-
-
-
 ```
