@@ -15,10 +15,12 @@ import { Header } from "./Header";
 import { notifications } from "../notifications";
 import { NotificationBar } from "./NotificationBar";
 import { introStyles, fieldStyles, titleStyles, formStyles } from "./styles/PreEngagementFormPhase.styles";
+import { useSanitizer } from "../utils/useSanitizer";
 
 export const PreEngagementFormPhase = () => {
     const { name, email, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
     const dispatch = useDispatch();
+    const { onUserInputSubmit } = useSanitizer();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -26,9 +28,9 @@ export const PreEngagementFormPhase = () => {
         try {
             const data = await sessionDataHandler.fetchAndStoreNewSession({
                 formData: {
-                    friendlyName: name,
+                    friendlyName: name && onUserInputSubmit(name, true),
                     email,
-                    query
+                    query: query && onUserInputSubmit(query)
                 }
             });
             dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
@@ -65,6 +67,7 @@ export const PreEngagementFormPhase = () => {
                         data-test="pre-engagement-chat-form-name-input"
                         value={name}
                         onChange={(e) => dispatch(updatePreEngagementData({ name: e.target.value }))}
+                        pattern="[A-Za-z0-9' ]{1,}"
                         required
                     />
                 </Box>

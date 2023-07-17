@@ -8,7 +8,7 @@ module.exports = function override(config) {
     delete config.optimization.splitChunks;
 
     // ⬇ Remove hash from filename
-    config.output.filename = "static/js/[name].js";
+    config.output.filename = "static/js/[name].min.js";
 
     // ⬇ Prevent (missing) node fallback on path module
     config.resolve.fallback = { ...(config.resolve.fallback || {}), path: false };

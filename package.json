@@ -29,7 +29,8 @@
     "react-scripts": "^5.0.0",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.0",
-    "slugify": "1.6.5"
+    "slugify": "1.6.5",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.15.1",
@@ -40,6 +41,7 @@
     "@types/mime-types": "^2.1.1",
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
+    "@types/validator": "^13.7.17",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.4.0",
     "axios": "^0.24.0",

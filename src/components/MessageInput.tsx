@@ -20,6 +20,7 @@ import {
     filePreviewContainerStyles,
     textAreaContainerStyles
 } from "./styles/MessageInput.styles";
+import { useSanitizer } from "../utils/useSanitizer";
 
 export const MessageInput = () => {
     const dispatch = useDispatch();
@@ -46,6 +47,7 @@ export const MessageInput = () => {
             }, 500),
         [conversation]
     );
+    const { onUserInputSubmit } = useSanitizer();
 
     const isSubmitDisabled = (!text.trim() && !attachedFiles?.length) || isSending;
 
@@ -60,7 +62,7 @@ export const MessageInput = () => {
         setIsSending(true);
 
         let preparedMessage = conversation.prepareMessage();
-        preparedMessage = preparedMessage.setBody(text);
+        preparedMessage = preparedMessage.setBody(onUserInputSubmit(text));
         attachedFiles.forEach((file: File) => {
             const formData = new FormData();
             formData.append(file.name, file);
