@@ -11,3 +11,5 @@ cypress/videos/
 cypress/screenshots/
 cypress/downloads/
 cypress.env.json
+coverage
+.vscode/
