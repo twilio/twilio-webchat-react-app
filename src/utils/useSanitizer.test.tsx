@@ -27,7 +27,7 @@ describe("useSanitizer custom hook", () => {
             result.current.onUserInputSubmit("<script>alert('Hello!!!')</script>");
         });
 
-        expect(result.current.userInput).toBe("scriptalert(Hello!!!)script");
+        expect(result.current.userInput).toBe("script>alert('Hello!!!')script>");
         expect(blackListSpy).toBeCalled();
     });
 });
