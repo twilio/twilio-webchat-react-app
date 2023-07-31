@@ -39,7 +39,7 @@ alt Feature is turned on & Fingerprint is generated
 	deactivate SAS	
     FAS ->> FWO : {token: generated_token_with_fingerprint, identity: random_generated_uuid}
     deactivate FAS
-    FWO ->> CN: CreateConversationContext with generated identity
+    FWO ->> CN: Create Conversation with generated identity
     activate CN
     CN ->> CN: Conversation is created and conversation sid is returned
     CN ->> FWO: ConversationSid is returned
