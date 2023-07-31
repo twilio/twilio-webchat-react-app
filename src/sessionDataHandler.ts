@@ -1,17 +1,24 @@
 import log from "loglevel";
 
 import { Token } from "./definitions";
+import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 
-const LOCAL_STORAGE_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
+export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
 let _endpoint = "";
 
+type SessionDataStorage = Token & {
+    loginTimestamp: number | null;
+};
+
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
+    const securityHeaders = await generateSecurityHeaders();
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
         headers: {
             Accept: "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            ...securityHeaders
         },
         body: JSON.stringify(body)
     });
@@ -23,12 +30,12 @@ export async function contactBackend<T>(endpointRoute: string, body: Record<stri
     return response.json();
 }
 
-function storeSessionData(data: Token) {
-    localStorage.setItem(LOCAL_STORAGE_ITEM_ID, JSON.stringify(data));
+function storeSessionData(data: SessionDataStorage) {
+    localStorage.setItem(LOCALSTORAGE_SESSION_ITEM_ID, JSON.stringify(data));
 }
 
 function getStoredSessionData() {
-    const item = localStorage.getItem(LOCAL_STORAGE_ITEM_ID);
+    const item = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID);
     let storedData: Token;
 
     if (!item) {
@@ -42,7 +49,7 @@ function getStoredSessionData() {
         return null;
     }
 
-    return storedData;
+    return storedData as SessionDataStorage;
 }
 
 export const sessionDataHandler = {
@@ -69,6 +76,11 @@ export const sessionDataHandler = {
         }
 
         log.debug("sessionDataHandler: existing token still valid, using existing session data");
+
+        storeSessionData({
+            ...storedTokenData,
+            loginTimestamp: storedTokenData.loginTimestamp || null
+        });
         return storedTokenData;
     },
 
@@ -97,12 +109,12 @@ export const sessionDataHandler = {
         };
 
         storeSessionData(updatedSessionData);
-
         return updatedSessionData;
     },
 
     fetchAndStoreNewSession: async ({ formData }: { formData: Record<string, unknown> }) => {
         log.debug("sessionDataHandler: trying to create new session");
+        const loginTimestamp = Date.now();
 
         let newTokenData;
 
@@ -113,12 +125,15 @@ export const sessionDataHandler = {
         }
 
         log.debug("sessionDataHandler: new session successfully created");
-        storeSessionData(newTokenData);
+        storeSessionData({
+            ...newTokenData,
+            loginTimestamp
+        });
 
         return newTokenData;
     },
 
     clear: () => {
-        localStorage.removeItem(LOCAL_STORAGE_ITEM_ID);
+        localStorage.removeItem(LOCALSTORAGE_SESSION_ITEM_ID);
     }
 };
