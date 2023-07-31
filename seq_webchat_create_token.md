@@ -9,12 +9,13 @@ participant S as Starship
 participant FWO as FlexWebchatOrchestratorService
 participant FAS as FederatedAuthService
 participant SAS as ScopedAuthService
+participant CN as ConversationService
 
 C ->> B: User loads Customer app and Webchat assets
 B ->> B: Customer app provides Deployment Key
 B ->> B: Webchat instantiates and visually appears
 C ->> B: Fills Pre Engagement Form and submits
-B ->> FWO : POST /v2/Webchat/Token <br/>req.body.deploymentKey=<deployment_key>
+B ->> FWO : POST /v2/Webchat/Init <br/>req.body.deploymentKey=<deployment_key>
 activate FWO
 
 FWO ->> FWO : Fetches accountSid with Deployment Key
@@ -38,20 +39,24 @@ alt Feature is turned on & Fingerprint is generated
 	deactivate SAS	
     FAS ->> FWO : {token: generated_token_with_fingerprint, identity: random_generated_uuid}
     deactivate FAS
+    FWO ->> CN: CreateConversationContext with generated identity
+    activate CN
+    CN ->> CN: Conversation is created and conversation sid is returned
+    CN ->> FWO: ConversationSid is returned
+    deactivate CN
 end
 
 
 
 FWO ->> FWO : Sets ACAO response <br/>header to * if allowedOrigins is <br/>empty. otherwise sets comma separated value
-FWO ->> S : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
+FWO ->> S : res.body={token: generated_token_with_fingerprint, <br/> conversation_sid: conversation_sid}<br/>res.header.ACAO='*.twilio.com'
 activate S
 deactivate FWO
 S ->> S : If ACAO header exists, then passes through, <br/>else sets to *
 S ->> B : res.body={token: generated_token_with_fingerprint}<br/>res.header.ACAO='*.twilio.com'
 deactivate S
 
-B ->> B: Calls /V2/WebChannels to create webchat
-Note right of B: Receives conversationSID
+B ->> B: Receives conversationSID
 Note right of B: Saves token and conversation SID on localStorage
 B ->> C: User Sees Welcome message
 
