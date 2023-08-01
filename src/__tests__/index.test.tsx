@@ -14,6 +14,17 @@ store.dispatch = jest.fn();
 
 describe("Index", () => {
     const { initWebchat } = window.Twilio;
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                addLogs: jest.fn()
+            }
+        });
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     describe("initWebchat", () => {
         it("renders Webchat Lite correctly", () => {
@@ -56,14 +67,6 @@ describe("Index", () => {
             initWebchat({ serverUrl });
 
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ serverUrl, theme: { isLight: true } }));
-        });
-
-        it("initializes logger", () => {
-            const initLoggerSpy = jest.spyOn(logger, "initLogger");
-
-            initWebchat({});
-
-            expect(initLoggerSpy).toBeCalled();
         });
     });
 });

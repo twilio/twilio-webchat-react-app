@@ -30,6 +30,18 @@ jest.mock("../RootContainer", () => ({
     RootContainer: () => <div title="RootContainer" />
 }));
 
+beforeAll(() => {
+    Object.defineProperty(window, "Twilio", {
+        value: {
+            addLogs: jest.fn()
+        }
+    });
+});
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
 describe("Webchat Lite", () => {
     const sessionData = {
         token: "token",
