@@ -1,7 +1,7 @@
 import merge from "lodash.merge";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
-import { LogLevelDesc } from "loglevel";
+import { Logger, LogLevelDesc } from "loglevel";
 
 import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
@@ -60,7 +60,7 @@ declare global {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
             loggerManager: (level?: LogLevelDesc) => void;
-            logMap: Map<string, string>;
+            logMap: Map<string, Logger>;
             addLogs: addLogsType;
         };
         Cypress: Cypress.Cypress;

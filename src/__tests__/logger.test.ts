@@ -1,5 +1,4 @@
-import log from "loglevel";
-import loggerManager from "../logger";
+import loggerManager, { createLogger } from "../logger";
 
 describe("logger", () => {
     beforeAll(() => {
@@ -44,5 +43,13 @@ describe("logger", () => {
         window.Twilio.addLogs(className, "test message", "error");
 
         expect(consoleLogSpy).toBeCalled();
+    });
+
+    describe("createLogger", () => {
+        it("should return a logger for a given Classname and Log Level", () => {
+            const className = "testName";
+            createLogger(className, "warn");
+            expect(window.Twilio.logMap.get(className)).toBeTruthy();
+        });
     });
 });

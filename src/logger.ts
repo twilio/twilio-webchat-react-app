@@ -1,6 +1,14 @@
-import log, { LogLevelDesc } from "loglevel";
+import log, { Logger, LogLevelDesc } from "loglevel";
 
 export type addLogsType = (className: string, message: string, level: LogLevelDesc) => void;
+
+export const createLogger = (className: string, logLevel: LogLevelDesc): Logger => {
+    const logger = log.getLogger(className);
+    logger.setLevel(logLevel);
+    logger.info(`${className} logger is initialised`);
+    window.Twilio.logMap.set(className, logger);
+    return logger;
+};
 
 function loggerManager(level?: LogLevelDesc): void {
     if(!level || (level < log.levels.INFO)) {
@@ -12,41 +20,22 @@ function loggerManager(level?: LogLevelDesc): void {
     Object.assign(window.Twilio, {
         ...window.Twilio,
         logMap: new Map(),
-        addLogs(className: string, message: string, logLevel: LogLevelDesc) {
+        addLogs(className: string, message: string, logLevel: LogLevelDesc = "info") {
             let webchatLogger = this.logMap.get(className);
             const newLogEntry = `${className} > ${message}`;
+            if (!webchatLogger) {
+                webchatLogger = createLogger(className, logLevel);
+            }
             switch(logLevel) {
                 case 'warn': {
-                    if (!webchatLogger) {
-                        webchatLogger = log.getLogger(className);
-                        webchatLogger.setLevel(defaultLevel ?? logLevel);
-                        webchatLogger.info(`${className} logger is initialised`);
-                        this.logMap.set(className, webchatLogger);
-                    }
-
                     webchatLogger.warn(newLogEntry);
                     break;
                 }
                 case 'error': {
-                    if (!webchatLogger) {
-                        webchatLogger = log.getLogger(className);
-                        webchatLogger.setLevel(defaultLevel ?? logLevel);
-                        webchatLogger.info(`${className} logger is initialised`);
-                        this.logMap.set(className, webchatLogger);
-                    }
-
                     webchatLogger.error(newLogEntry);
                     break;
                 }
                 default: {
-                    if (!webchatLogger) {
-                        webchatLogger = log.getLogger(className);
-                        webchatLogger.setLevel(defaultLevel ?? logLevel);
-                        // webchatLogger.enableAll();
-                        webchatLogger.info(`${className} logger is initialised`);
-                        this.logMap.set(className, webchatLogger);
-                    }
-                    
                     webchatLogger.info(newLogEntry);
                     break;
                 }
