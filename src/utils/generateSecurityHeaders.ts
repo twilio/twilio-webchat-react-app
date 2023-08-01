@@ -11,12 +11,9 @@ type SecurityHeaders = {
 };
 
 const getUserSpecificSettings = () => {
-    const plugins = Object.keys(navigator.plugins).map((_, index: number) => navigator.plugins[index].name);
-
     return {
-        plugins: plugins ?? [],
         language: navigator.language ?? "en_IN",
-        cookieEnabled: navigator.cookieEnabled ?? true,
+        cookieEnabled: navigator.cookieEnabled ?? false,
         userTimezone: new Date().getTimezoneOffset() ?? "GMT"
     };
 };

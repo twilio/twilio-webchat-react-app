@@ -36,13 +36,6 @@ describe("Generate Security Headers", () => {
             writable: true,
             value: false
         });
-        Object.defineProperty(navigator, "plugins", {
-            writable: true,
-            value: {
-                0: { name: "Plugin A" },
-                1: { name: "Plugin B" }
-            }
-        });
         Object.defineProperty(navigator, "language", {
             writable: true,
             value: "en_IN"
@@ -53,7 +46,6 @@ describe("Generate Security Headers", () => {
         expect(headers).not.toBeFalsy();
         expect(headers["X-Sec-Browseros"]).toEqual("USER_AGENT");
         expect(JSON.parse(headers["X-Sec-Usersettings"])).toMatchObject({
-            plugins: ["Plugin A", "Plugin B"],
             language: "en_IN",
             cookieEnabled: false,
             userTimezone: new Date().getTimezoneOffset()
@@ -87,11 +79,7 @@ describe("Generate Security Headers", () => {
         });
         Object.defineProperty(navigator, "cookieEnabled", {
             writable: true,
-            value: false
-        });
-        Object.defineProperty(navigator, "plugins", {
-            writable: true,
-            value: {}
+            value: null
         });
         Object.defineProperty(navigator, "language", {
             writable: true,
@@ -103,7 +91,6 @@ describe("Generate Security Headers", () => {
         expect(headers).not.toBeFalsy();
         expect(headers["X-Sec-Browseros"]).toEqual("USER_AGENT_2");
         expect(JSON.parse(headers["X-Sec-Usersettings"])).toMatchObject({
-            plugins: [],
             language: "en_IN",
             cookieEnabled: false,
             userTimezone: new Date().getTimezoneOffset()
