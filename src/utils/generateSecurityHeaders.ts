@@ -37,7 +37,7 @@ const getWebchatInfo = () => {
 };
 
 const getAudioVideoDecoders = async () => {
-    const audioDecorder = navigator.mediaCapabilities.decodingInfo({
+    const audioDecorder = navigator.mediaCapabilities?.decodingInfo({
         type: "file",
         audio: {
             contentType: "audio/mp3",
