@@ -3,18 +3,35 @@ import log from "loglevel";
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-type SecurityHeaders = {
-    "X-Sec-Browseros": string;
-    "X-Sec-Usersettings": string;
-    "X-Sec-Webchatinfo": string;
-    "X-Sec-Decoders": string;
+export const HEADER_SEC_DECODER = "X-Sec-Decoders";
+export const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
+export const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
+export const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
+
+type SecurityHeadersType = {
+    [HEADER_SEC_BROWSEROS]: string;
+    [HEADER_SEC_USERSETTINGS]: string;
+    [HEADER_SEC_WEBCHAT]: string;
+    [HEADER_SEC_DECODER]: string;
 };
+
+type MediaCapabilitiesInfo = MediaCapabilitiesDecodingInfo | MediaCapabilitiesEncodingInfo;
+
+export const DEFAULT_NAVIGATOR_LANG = "en_IN";
+export const DEFAULT_COOKIE_ENABLED = false;
+export const DEFAULT_LOGIN_TIMESTAMP = "9999999";
+const DEFAULT_CODEC_INFO = {
+    powerEfficient: false,
+    smooth: false,
+    supported: false,
+    keySystemAccess: "twilio-keySystemAccess"
+} as MediaCapabilitiesInfo;
 
 const getUserSpecificSettings = () => {
     return {
-        language: navigator.language ?? "en_IN",
-        cookieEnabled: navigator.cookieEnabled ?? false,
-        userTimezone: new Date().getTimezoneOffset() ?? "GMT"
+        language: navigator.language ?? DEFAULT_NAVIGATOR_LANG,
+        cookieEnabled: navigator.cookieEnabled ?? DEFAULT_COOKIE_ENABLED,
+        userTimezone: new Date().getTimezoneOffset()
     };
 };
 
@@ -31,8 +48,8 @@ const getWebchatInfo = () => {
     }
 
     return {
-        loginTimestamp: parsedStorage?.loginTimestamp || null,
-        deploymentKey: reduxState.config.deploymentKey
+        loginTimestamp: parsedStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
+        deploymentKey: reduxState?.config?.deploymentKey || null
     };
 };
 
@@ -46,40 +63,46 @@ const getAudioVideoDecoders = async () => {
             samplerate: 5200
         }
     });
-    const videoDecorder = navigator.mediaCapabilities.decodingInfo({
+    const videoDecorder = navigator.mediaCapabilities?.decodingInfo({
         type: "file",
         audio: {
             contentType: "audio/mp4",
             channels: "2",
             bitrate: 132700,
-
             samplerate: 5200
         }
     });
-    return Promise.allSettled([audioDecorder, videoDecorder]).then((results: Array<PromiseSettledResult<unknown>>) => {
-        const allFullfied = results.every((result) => result.status === "fulfilled");
 
-        if (!allFullfied) {
+    return Promise.allSettled([audioDecorder, videoDecorder]).then(
+        (results: Array<PromiseSettledResult<MediaCapabilitiesInfo>>) => {
+            const allFullfied = results.every((result) => result.status === "fulfilled" && Boolean(result.value));
+
+            let audio: MediaCapabilitiesInfo = DEFAULT_CODEC_INFO;
+            let video: MediaCapabilitiesInfo = DEFAULT_CODEC_INFO;
+
+            if (allFullfied) {
+                const _res = results as Array<PromiseFulfilledResult<MediaCapabilitiesInfo>>;
+
+                audio = _res[0].value;
+                video = _res[1].value;
+            }
+
             return {
-                audio: null,
-                video: null
+                audio,
+                video
             };
         }
-        return {
-            audio: (results[0] as PromiseFulfilledResult<unknown>).value,
-            video: (results[1] as PromiseFulfilledResult<unknown>).value
-        };
-    });
+    );
 };
 
 // eslint-disable-next-line import/no-unused-modules
-export const generateSecurityHeaders = async (): Promise<SecurityHeaders> => {
-    const headers = {} as SecurityHeaders;
+export const generateSecurityHeaders = async (): Promise<SecurityHeadersType> => {
+    const headers = {} as SecurityHeadersType;
     return getAudioVideoDecoders().then((decoders) => {
-        headers["X-Sec-Webchatinfo"] = JSON.stringify(getWebchatInfo());
-        headers["X-Sec-Usersettings"] = JSON.stringify(getUserSpecificSettings());
-        headers["X-Sec-Decoders"] = JSON.stringify(decoders);
-        headers["X-Sec-Browseros"] = navigator.userAgent;
+        headers[HEADER_SEC_WEBCHAT] = JSON.stringify(getWebchatInfo());
+        headers[HEADER_SEC_USERSETTINGS] = JSON.stringify(getUserSpecificSettings());
+        headers[HEADER_SEC_DECODER] = JSON.stringify(decoders);
+        headers[HEADER_SEC_BROWSEROS] = navigator.userAgent;
 
         return headers;
     });
