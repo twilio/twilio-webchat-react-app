@@ -11,11 +11,11 @@ export const createLogger = (className: string, logLevel: LogLevelDesc): Logger 
 };
 
 function loggerManager(level?: LogLevelDesc): void {
-    if(!level || (level < log.levels.INFO)) {
+    if (!level || level < log.levels.INFO) {
         log.error(`Invalid Log Level -> ${level}. Select level higher than INFO or more.`);
         return;
     }
-    const defaultLevel = level ?? "info";
+
     log.info("Logger has been initialized.");
     Object.assign(window.Twilio, {
         ...window.Twilio,
@@ -26,12 +26,12 @@ function loggerManager(level?: LogLevelDesc): void {
             if (!webchatLogger) {
                 webchatLogger = createLogger(className, logLevel);
             }
-            switch(logLevel) {
-                case 'warn': {
+            switch (logLevel) {
+                case "warn": {
                     webchatLogger.warn(newLogEntry);
                     break;
                 }
-                case 'error': {
+                case "error": {
                     webchatLogger.error(newLogEntry);
                     break;
                 }

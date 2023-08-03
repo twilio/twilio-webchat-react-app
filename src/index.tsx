@@ -42,7 +42,7 @@ const initWebchat = async (config: ConfigState) => {
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     const rootElement = document.getElementById("twilio-webchat-widget-root");
-    window.Twilio.addLogs('initWebChat', 'Now rendering the webchat', 'info');
+    window.Twilio.addLogs("initWebChat", "Now rendering the webchat", "info");
     render(
         <Provider store={store}>
             <WebchatWidget />
