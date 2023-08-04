@@ -60,7 +60,7 @@ declare global {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
             loggerManager: (level?: LogLevelDesc) => void;
-            logMap: Map<string, Logger>;
+            logDump: Map<string, Logger>;
             addLogs: addLogsType;
         };
         Cypress: Cypress.Cypress;
