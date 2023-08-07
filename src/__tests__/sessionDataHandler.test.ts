@@ -2,6 +2,13 @@ import fetchMock from "fetch-mock-jest";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 
+Object.defineProperty(navigator, "mediaCapabilities", {
+    writable: true,
+    value: {
+        decodingInfo: jest.fn().mockResolvedValue({} as unknown as MediaCapabilitiesDecodingInfo)
+    }
+});
+
 describe("session data handler", () => {
     afterEach(() => {
         jest.clearAllMocks();
@@ -24,15 +31,22 @@ describe("session data handler", () => {
         it("should store new token data in local storage", async () => {
             const setLocalStorageItemSpy = jest.spyOn(Object.getPrototypeOf(window.localStorage), "setItem");
 
+            jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
+
+            const currentTime = Date.now();
             const tokenPayload = {
-                expiration: Date.now() + 10e5,
+                expiration: currentTime + 10e5,
                 token: "new token",
                 conversationSid: "sid"
             };
             fetchMock.once(() => true, tokenPayload);
             await sessionDataHandler.fetchAndStoreNewSession({ formData: {} });
 
-            expect(setLocalStorageItemSpy).toHaveBeenCalledWith("TWILIO_WEBCHAT_WIDGET", JSON.stringify(tokenPayload));
+            const expected = {
+                ...tokenPayload,
+                loginTimestamp: currentTime
+            };
+            expect(setLocalStorageItemSpy).toHaveBeenCalledWith("TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
         });
 
         it("should return a new token", async () => {
@@ -121,6 +135,8 @@ describe("session data handler", () => {
         });
 
         it("should store new token in local storage", async () => {
+            jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
+
             jest.spyOn(Object.getPrototypeOf(window.localStorage), "getItem").mockReturnValueOnce(
                 JSON.stringify({
                     expiration: Date.now() + 10e5,
