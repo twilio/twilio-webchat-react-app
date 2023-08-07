@@ -1,7 +1,7 @@
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
-const filename = "webchat-v3.min.js"
-const cdnDirname = "cdn"
+const OUTPUT_FILENAME = "webchat.min.js"
+const DIST_CDN_DIR = "dist/cdn"
 
 module.exports = function override(config) {
     // ⬇ Output a single file
@@ -10,7 +10,7 @@ module.exports = function override(config) {
     delete config.optimization.splitChunks;
 
     // ⬇ Remove hash from filename
-    config.output.filename = `static/js/${filename}`;
+    config.output.filename = `static/js/${OUTPUT_FILENAME}`;
 
     // ⬇ Prevent (missing) node fallback on path module
     config.resolve.fallback = { ...(config.resolve.fallback || {}), path: false };
@@ -20,7 +20,7 @@ module.exports = function override(config) {
         new FileManagerPlugin({
               events: {
                   onEnd: {
-                      copy: [{ source: `build/static/js/${filename}`, destination: `dist/${cdnDirname}/${filename}` }]
+                      copy: [{ source: `build/static/js/${OUTPUT_FILENAME}`, destination: `${DIST_CDN_DIR}/${OUTPUT_FILENAME}` }]
                   }
               }
         })
