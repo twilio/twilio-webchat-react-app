@@ -3,10 +3,10 @@ import log from "loglevel";
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-export const HEADER_SEC_DECODER = "X-Sec-Decoders";
-export const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
-export const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
-export const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "X-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
 
 type SecurityHeadersType = {
     [HEADER_SEC_BROWSEROS]: string;
