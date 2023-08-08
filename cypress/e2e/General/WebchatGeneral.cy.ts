@@ -351,7 +351,7 @@ describe("Webchat Lite general scenario's", () => {
             });
         }
 
-        if (Cypress.env("DOWNLOAD_TRANSCRIPT_ENABLED")) {
+        if (JSON.parse(Cypress.env("DOWNLOAD_TRANSCRIPT_ENABLED"))) {
             cy.resumeWebchatSessionCookie();
             PreEngagementChatForm.toggleWebchatExpanded();
             EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
@@ -362,7 +362,7 @@ describe("Webchat Lite general scenario's", () => {
     });
 
     it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
-        if (Cypress.env("EMAIL_TRANSCRIPT_ENABLED")) {
+        if (JSON.parse(Cypress.env("EMAIL_TRANSCRIPT_ENABLED"))) {
             cy.resumeWebchatSessionCookie();
             PreEngagementChatForm.toggleWebchatExpanded();
             EndChatView.validateEmailTranscriptButtonButtonVisible(10000);

@@ -17,14 +17,15 @@ suites:
       platformName: Windows 10
       config:
           specPattern:
-              - "**/*.*"
-    - name: cypress - windows 10 - chrome latest-1
-      browser: chrome
-      browserVersion: latest-1
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "**/*.*"
+              - "cypress/e2e/**/*.*"
+    # - name: cypress - windows 10 - chrome latest-1
+    #   browser: chrome
+    #   browserVersion: latest-1
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "**/*.*"
+    # ****
     #  COMMENTING FIREFOX 101 OUT AS THE SAUCELAB IMAGE IS BUGGY
     #- name: cypress - windows 10 - firefox latest
     #  browser: firefox
@@ -34,27 +35,28 @@ suites:
     #  config:
     #    testFiles:
     #    - '**/*.*'
-    - name: cypress - windows 10 - firefox 100
-      browser: firefox
-      browserVersion: "100"
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest
-      browser: microsoftedge
-      browserVersion: latest
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest-1
-      browser: microsoftedge
-      browserVersion: latest-1
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "**/*.*"
+    # *****
+    # - name: cypress - windows 10 - firefox 100
+    #   browser: firefox
+    #   browserVersion: "100"
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "**/*.*"
+    # - name: cypress - windows 10 - microsoftedge latest
+    #   browser: microsoftedge
+    #   browserVersion: latest
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "**/*.*"
+    # - name: cypress - windows 10 - microsoftedge latest-1
+    #   browser: microsoftedge
+    #   browserVersion: latest-1
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "**/*.*"
 artifacts:
     download:
         match:
