@@ -1,5 +1,5 @@
 version: 2.1
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 showConsoleLog: false
 sauce:
@@ -11,23 +11,21 @@ defaults:
 rootDir: .
 cypress:
     configFile: cypress.json
-    version: 9.1.0
+    version: 12.17.2
 suites:
     - name: cypress - windows 10 - chrome latest
       browser: chrome
-      extendedDebugging: true
       browserVersion: latest
-      platformName: windows 10
+      platformName: Windows 10
       config:
-          testFiles:
+          specPattern:
               - "**/*.*"
     - name: cypress - windows 10 - chrome latest-1
       browser: chrome
-      extendedDebugging: true
       browserVersion: latest-1
-      platformName: windows 10
+      platformName: Windows 10
       config:
-          testFiles:
+          specPattern:
               - "**/*.*"
     #  COMMENTING FIREFOX 101 OUT AS THE SAUCELAB IMAGE IS BUGGY
     #- name: cypress - windows 10 - firefox latest
@@ -40,27 +38,24 @@ suites:
     #    - '**/*.*'
     - name: cypress - windows 10 - firefox 100
       browser: firefox
-      extendedDebugging: true
       browserVersion: 100
-      platformName: windows 10
+      platformName: Windows 10
       config:
-          testFiles:
+          specPattern:
               - "**/*.*"
     - name: cypress - windows 10 - microsoftedge latest
       browser: microsoftedge
-      extendedDebugging: true
       browserVersion: latest
-      platformName: windows 10
+      platformName: Windows 10
       config:
-          testFiles:
+          specPattern:
               - "**/*.*"
     - name: cypress - windows 10 - microsoftedge latest-1
       browser: microsoftedge
-      extendedDebugging: true
       browserVersion: latest-1
-      platformName: windows 10
+      platformName: Windows 10
       config:
-          testFiles:
+          specPattern:
               - "**/*.*"
 artifacts:
     download:
