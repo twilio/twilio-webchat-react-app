@@ -6,11 +6,9 @@ sauce:
     region: us-west-1
     concurrency: 5
     sauceignore: .sauceignore
-defaults:
-    mode: sauce
 rootDir: .
 cypress:
-    configFile: cypress.json
+    configFile: cypress.config.ts
     version: 12.17.2
 suites:
     - name: cypress - windows 10 - chrome latest
@@ -38,7 +36,7 @@ suites:
     #    - '**/*.*'
     - name: cypress - windows 10 - firefox 100
       browser: firefox
-      browserVersion: 100
+      browserVersion: "100"
       platformName: Windows 10
       config:
           specPattern:
