@@ -4,13 +4,11 @@ import { Provider } from "react-redux";
 
 import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
-import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
-    serverUrl: "http://localhost:3001",
     theme: {
         isLight: true
     },
@@ -38,7 +36,6 @@ const defaultConfig: ConfigState = {
 
 const initWebchat = async (config: ConfigState) => {
     const mergedConfig = merge({}, defaultConfig, config);
-    sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     initLogger();
     const rootElement = document.getElementById("twilio-webchat-widget-root");

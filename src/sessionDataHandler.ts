@@ -2,16 +2,20 @@ import log from "loglevel";
 
 import { Token } from "./definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
+import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
-let _endpoint = "";
+function getServerUrl(REGION: string): string {
+    return `https://flex-api${buildRegionalHost(REGION)}.twilio.com/V2`;
+}
 
 type SessionDataStorage = Token & {
     loginTimestamp: number | null;
 };
 
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
+    const _endpoint = getServerUrl(process.env.REGION ?? "");
     const securityHeaders = await generateSecurityHeaders();
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
@@ -53,14 +57,6 @@ function getStoredSessionData() {
 }
 
 export const sessionDataHandler = {
-    setEndpoint(endpoint: string = "") {
-        _endpoint = endpoint;
-    },
-
-    getEndpoint() {
-        return _endpoint;
-    },
-
     tryResumeExistingSession(): Token | null {
         log.debug("sessionDataHandler: trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
@@ -95,7 +91,7 @@ export const sessionDataHandler = {
         let newTokenData: Token;
 
         try {
-            newTokenData = await contactBackend<Token>("/refreshToken", {
+            newTokenData = await contactBackend<Token>("/Webchat/Tokens/Refresh", {
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -119,7 +115,7 @@ export const sessionDataHandler = {
         let newTokenData;
 
         try {
-            newTokenData = await contactBackend<Token>("/initWebchat", { formData });
+            newTokenData = await contactBackend<Token>("/Webchat/Init", { formData });
         } catch (e) {
             throw Error("No results from server");
         }

@@ -2,7 +2,6 @@ import "..";
 import { Provider } from "react-redux";
 import * as reactDom from "react-dom";
 
-import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
 import * as logger from "../logger";
@@ -30,15 +29,6 @@ describe("Index", () => {
                 </Provider>,
                 root
             );
-        });
-
-        it("sets endpoint correctly", () => {
-            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setEndpoint");
-
-            const serverUrl = "serverUrl";
-            initWebchat({ serverUrl });
-
-            expect(setEndpointSpy).toBeCalledWith(serverUrl);
         });
 
         it("initializes config", () => {

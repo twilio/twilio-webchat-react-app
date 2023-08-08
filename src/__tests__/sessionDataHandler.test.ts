@@ -1,6 +1,6 @@
 import fetchMock from "fetch-mock-jest";
 
-import { sessionDataHandler } from "../sessionDataHandler";
+import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
 
 Object.defineProperty(navigator, "mediaCapabilities", {
     writable: true,
@@ -14,9 +14,39 @@ describe("session data handler", () => {
         jest.clearAllMocks();
     });
 
-    it("should set an endpoint", () => {
-        sessionDataHandler.setEndpoint("foo");
-        expect(sessionDataHandler.getEndpoint()).toBe("foo");
+    describe("contactBackend", () => {
+        const originalEnv = process.env;
+
+        beforeEach(() => {
+            jest.resetModules();
+        });
+
+        afterEach(() => {
+            process.env = originalEnv;
+        });
+
+        it("should call correct stage url", async () => {
+            const mockFetch = Promise.resolve({ ok: true, json: async () => Promise.resolve("okay") });
+            const fetchSpy = jest
+                .spyOn(window, "fetch")
+                .mockImplementation(async (): Promise<never> => mockFetch as Promise<never>);
+            process.env = {
+                ...originalEnv,
+                REGION: "stage"
+            };
+            await contactBackend("/Webchat/Tokens/Refresh", { formData: {} });
+            expect(fetchSpy.mock.calls[0][0]).toEqual("https://flex-api.stage.twilio.com/V2/Webchat/Tokens/Refresh");
+        });
+
+        it("should call correct prod url", async () => {
+            process.env.REGION = "";
+            const mockFetch = Promise.resolve({ ok: true, json: async () => Promise.resolve("okay") });
+            const fetchSpy = jest
+                .spyOn(window, "fetch")
+                .mockImplementation(async (): Promise<never> => mockFetch as Promise<never>);
+            await contactBackend("/Webchat/Tokens/Refresh", { formData: {} });
+            expect(fetchSpy.mock.calls[0][0]).toEqual("https://flex-api.twilio.com/V2/Webchat/Tokens/Refresh");
+        });
     });
 
     describe("fetch and store new session", () => {
