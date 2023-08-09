@@ -135,7 +135,9 @@ describe("Pre Engagement Form Phase", () => {
         fireEvent.change(queryInput, { target: { value: query } });
         fireEvent.submit(formBox);
 
-        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: name, query, email } });
+        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({
+            formData: { customerFriendlyName: name, query, email }
+        });
     });
 
     it("submits form on enter within textarea", () => {

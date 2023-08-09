@@ -6,16 +6,15 @@ import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
-function getServerUrl(REGION: string): string {
-    return `https://flex-api${buildRegionalHost(REGION)}.twilio.com/V2`;
-}
-
 type SessionDataStorage = Token & {
     loginTimestamp: number | null;
 };
 
+let _region = "";
+let _deploymentKey = "";
+
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
-    const _endpoint = getServerUrl(process.env.REGION ?? "");
+    const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
@@ -57,6 +56,22 @@ function getStoredSessionData() {
 }
 
 export const sessionDataHandler = {
+    setRegion(region: string = "") {
+        _region = region;
+    },
+
+    getRegion(): string {
+        return _region;
+    },
+
+    setDeploymentKey(key: string = "") {
+        _deploymentKey = key;
+    },
+
+    getDeploymentKey(): string {
+        return _deploymentKey;
+    },
+
     tryResumeExistingSession(): Token | null {
         log.debug("sessionDataHandler: trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
@@ -92,6 +107,8 @@ export const sessionDataHandler = {
 
         try {
             newTokenData = await contactBackend<Token>("/Webchat/Tokens/Refresh", {
+                // eslint-disable-next-line camelcase
+                deployment_key: _deploymentKey,
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -115,7 +132,12 @@ export const sessionDataHandler = {
         let newTokenData;
 
         try {
-            newTokenData = await contactBackend<Token>("/Webchat/Init", { formData });
+            newTokenData = await contactBackend<Token>("/Webchat/Init", {
+                // eslint-disable-next-line camelcase
+                deployment_key: _deploymentKey,
+                customerFriendlyName: formData?.customerFriendlyName || "Customer",
+                preEngagementData: formData
+            });
         } catch (e) {
             throw Error("No results from server");
         }

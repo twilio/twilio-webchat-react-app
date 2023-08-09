@@ -37,7 +37,8 @@ export type SessionState = {
 };
 
 export type ConfigState = {
-    serverUrl?: string;
+    deploymentKey?: string;
+    region?: string;
     theme?: {
         isLight?: boolean;
         overrides?: Partial<GenericThemeShape>;

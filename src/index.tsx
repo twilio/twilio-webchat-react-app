@@ -5,10 +5,13 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
 import { initConfig } from "./store/actions/initActions";
+import { sessionDataHandler } from "./sessionDataHandler";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
+    deploymentKey: "",
+    region: "",
     theme: {
         isLight: true
     },
@@ -36,6 +39,8 @@ const defaultConfig: ConfigState = {
 
 const initWebchat = async (config: ConfigState) => {
     const mergedConfig = merge({}, defaultConfig, config);
+    sessionDataHandler.setDeploymentKey(mergedConfig.deploymentKey);
+    sessionDataHandler.setRegion(mergedConfig.region);
     store.dispatch(initConfig(mergedConfig));
     initLogger();
     const rootElement = document.getElementById("twilio-webchat-widget-root");
@@ -56,15 +61,17 @@ declare global {
     interface Window {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
+            getDeploymentKey: () => string;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
     }
 }
 
-// Expose `initWebchat` function to window object
+// Expose `initWebchat`, `getDeploymentKey` function to window object
 Object.assign(window, {
     Twilio: {
-        initWebchat
+        initWebchat,
+        getDeploymentKey: sessionDataHandler.getDeploymentKey
     }
 });

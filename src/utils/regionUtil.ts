@@ -1,4 +1,4 @@
-export function buildRegionalHost(region: string): string {
+export function buildRegionalHost(region: string = ""): string {
     switch (region) {
         case "prod":
         case "us1":

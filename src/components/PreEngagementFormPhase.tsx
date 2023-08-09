@@ -28,7 +28,7 @@ export const PreEngagementFormPhase = () => {
         try {
             const data = await sessionDataHandler.fetchAndStoreNewSession({
                 formData: {
-                    friendlyName: name && onUserInputSubmit(name, true),
+                    customerFriendlyName: name && onUserInputSubmit(name, true),
                     email,
                     query: query && onUserInputSubmit(query)
                 }
