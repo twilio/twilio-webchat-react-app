@@ -2,6 +2,7 @@ import "..";
 import { Provider } from "react-redux";
 import * as reactDom from "react-dom";
 
+import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
 import * as logger from "../logger";
@@ -29,6 +30,24 @@ describe("Index", () => {
                 </Provider>,
                 root
             );
+        });
+
+        it("sets region correctly", () => {
+            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setRegion");
+
+            const region = "Foo";
+            initWebchat({ region });
+
+            expect(setEndpointSpy).toBeCalledWith(region);
+        });
+
+        it("sets deployment key correctly", () => {
+            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setDeploymentKey");
+
+            const deploymentKey = "Foo";
+            initWebchat({ deploymentKey });
+
+            expect(setEndpointSpy).toBeCalledWith(deploymentKey);
         });
 
         it("initializes config", () => {

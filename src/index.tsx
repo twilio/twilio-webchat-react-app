@@ -4,8 +4,8 @@ import { Provider } from "react-redux";
 
 import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
-import { initConfig } from "./store/actions/initActions";
 import { sessionDataHandler } from "./sessionDataHandler";
+import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 

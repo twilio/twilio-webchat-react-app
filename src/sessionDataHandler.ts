@@ -6,12 +6,12 @@ import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
+let _region = "";
+let _deploymentKey = "";
+
 type SessionDataStorage = Token & {
     loginTimestamp: number | null;
 };
-
-let _region = "";
-let _deploymentKey = "";
 
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;

@@ -145,7 +145,7 @@ describe("Pre Engagement Form Phase", () => {
         const { container } = render(withStore(<PreEngagementFormPhase />));
 
         const textArea = container.querySelector("textarea") as Element;
-        fireEvent.keyPress(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: false });
+        fireEvent.keyDown(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: false });
 
         expect(fetchAndStoreNewSessionSpy).toHaveBeenCalled();
     });
@@ -155,7 +155,7 @@ describe("Pre Engagement Form Phase", () => {
         const { container } = render(withStore(<PreEngagementFormPhase />));
 
         const textArea = container.querySelector("textarea") as Element;
-        fireEvent.keyPress(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: true });
+        fireEvent.keyDown(textArea, { key: "Enter", code: "Enter", charCode: 13, shiftKey: true });
 
         expect(fetchAndStoreNewSessionSpy).not.toHaveBeenCalled();
     });
