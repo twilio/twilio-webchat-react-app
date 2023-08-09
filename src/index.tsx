@@ -61,17 +61,15 @@ declare global {
     interface Window {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
-            getDeploymentKey: () => string;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
     }
 }
 
-// Expose `initWebchat`, `getDeploymentKey` function to window object
+// Expose `initWebchat` function to window object
 Object.assign(window, {
     Twilio: {
-        initWebchat,
-        getDeploymentKey: sessionDataHandler.getDeploymentKey
+        initWebchat
     }
 });
