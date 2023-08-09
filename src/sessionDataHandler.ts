@@ -107,7 +107,6 @@ export const sessionDataHandler = {
 
         try {
             newTokenData = await contactBackend<Token>("/Webchat/Tokens/Refresh", {
-                // eslint-disable-next-line camelcase
                 deployment_key: _deploymentKey,
                 token: storedTokenData.token
             });
@@ -133,10 +132,9 @@ export const sessionDataHandler = {
 
         try {
             newTokenData = await contactBackend<Token>("/Webchat/Init", {
-                // eslint-disable-next-line camelcase
                 deployment_key: _deploymentKey,
-                customerFriendlyName: formData?.customerFriendlyName || "Customer",
-                preEngagementData: formData
+                customerFriendlyName: formData?.friendlyName || "Customer",
+                preEngagementData: JSON.stringify(formData)
             });
         } catch (e) {
             throw Error("No results from server");

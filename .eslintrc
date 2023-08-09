@@ -37,5 +37,13 @@
     "import/no-duplicates": ["error"],
     "spaced-comment": "warn",
     "prefer-named-capture-group": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["sessionDataHandler.ts"],
+      "rules": {
+        "camelcase": ["off"]
+      }
+    }
+  ]
 }

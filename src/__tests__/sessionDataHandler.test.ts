@@ -31,6 +31,7 @@ describe("session data handler", () => {
 
         afterEach(() => {
             sessionDataHandler.setRegion("");
+            fetchMock.reset();
         });
 
         it("should call correct stage url", async () => {

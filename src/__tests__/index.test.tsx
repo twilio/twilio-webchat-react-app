@@ -33,21 +33,21 @@ describe("Index", () => {
         });
 
         it("sets region correctly", () => {
-            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setRegion");
+            const setRegionSpy = jest.spyOn(sessionDataHandler, "setRegion");
 
             const region = "Foo";
             initWebchat({ region });
 
-            expect(setEndpointSpy).toBeCalledWith(region);
+            expect(setRegionSpy).toBeCalledWith(region);
         });
 
         it("sets deployment key correctly", () => {
-            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setDeploymentKey");
+            const setDeploymentKeySpy = jest.spyOn(sessionDataHandler, "setDeploymentKey");
 
             const deploymentKey = "Foo";
             initWebchat({ deploymentKey });
 
-            expect(setEndpointSpy).toBeCalledWith(deploymentKey);
+            expect(setDeploymentKeySpy).toBeCalledWith(deploymentKey);
         });
 
         it("initializes config", () => {
@@ -61,10 +61,10 @@ describe("Index", () => {
         it("initializes config with provided config merged with default config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
-            const serverUrl = "serverUrl";
-            initWebchat({ serverUrl });
+            const deploymentKey = "DKxxxxxxxxxxxx";
+            initWebchat({ deploymentKey });
 
-            expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ serverUrl, theme: { isLight: true } }));
+            expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ deploymentKey, theme: { isLight: true } }));
         });
 
         it("initializes logger", () => {
