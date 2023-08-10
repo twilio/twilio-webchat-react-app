@@ -344,7 +344,7 @@ describe("Webchat Lite general scenario's", () => {
                     cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
                     cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
                     const unzippedFolderName = downloadedFile.split(".")[0];
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${`${unzippedFolderName}.txt`}`).should(
+                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${unzippedFolderName}.txt`).should(
                         "exist"
                     );
                     cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
