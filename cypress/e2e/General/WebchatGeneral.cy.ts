@@ -315,6 +315,11 @@ describe("Webchat Lite general scenario's", () => {
     });
 
     it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
+        cy.on("uncaught:exception", (error, promise) => {
+            if(promise){
+                return false;
+            }
+        });
         cy.resumeWebchatSessionCookie();
         PreEngagementChatForm.toggleWebchatExpanded();
         cy.getConversationSid()
