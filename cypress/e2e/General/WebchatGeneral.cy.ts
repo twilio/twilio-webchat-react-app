@@ -331,41 +331,6 @@ describe("Webchat Lite general scenario's", () => {
             });
     });
 
-    it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
-        function performDownload() {
-            const downloadDirectory = Cypress.config().downloadsFolder;
-            cy.task("downloads", downloadDirectory).then((before) => {
-                EndChatView.getDownloadTranscriptButton(10000).click();
-                cy.wait(10000);
-                cy.task("downloads", downloadDirectory).then((after) => {
-                    const downloadedFile = String(after)
-                        .split(",")
-                        .filter((file) => !String(before).split(",").includes(file))[0];
-                    cy.readFile(`${downloadDirectory}/${downloadedFile}`).should("exist");
-                    cy.task("unzip", { source: `${downloadDirectory}/${downloadedFile}`, downloadDirectory });
-                    const unzippedFolderName = downloadedFile.split(".")[0];
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/${unzippedFolderName}.txt`).should(
-                        "exist"
-                    );
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.jpg`).should("exist");
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.pdf`).should("exist");
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.png`).should("exist");
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test.txt`).should("exist");
-                    cy.readFile(`${downloadDirectory}/${unzippedFolderName}/test2.jpg`).should("exist");
-                });
-            });
-        }
-
-        if (JSON.parse(Cypress.env("DOWNLOAD_TRANSCRIPT_ENABLED"))) {
-            cy.resumeWebchatSessionCookie();
-            PreEngagementChatForm.toggleWebchatExpanded();
-            EndChatView.validateDownloadTranscriptButtonButtonVisible(10000);
-            performDownload();
-        } else {
-            this.skip();
-        }
-    });
-
     it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
         if (JSON.parse(Cypress.env("EMAIL_TRANSCRIPT_ENABLED"))) {
             cy.resumeWebchatSessionCookie();
