@@ -4,7 +4,6 @@ import { getWorker } from "./getWorker";
 
 const getJwt = (identity: string, grants: any[], { ttl }: { ttl?: number } = {}) => {
     const { AccessToken } = jwt;
-
     const token = new AccessToken(process.env.ACCOUNT_SID!, process.env.API_KEY!, process.env.API_SECRET!, {
         identity,
         ttl: ttl || 60 * 5
