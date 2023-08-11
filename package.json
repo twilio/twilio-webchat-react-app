@@ -71,7 +71,7 @@
     "server": "nodemon server",
     "server:ci": "node server",
     "build": "react-app-rewired build",
-    "test": "LC_ALL=\"en_GB.UTF-8\" react-app-rewired test --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
+    "test": "LC_ALL=\"en_GB.UTF-8\" react-app-rewired test --watchAll=false --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
     "test:nowatch": "yarn test --watchAll=false --verbose --runInBand",
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
@@ -85,9 +85,17 @@
     "not op_mini all"
   ],
   "jest": {
-    "setupFiles": [
-      "./jest.config.js"
-    ]
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+        "<rootDir>/src/components/**/*.ts",
+        "!src/**/*.d.ts",
+        "!**/node_modules/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/src/coverage/"
+    ],
+    "rootDir": "./"
   },
   "engines": {
     "node": ">=14"

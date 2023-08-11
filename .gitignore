@@ -12,3 +12,6 @@ cypress/screenshots/
 cypress/downloads/
 cypress.env.json
 dist
+artifacts
+coverage
+src/coverage
