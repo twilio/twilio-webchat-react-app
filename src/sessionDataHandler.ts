@@ -64,7 +64,7 @@ export const sessionDataHandler = {
         return _region;
     },
 
-    setDeploymentKey(key: string = "") {
+    setDeploymentKey(key: string) {
         _deploymentKey = key;
     },
 
