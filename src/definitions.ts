@@ -1,3 +1,5 @@
+import { GenericThemeShape } from "@twilio-paste/theme";
+
 export type Token = {
     token: string;
     conversationSid: string;
@@ -16,4 +18,13 @@ export type TranscriptConfig = {
     emailEnabled?: boolean;
     emailSubject?: (agentNames: (string | undefined)[]) => string;
     emailContent?: (customerName: string | undefined, transcript: string) => string;
+};
+
+export type InitialConfig = {
+    deploymentKey: string;
+    region?: string;
+    theme?: {
+        isLight?: boolean;
+        overrides?: Partial<GenericThemeShape>;
+    };
 };

@@ -22,7 +22,7 @@ describe("Index", () => {
             const root = document.createElement("div");
             root.id = "twilio-webchat-widget-root";
             document.body.appendChild(root);
-            initWebchat({});
+            initWebchat({ deploymentKey: "xyz" });
 
             expect(renderSpy).toBeCalledWith(
                 <Provider store={store}>
@@ -36,7 +36,7 @@ describe("Index", () => {
             const setRegionSpy = jest.spyOn(sessionDataHandler, "setRegion");
 
             const region = "Foo";
-            initWebchat({ region });
+            initWebchat({ deploymentKey: "xyz", region });
 
             expect(setRegionSpy).toBeCalledWith(region);
         });
@@ -53,9 +53,21 @@ describe("Index", () => {
         it("initializes config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
-            initWebchat({});
+            initWebchat({ deploymentKey: "xyz" });
 
             expect(initConfigSpy).toBeCalled();
+        });
+
+        it("gives error when deploymentKey is missing", () => {
+            const errorLoggerSpy = jest.spyOn(console, "error");
+            initWebchat();
+            expect(errorLoggerSpy).toHaveBeenCalledWith("`deploymentKey` is required.");
+        });
+
+        it("gives warning when unsupported params are passed", () => {
+            const warningSpy = jest.spyOn(console, "warn");
+            initWebchat({ deploymentKey: "xyz", someKey: "abc" });
+            expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
         });
 
         it("initializes config with provided config merged with default config", () => {
@@ -70,7 +82,7 @@ describe("Index", () => {
         it("initializes logger", () => {
             const initLoggerSpy = jest.spyOn(logger, "initLogger");
 
-            initWebchat({});
+            initWebchat({ deploymentKey: "xyz" });
 
             expect(initLoggerSpy).toBeCalled();
         });

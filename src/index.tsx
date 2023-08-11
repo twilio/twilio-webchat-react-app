@@ -7,6 +7,7 @@ import { WebchatWidget } from "./components/WebchatWidget";
 import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
+import { InitialConfig } from "./definitions";
 import { initLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
@@ -37,7 +38,23 @@ const defaultConfig: ConfigState = {
     }
 };
 
-const initWebchat = async (config: ConfigState) => {
+const initWebchat = async (config: InitialConfig) => {
+    // validations for only supported keys in config
+    const validKeys = ["deploymentKey", "region", "theme"];
+
+    // deploymentKey is required
+    if (!config || !config.deploymentKey) {
+        // TODO - replace with logger implementation
+        console.error("`deploymentKey` is required.");
+    }
+
+    for (const key in config) {
+        if (!validKeys.includes(key)) {
+            // TODO - replace with logger implementation
+            console.warn(`${key} is not supported.`);
+        }
+    }
+
     const mergedConfig = merge({}, defaultConfig, config);
     sessionDataHandler.setDeploymentKey(mergedConfig.deploymentKey);
     sessionDataHandler.setRegion(mergedConfig.region);
@@ -60,7 +77,7 @@ const initWebchat = async (config: ConfigState) => {
 declare global {
     interface Window {
         Twilio: {
-            initWebchat: (config: ConfigState) => void;
+            initWebchat: (config: InitialConfig) => void;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
