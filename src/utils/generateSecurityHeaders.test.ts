@@ -5,10 +5,10 @@ import {
     DEFAULT_NAVIGATOR_LANG
 } from "./generateSecurityHeaders";
 
-const HEADER_SEC_DECODER = "X-Sec-Decoders";
-const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
-const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
-const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
 describe("Generate Security Headers", () => {
     it("Should generateSecurityHeaders", async () => {
         jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));

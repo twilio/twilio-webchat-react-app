@@ -3,10 +3,10 @@ import log from "loglevel";
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-const HEADER_SEC_DECODER = "X-Sec-Decoders";
-const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
-const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
-const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
 
 type SecurityHeadersType = {
     [HEADER_SEC_BROWSEROS]: string;
