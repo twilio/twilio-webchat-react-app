@@ -2,13 +2,13 @@ import {
     generateSecurityHeaders,
     DEFAULT_COOKIE_ENABLED,
     DEFAULT_LOGIN_TIMESTAMP,
-    DEFAULT_NAVIGATOR_LANG,
-    HEADER_SEC_WEBCHAT,
-    HEADER_SEC_BROWSEROS,
-    HEADER_SEC_USERSETTINGS,
-    HEADER_SEC_DECODER
+    DEFAULT_NAVIGATOR_LANG
 } from "./generateSecurityHeaders";
 
+const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
 describe("Generate Security Headers", () => {
     it("Should generateSecurityHeaders", async () => {
         jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
