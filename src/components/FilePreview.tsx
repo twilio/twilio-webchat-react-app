@@ -38,7 +38,7 @@ export const FilePreview = (props: FilePreviewProps) => {
     const dispatch = useDispatch();
     const fileAttachmentConfig = useSelector((state: AppState) => state.config.fileAttachment);
 
-    const logger = window.Twilio.getClassLogger("FilePreview");
+    const logger = window.Twilio.getLogger("FilePreview");
     const handleDetach = () => {
         dispatch(detachFiles([file]));
     };

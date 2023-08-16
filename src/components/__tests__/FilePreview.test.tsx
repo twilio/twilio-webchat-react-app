@@ -6,7 +6,7 @@ import { FilePreview } from "../FilePreview";
 import * as genericActions from "../../store/actions/genericActions";
 import { notifications } from "../../notifications";
 import { matchPartialNotificationObject } from "../../test-utils";
-import GenerateLogger from "../../logger";
+import WebChatLogger from "../../logger";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -35,8 +35,8 @@ describe("File Preview", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });

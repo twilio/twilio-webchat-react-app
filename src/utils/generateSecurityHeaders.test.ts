@@ -8,7 +8,7 @@ import {
     HEADER_SEC_USERSETTINGS,
     HEADER_SEC_DECODER
 } from "./generateSecurityHeaders";
-import GenerateLogger from "../logger";
+import WebChatLogger from "../logger";
 
 jest.mock("../logger");
 
@@ -16,8 +16,8 @@ describe("Generate Security Headers", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });

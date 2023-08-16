@@ -12,7 +12,7 @@ type SessionDataStorage = Token & {
 
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const securityHeaders = await generateSecurityHeaders();
-    const logger = window.Twilio.getClassLogger('sessionDataHandler');
+    const logger = window.Twilio.getLogger('sessionDataHandler');
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
         headers: {
@@ -37,7 +37,7 @@ function storeSessionData(data: SessionDataStorage) {
 
 function getStoredSessionData() {
     const item = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID);
-    const logger = window.Twilio.getClassLogger('sessionDataHandler');
+    const logger = window.Twilio.getLogger('sessionDataHandler');
     let storedData: Token;
 
     if (!item) {
@@ -64,7 +64,7 @@ export const sessionDataHandler = {
     },
 
     tryResumeExistingSession(): Token | null {
-        const logger = window.Twilio.getClassLogger('sessionDataHandler');
+        const logger = window.Twilio.getLogger('sessionDataHandler');
         logger.info("trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
 
@@ -88,7 +88,7 @@ export const sessionDataHandler = {
     },
 
     async getUpdatedToken(): Promise<Token> {
-        const logger = window.Twilio.getClassLogger('sessionDataHandler');
+        const logger = window.Twilio.getLogger('sessionDataHandler');
         logger.info("trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
 
@@ -119,7 +119,7 @@ export const sessionDataHandler = {
     },
 
     fetchAndStoreNewSession: async ({ formData }: { formData: Record<string, unknown> }) => {
-        const logger = window.Twilio.getClassLogger('sessionDataHandler');
+        const logger = window.Twilio.getLogger('sessionDataHandler');
         logger.info("trying to create new session");
         const loginTimestamp = Date.now();
 

@@ -1,11 +1,10 @@
-import { Logger } from "loglevel";
-import { init , getClassLogger } from "../logger";
+import { initLogger , getLogger } from "../logger";
 
 describe("loggerManager", () => {
     it("should show a proper message if an invalid log level `DEBUG` is selected", () => {
         const consoleLogSpy = jest.spyOn(global.console, "error");
 
-        init("debug");
+        initLogger("debug");
 
         expect(consoleLogSpy).toHaveBeenCalled();
     });
@@ -18,7 +17,7 @@ describe("loggerManager", () => {
         });
 
         beforeEach(() => {
-            init("info");
+            initLogger("info");
         });
 
         afterEach(() => {
@@ -29,7 +28,7 @@ describe("loggerManager", () => {
             const className = "testName";
             const consoleLogSpy = jest.spyOn(global.console, "info");
 
-            const logger = getClassLogger(className);
+            const logger = getLogger(className);
             logger.info("test message");
 
             expect(consoleLogSpy).toHaveBeenCalledWith(`[${className}]: test message`);
@@ -39,7 +38,7 @@ describe("loggerManager", () => {
             const className = "testName";
             const consoleLogSpy = jest.spyOn(global.console, "error");
 
-            const logger = getClassLogger(className);
+            const logger = getLogger(className);
             logger.error("test message");
 
             expect(consoleLogSpy).toHaveBeenCalledWith(`[${className}]: test message`);

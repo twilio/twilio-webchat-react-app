@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import { MessageInput } from "../MessageInput";
 import * as genericActions from "../../store/actions/genericActions";
-import GenerateLogger from "../../logger";
+import WebChatLogger from "../../logger";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -67,8 +67,8 @@ describe("Message Input", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });

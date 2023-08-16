@@ -1,7 +1,7 @@
 import fetchMock from "fetch-mock-jest";
 
 import { sessionDataHandler } from "../sessionDataHandler";
-import GenerateLogger from "../logger";
+import WebChatLogger from "../logger";
 
 jest.mock("../logger");
 
@@ -16,8 +16,8 @@ describe("session data handler", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });

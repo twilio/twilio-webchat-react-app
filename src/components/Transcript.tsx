@@ -34,7 +34,7 @@ export const Transcript = (props: TranscriptProps) => {
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
     const [isEmailingTranscript, setEmailingTranscript] = useState(false);
 
-    const logger = window.Twilio.getClassLogger("Transcript");
+    const logger = window.Twilio.getLogger("Transcript");
     const getMediaInfo = async () => {
         const mediaMessages = props.messages?.filter((message) => message.attachedMedia);
         const mediaInfo = [];

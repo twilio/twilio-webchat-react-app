@@ -48,7 +48,7 @@ export const MessageInput = () => {
     );
     const { onUserInputSubmit } = useSanitizer();
 
-    const logger = window.Twilio.getClassLogger("MessageInput");
+    const logger = window.Twilio.getLogger("MessageInput");
     const isSubmitDisabled = (!text.trim() && !attachedFiles?.length) || isSending;
 
     const send = async () => {

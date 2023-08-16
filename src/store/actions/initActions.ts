@@ -19,7 +19,7 @@ export function initConfig(config: ConfigState) {
 }
 
 export function initSession({ token, conversationSid }: { token: string; conversationSid: string }) {
-    const logger = window.Twilio.getClassLogger("initSession");
+    const logger = window.Twilio.getLogger("initSession");
     return async (dispatch: Dispatch) => {
         let conversationsClient: Client;
         let conversation;

@@ -8,7 +8,7 @@ import {
     generateDownloadTranscript,
     generateEmailTranscript
 } from "../../utils/generateTranscripts";
-import GenerateLogger from "../../logger";
+import WebChatLogger from "../../logger";
 
 const user1 = {
     identity: "identity 1",
@@ -75,8 +75,8 @@ describe("Transcript", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });

@@ -37,7 +37,7 @@ const getUserSpecificSettings = () => {
 const getWebchatInfo = () => {
     const sessionStorage = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) as string;
     const reduxState = store.getState();
-    const logger = window.Twilio.getClassLogger('getWebchatInfo');
+    const logger = window.Twilio.getLogger('getWebchatInfo');
 
     let parsedStorage = null;
 

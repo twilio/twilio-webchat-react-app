@@ -2,7 +2,7 @@ import log, { Logger, LogLevelDesc } from "loglevel";
 
 const VALID_LOGLEVELS: Array<LogLevelDesc> = ["info", "warn", "error"];
 
-export default class GenerateLogger {
+export default class WebChatLogger {
     className: string;
     logger: Logger;
 
@@ -22,7 +22,7 @@ export default class GenerateLogger {
     }
 }
 
-export const { initialize: init, getWebChatLogger: getClassLogger } = (function () {
+export const { initialize: initLogger, getWebChatLogger: getLogger } = (function () {
     const logDump = new Map();
 
     function initialize(level: LogLevelDesc = "info") {
@@ -36,13 +36,11 @@ export const { initialize: init, getWebChatLogger: getClassLogger } = (function 
     }
 
     function getWebChatLogger(className: string) {
-        let classLogger = logDump.get(className);
-        if (!classLogger) {
-            classLogger = new GenerateLogger(className);
-            logDump.set(className, classLogger);
+        if (!logDump.has(className)) {
+            logDump.set(className, new WebChatLogger(className));
         }
 
-        return classLogger;
+        return logDump.get(className);
     }
 
     return {

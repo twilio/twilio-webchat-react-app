@@ -6,7 +6,7 @@ import { sessionDataHandler } from "../../sessionDataHandler";
 import * as genericActions from "../../store/actions/genericActions";
 import * as initActions from "../../store/actions/initActions";
 import { EngagementPhase } from "../../store/definitions";
-import GenerateLogger from "../../logger";
+import WebChatLogger from "../../logger";
 
 jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn(),
@@ -36,8 +36,8 @@ jest.mock("../../logger");
 beforeAll(() => {
     Object.defineProperty(window, "Twilio", {
         value: {
-            getClassLogger: function(className: string) {
-                return new GenerateLogger(className);
+            getLogger: function(className: string) {
+                return new WebChatLogger(className);
             }
         }
     });

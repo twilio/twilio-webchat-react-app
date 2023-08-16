@@ -7,7 +7,7 @@ import { initClientListeners } from "../clientListener";
 import { Token } from "../../../../definitions";
 import { sessionDataHandler } from "../../../../sessionDataHandler";
 import { Client } from "../../../../__mocks__/@twilio/conversations/client";
-import GenerateLogger from "../../../../logger";
+import WebChatLogger from "../../../../logger";
 
 jest.mock("../../../../logger");
 
@@ -20,8 +20,8 @@ describe("Client Listeners", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getClassLogger: function(className: string) {
-                    return new GenerateLogger(className);
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
                 }
             }
         });
