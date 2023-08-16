@@ -28,7 +28,7 @@ export function WebchatWidget() {
             }
         } else {
             // if no token is stored, got engagement form
-            logger.error('Found no token. Goign to Engagement form.');
+            logger.error('Found no token. Going to Engagement form.');
             dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
         }
     }, [dispatch]);

@@ -27,7 +27,7 @@ export const { initialize: initLogger, getWebChatLogger: getLogger } = (function
 
     function initialize(level: LogLevelDesc = "info") {
         if (!VALID_LOGLEVELS.includes(level)) {
-            console.error(`Invalid Log Level -> ${level}. Select level higher than INFO or more.`);
+            console.error(`Invalid Log Level -> ${level}. Select level higher than INFO or more. Valid levels are INFO, WARN and ERROR.`);
             return;
         }
 
