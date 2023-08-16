@@ -1,4 +1,3 @@
-import log from "loglevel";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@twilio-paste/core/box";
@@ -39,6 +38,7 @@ export const FilePreview = (props: FilePreviewProps) => {
     const dispatch = useDispatch();
     const fileAttachmentConfig = useSelector((state: AppState) => state.config.fileAttachment);
 
+    const logger = window.Twilio.getClassLogger("FilePreview");
     const handleDetach = () => {
         dispatch(detachFiles([file]));
     };
@@ -74,7 +74,7 @@ export const FilePreview = (props: FilePreviewProps) => {
             const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
             window.open(url);
         } catch (e) {
-            log.error(`Failed downloading message attachment: ${e}`);
+            logger.error(`Failed downloading message attachment: ${e}`);
         }
     };
 

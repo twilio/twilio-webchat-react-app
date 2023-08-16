@@ -8,6 +8,7 @@ import {
     generateDownloadTranscript,
     generateEmailTranscript
 } from "../../utils/generateTranscripts";
+import GenerateLogger from "../../logger";
 
 const user1 = {
     identity: "identity 1",
@@ -67,7 +68,24 @@ const defaultState = {
     }
 };
 
+jest.mock("../../logger");
+
 describe("Transcript", () => {
+
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getClassLogger: function(className: string) {
+                    return new GenerateLogger(className);
+                }
+            }
+        });
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+    
     const transcriptData: Transcript[] = [
         { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },
         { author: "Concierge", body: "hi", timeStamp: new Date("December 18, 2022 04:30:10"), attachedMedia: null },

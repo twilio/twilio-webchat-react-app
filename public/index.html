@@ -40,7 +40,7 @@
 
 	<script>
 		window.addEventListener("DOMContentLoaded", () => {
-			Twilio.loggerManager('info');
+			Twilio.init("info");
 			Twilio.initWebchat({
 				serverUrl: "%REACT_APP_SERVER_URL%",
 				theme: {

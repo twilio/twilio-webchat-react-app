@@ -1,6 +1,5 @@
 import { Client } from "@twilio/conversations";
 import { Dispatch } from "redux";
-import log from "loglevel";
 
 import { initMessagesListener } from "./listeners/messagesListener";
 import { initParticipantsListener } from "./listeners/participantsListener";
@@ -20,6 +19,7 @@ export function initConfig(config: ConfigState) {
 }
 
 export function initSession({ token, conversationSid }: { token: string; conversationSid: string }) {
+    const logger = window.Twilio.getClassLogger("initSession");
     return async (dispatch: Dispatch) => {
         let conversationsClient: Client;
         let conversation;
@@ -41,7 +41,7 @@ export function initSession({ token, conversationSid }: { token: string; convers
             users = await Promise.all(participants.map(async (p) => p.getUser()));
             messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
         } catch (e) {
-            log.error("Something went wrong when initializing session", e);
+            logger.error("Something went wrong when initializing session", e);
             throw e;
         }
 

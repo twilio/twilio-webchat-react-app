@@ -1,6 +1,9 @@
 import fetchMock from "fetch-mock-jest";
 
 import { sessionDataHandler } from "../sessionDataHandler";
+import GenerateLogger from "../logger";
+
+jest.mock("../logger");
 
 Object.defineProperty(navigator, "mediaCapabilities", {
     writable: true,
@@ -10,6 +13,15 @@ Object.defineProperty(navigator, "mediaCapabilities", {
 });
 
 describe("session data handler", () => {
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getClassLogger: function(className: string) {
+                    return new GenerateLogger(className);
+                }
+            }
+        });
+    });
     afterEach(() => {
         jest.clearAllMocks();
     });

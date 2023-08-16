@@ -1,10 +1,11 @@
-import loggerManager, { createLogger } from "../logger";
+import { Logger } from "loglevel";
+import { init , getClassLogger } from "../logger";
 
 describe("loggerManager", () => {
     it("should show a proper message if an invalid log level `DEBUG` is selected", () => {
         const consoleLogSpy = jest.spyOn(global.console, "error");
 
-        loggerManager("debug");
+        init("debug");
 
         expect(consoleLogSpy).toHaveBeenCalled();
     });
@@ -17,49 +18,31 @@ describe("loggerManager", () => {
         });
 
         beforeEach(() => {
-            loggerManager("info");
+            init("info");
         });
 
         afterEach(() => {
             jest.clearAllMocks();
-        });
-        it("should have a map of loggers after initializing", () => {
-            expect(window.Twilio.logDump).toBeTruthy();
         });
 
         it("should add the new logger to the logger map", () => {
             const className = "testName";
             const consoleLogSpy = jest.spyOn(global.console, "info");
 
-            window.Twilio.addLogs(className, "test message", "info");
+            const logger = getClassLogger(className);
+            logger.info("test message");
 
-            expect(consoleLogSpy).toBeCalled();
-            expect(window.Twilio.logDump.get(className)).toBeTruthy();
+            expect(consoleLogSpy).toHaveBeenCalledWith(`[${className}]: test message`);
         });
 
         it("should add a logger with LEVEL `error`", () => {
             const className = "testName";
-            const consoleLogSpy = jest.spyOn(global.console, "warn");
-
-            window.Twilio.addLogs(className, "test message", "warn");
-
-            expect(consoleLogSpy).toBeCalled();
-        });
-        it("should add a logger with LEVEL `warn`", () => {
-            const className = "testName";
             const consoleLogSpy = jest.spyOn(global.console, "error");
 
-            window.Twilio.addLogs(className, "test message", "error");
+            const logger = getClassLogger(className);
+            logger.error("test message");
 
-            expect(consoleLogSpy).toBeCalled();
-        });
-
-        describe("createLogger", () => {
-            it("should return a logger for a given Classname and Log Level", () => {
-                const className = "testName";
-                createLogger(className, "warn");
-                expect(window.Twilio.logDump.get(className)).toBeTruthy();
-            });
+            expect(consoleLogSpy).toHaveBeenCalledWith(`[${className}]: test message`);
         });
     });
 });

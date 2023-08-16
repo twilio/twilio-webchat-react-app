@@ -5,7 +5,6 @@ import * as reactDom from "react-dom";
 import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
-import * as logger from "../logger";
 import * as initActions from "../store/actions/initActions";
 
 jest.mock("react-dom");
@@ -13,13 +12,9 @@ jest.mock("react-dom");
 store.dispatch = jest.fn();
 
 describe("Index", () => {
-    const { initWebchat } = window.Twilio;
+    let { initWebchat, getClassLogger } = window.Twilio;
     beforeAll(() => {
-        Object.defineProperty(window, "Twilio", {
-            value: {
-                addLogs: jest.fn()
-            }
-        });
+        getClassLogger = jest.fn();
     });
     
     afterEach(() => {

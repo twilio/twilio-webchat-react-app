@@ -8,8 +8,23 @@ import {
     HEADER_SEC_USERSETTINGS,
     HEADER_SEC_DECODER
 } from "./generateSecurityHeaders";
+import GenerateLogger from "../logger";
+
+jest.mock("../logger");
 
 describe("Generate Security Headers", () => {
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getClassLogger: function(className: string) {
+                    return new GenerateLogger(className);
+                }
+            }
+        });
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
     it("Should generateSecurityHeaders", async () => {
         jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
         // eslint-disable-next-line no-proto

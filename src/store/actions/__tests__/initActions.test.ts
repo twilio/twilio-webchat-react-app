@@ -17,6 +17,7 @@ import { initMessagesListener } from "../listeners/messagesListener";
 import { initParticipantsListener } from "../listeners/participantsListener";
 import { SessionReducer } from "../../session.reducer";
 import { notifications } from "../../../notifications";
+import GenerateLogger from "../../../logger";
 
 jest.mock("@twilio/conversations");
 jest.mock("../listeners/clientListener", () => ({
@@ -31,6 +32,7 @@ jest.mock("../listeners/messagesListener", () => ({
 jest.mock("../listeners/participantsListener", () => ({
     initParticipantsListener: jest.fn()
 }));
+jest.mock("../../../logger");
 
 const createSessionStore = () =>
     createStore(
@@ -58,8 +60,22 @@ describe("Actions", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockStore: any;
 
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getClassLogger: function(className: string) {
+                    return new GenerateLogger(className);
+                }
+            }
+        });
+    });
+
     beforeEach(() => {
         mockStore = createSessionStore();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     describe("initSession", () => {

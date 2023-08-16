@@ -8,7 +8,7 @@ import { WebchatWidget } from "./components/WebchatWidget";
 import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
-import loggerManager, { addLogsType } from "./logger";
+import { init, getClassLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -42,7 +42,8 @@ const initWebchat = async (config: ConfigState) => {
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     const rootElement = document.getElementById("twilio-webchat-widget-root");
-    window.Twilio.addLogs("initWebChat", "Now rendering the webchat", "info");
+    const logger = window.Twilio.getClassLogger("initWebChat");
+    logger.info("Now rendering the webchat");
     render(
         <Provider store={store}>
             <WebchatWidget />
@@ -59,9 +60,8 @@ declare global {
     interface Window {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
-            loggerManager: (level?: LogLevelDesc) => void;
-            logDump: Map<string, Logger>;
-            addLogs: addLogsType;
+            init: (level?: LogLevelDesc) => void;
+            getClassLogger: (className: string) => Logger;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
@@ -72,6 +72,7 @@ declare global {
 Object.assign(window, {
     Twilio: {
         initWebchat,
-        loggerManager
+        init,
+        getClassLogger
     }
 });

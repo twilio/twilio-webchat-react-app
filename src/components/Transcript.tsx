@@ -1,6 +1,5 @@
 import { Message, User } from "@twilio/conversations";
 import { useState } from "react";
-import log from "loglevel";
 import { Box } from "@twilio-paste/core/box";
 import { Flex } from "@twilio-paste/core/flex";
 import { Text } from "@twilio-paste/core/text";
@@ -35,6 +34,7 @@ export const Transcript = (props: TranscriptProps) => {
     const [isDownloadingTranscript, setIsDownloadingTranscript] = useState(false);
     const [isEmailingTranscript, setEmailingTranscript] = useState(false);
 
+    const logger = window.Twilio.getClassLogger("Transcript");
     const getMediaInfo = async () => {
         const mediaMessages = props.messages?.filter((message) => message.attachedMedia);
         const mediaInfo = [];
@@ -49,7 +49,7 @@ export const Transcript = (props: TranscriptProps) => {
                     const url = media ? await media.getContentTemporaryUrl() : URL.createObjectURL(file);
                     mediaInfo.push({ url, filename: media.filename, type: media.contentType });
                 } catch (e) {
-                    log.error(`Failed downloading message attachment: ${e}`);
+                    logger.error(`Failed downloading message attachment: ${e}`);
                 }
             }
         }
@@ -91,7 +91,7 @@ export const Transcript = (props: TranscriptProps) => {
             await zip
                 .generateAsync({ type: "blob" })
                 .then((blob) => saveAs(blob, `${fileName}.zip`))
-                .catch((e) => log.error(`Failed zipping message attachments: ${e}`));
+                .catch((e) => logger.error(`Failed zipping message attachments: ${e}`));
         } else {
             saveAs(transcriptBlob, `${fileName}.txt`);
         }

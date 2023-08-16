@@ -6,6 +6,7 @@ import { ConversationEnded } from "../ConversationEnded";
 import * as genericActions from "../../store/actions/genericActions";
 import { sessionDataHandler } from "../../sessionDataHandler";
 import { EngagementPhase } from "../../store/definitions";
+import GenerateLogger from "../../logger";
 
 jest.mock("react-redux", () => ({
     ...jest.requireActual("react-redux"),
@@ -18,6 +19,8 @@ jest.mock("../../sessionDataHandler", () => ({
         clear: jest.fn()
     }
 }));
+
+jest.mock("../../logger");
 
 const user1 = {
     identity: "identity 1",
@@ -83,6 +86,16 @@ describe("Conversation Ended", () => {
     const downloadTranscriptButtonText = "Download";
     const emailTranscriptButtonText = "Send to my email";
 
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getClassLogger: function(className: string) {
+                    return new GenerateLogger(className);
+                }
+            }
+        });
+    });
+
     beforeEach(() => {
         (useSelector as jest.Mock).mockImplementation((callback: any) => callback(defaultState));
     });
@@ -92,6 +105,7 @@ describe("Conversation Ended", () => {
             DOWNLOAD_TRANSCRIPT_ENABLED: "true",
             EMAIL_TRANSCRIPT_ENABLED: "true"
         });
+        jest.clearAllMocks();
     });
 
     it("renders conversation ended", () => {
