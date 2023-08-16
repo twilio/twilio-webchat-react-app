@@ -1,13 +1,14 @@
 import merge from "lodash.merge";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
+import { Logger, LogLevelDesc } from "loglevel";
 
 import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
 import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
-import { initLogger } from "./logger";
+import { initLogger, getLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -40,9 +41,9 @@ const initWebchat = async (config: ConfigState) => {
     const mergedConfig = merge({}, defaultConfig, config);
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
-    initLogger();
     const rootElement = document.getElementById("twilio-webchat-widget-root");
-
+    const logger = window.Twilio.getLogger("initWebChat");
+    logger.info("Now rendering the webchat");
     render(
         <Provider store={store}>
             <WebchatWidget />
@@ -59,6 +60,8 @@ declare global {
     interface Window {
         Twilio: {
             initWebchat: (config: ConfigState) => void;
+            initLogger: (level?: LogLevelDesc) => void;
+            getLogger: (className: string) => Logger;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
@@ -68,6 +71,8 @@ declare global {
 // Expose `initWebchat` function to window object
 Object.assign(window, {
     Twilio: {
-        initWebchat
+        initWebchat,
+        initLogger,
+        getLogger
     }
 });

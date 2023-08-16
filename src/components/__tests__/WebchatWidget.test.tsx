@@ -6,6 +6,7 @@ import { sessionDataHandler } from "../../sessionDataHandler";
 import * as genericActions from "../../store/actions/genericActions";
 import * as initActions from "../../store/actions/initActions";
 import { EngagementPhase } from "../../store/definitions";
+import WebChatLogger from "../../logger";
 
 jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn(),
@@ -29,6 +30,22 @@ jest.mock("../../store/actions/genericActions", () => ({
 jest.mock("../RootContainer", () => ({
     RootContainer: () => <div title="RootContainer" />
 }));
+
+jest.mock("../../logger");
+
+beforeAll(() => {
+    Object.defineProperty(window, "Twilio", {
+        value: {
+            getLogger: function(className: string) {
+                return new WebChatLogger(className);
+            }
+        }
+    });
+});
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
 
 describe("Webchat Lite", () => {
     const sessionData = {

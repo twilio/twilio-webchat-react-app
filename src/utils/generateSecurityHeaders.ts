@@ -1,4 +1,3 @@
-import log from "loglevel";
 
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
@@ -38,13 +37,14 @@ const getUserSpecificSettings = () => {
 const getWebchatInfo = () => {
     const sessionStorage = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) as string;
     const reduxState = store.getState();
+    const logger = window.Twilio.getLogger('getWebchatInfo');
 
     let parsedStorage = null;
 
     try {
         parsedStorage = JSON.parse(sessionStorage);
     } catch (e) {
-        log.log("Couldn't parse locally stored data");
+        logger.error("Couldn't parse locally stored data");
     }
 
     return {

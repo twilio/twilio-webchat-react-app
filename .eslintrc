@@ -34,6 +34,8 @@
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-shadow": ["error"],
     "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/member-ordering": "off",
+    "lines-between-class-members": "off",
     "import/no-duplicates": ["error"],
     "spaced-comment": "warn",
     "prefer-named-capture-group": "off"

@@ -7,12 +7,29 @@ import { initClientListeners } from "../clientListener";
 import { Token } from "../../../../definitions";
 import { sessionDataHandler } from "../../../../sessionDataHandler";
 import { Client } from "../../../../__mocks__/@twilio/conversations/client";
+import WebChatLogger from "../../../../logger";
+
+jest.mock("../../../../logger");
 
 describe("Client Listeners", () => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
     const connectionStateChangedEvent = "connectionStateChanged";
     const mockDispatch = jest.fn();
     const mockClient = new Client("token");
+
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
+                }
+            }
+        });
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     it("updates token on tokenAboutToExpire event", async () => {
         const tokenResponsePayload: Token = {

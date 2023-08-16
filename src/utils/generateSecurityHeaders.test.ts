@@ -4,12 +4,27 @@ import {
     DEFAULT_LOGIN_TIMESTAMP,
     DEFAULT_NAVIGATOR_LANG
 } from "./generateSecurityHeaders";
+import WebChatLogger from "../logger";
+
+jest.mock("../logger");
 
 const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
 const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
 const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
 const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
 describe("Generate Security Headers", () => {
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
+                }
+            }
+        });
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
     it("Should generateSecurityHeaders", async () => {
         jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
         // eslint-disable-next-line no-proto

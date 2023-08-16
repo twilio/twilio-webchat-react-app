@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 import { MessageInput } from "../MessageInput";
 import * as genericActions from "../../store/actions/genericActions";
+import WebChatLogger from "../../logger";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -37,6 +38,8 @@ jest.mock("../AttachFileButton", () => ({
     AttachFileButton: () => <div title="AttachFileButton" />
 }));
 
+jest.mock("../../logger");
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function FormDataMock(this: any) {
     this.append = jest.fn();
@@ -60,6 +63,20 @@ describe("Message Input", () => {
         expect(buildMessageSpy).toHaveBeenCalledTimes(times);
         expect(sendMessageSpy).toHaveBeenCalledTimes(times);
     };
+
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
+                }
+            }
+        });
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     beforeEach(() => {
         (useSelector as jest.Mock).mockImplementation((callback: any) => callback(defaultState));

@@ -5,7 +5,6 @@ import * as reactDom from "react-dom";
 import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
-import * as logger from "../logger";
 import * as initActions from "../store/actions/initActions";
 
 jest.mock("react-dom");
@@ -13,7 +12,14 @@ jest.mock("react-dom");
 store.dispatch = jest.fn();
 
 describe("Index", () => {
-    const { initWebchat } = window.Twilio;
+    let { initWebchat, getLogger } = window.Twilio;
+    beforeAll(() => {
+        getLogger = jest.fn();
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     describe("initWebchat", () => {
         it("renders Webchat Lite correctly", () => {
@@ -56,14 +62,6 @@ describe("Index", () => {
             initWebchat({ serverUrl });
 
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ serverUrl, theme: { isLight: true } }));
-        });
-
-        it("initializes logger", () => {
-            const initLoggerSpy = jest.spyOn(logger, "initLogger");
-
-            initWebchat({});
-
-            expect(initLoggerSpy).toBeCalled();
         });
     });
 });
