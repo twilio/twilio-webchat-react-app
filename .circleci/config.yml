@@ -43,7 +43,7 @@ jobs:
           path: coverage
   cypressTestsOnSauce:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:14.18.1
     steps:
       - checkout
       - run:

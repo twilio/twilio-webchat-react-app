@@ -85,7 +85,6 @@
     "not op_mini all"
   ],
   "jest": {
-    "verbose": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
         "<rootDir>/src/components/**/*.ts",
