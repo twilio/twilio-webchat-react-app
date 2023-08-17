@@ -42,17 +42,16 @@ const defaultConfig: ConfigState = {
 const initWebchat = async (config: InitialConfig) => {
     // validations for only supported keys in config
     const validKeys = ["deploymentKey", "region", "theme"];
+    const logger = window.Twilio.getLogger("initWebChat");
 
     // deploymentKey is required
     if (!config || !config.deploymentKey) {
-        // TODO - replace with logger implementation
-        console.error("`deploymentKey` is required.");
+        logger.error("`deploymentKey` is required.");
     }
 
     for (const key in config) {
         if (!validKeys.includes(key)) {
-            // TODO - replace with logger implementation
-            console.warn(`${key} is not supported.`);
+            logger.warn(`${key} is not supported.`);
         }
     }
 
@@ -61,7 +60,6 @@ const initWebchat = async (config: InitialConfig) => {
     sessionDataHandler.setRegion(mergedConfig.region);
     store.dispatch(initConfig(mergedConfig));
     const rootElement = document.getElementById("twilio-webchat-widget-root");
-    const logger = window.Twilio.getLogger("initWebChat");
     logger.info("Now rendering the webchat");
     render(
         <Provider store={store}>

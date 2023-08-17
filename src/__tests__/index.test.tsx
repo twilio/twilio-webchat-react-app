@@ -64,18 +64,6 @@ describe("Index", () => {
             expect(initConfigSpy).toBeCalled();
         });
 
-        it("gives error when deploymentKey is missing", () => {
-            const errorLoggerSpy = jest.spyOn(console, "error");
-            initWebchat();
-            expect(errorLoggerSpy).toHaveBeenCalledWith("`deploymentKey` is required.");
-        });
-
-        it("gives warning when unsupported params are passed", () => {
-            const warningSpy = jest.spyOn(console, "warn");
-            initWebchat({ deploymentKey: "xyz", someKey: "abc" });
-            expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
-        });
-
         it("initializes config with provided config merged with default config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
@@ -85,12 +73,18 @@ describe("Index", () => {
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ deploymentKey, theme: { isLight: true } }));
         });
 
-        it("initializes logger", () => {
-            const initLoggerSpy = jest.spyOn(logger, "initLogger");
+        it("gives error when deploymentKey is missing", () => {
+            const logger = window.Twilio.getLogger("initWebChat");
+            const errorLoggerSpy = jest.spyOn(logger, "error");
+            initWebchat();
+            expect(errorLoggerSpy).toHaveBeenCalledWith("`deploymentKey` is required.");
+        });
 
-            initWebchat({ deploymentKey: "xyz" });
-
-            expect(initLoggerSpy).toBeCalled();
+        it("gives warning when unsupported params are passed", () => {
+            const logger = window.Twilio.getLogger("initWebChat");
+            const warningSpy = jest.spyOn(logger, "warn");
+            initWebchat({ deploymentKey: "xyz", someKey: "abc" });
+            expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
         });
     });
 });

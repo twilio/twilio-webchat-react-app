@@ -1,4 +1,3 @@
-
 import { Token } from "./definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 import { buildRegionalHost } from "./utils/regionUtil";
