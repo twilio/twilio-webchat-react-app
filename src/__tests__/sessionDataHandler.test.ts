@@ -1,6 +1,9 @@
 import fetchMock from "fetch-mock-jest";
 
 import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
+import WebChatLogger from "../logger";
+
+jest.mock("../logger");
 
 Object.defineProperty(navigator, "mediaCapabilities", {
     writable: true,
@@ -10,6 +13,15 @@ Object.defineProperty(navigator, "mediaCapabilities", {
 });
 
 describe("session data handler", () => {
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
+                }
+            }
+        });
+    });
     afterEach(() => {
         jest.clearAllMocks();
     });

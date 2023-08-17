@@ -1,4 +1,3 @@
-import log from "loglevel";
 
 import { Token } from "./definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
@@ -16,6 +15,7 @@ type SessionDataStorage = Token & {
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
+    const logger = window.Twilio.getLogger('sessionDataHandler');
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
         headers: {
@@ -27,6 +27,7 @@ export async function contactBackend<T>(endpointRoute: string, body: Record<stri
     });
 
     if (!response.ok) {
+        logger.error("Request to backend failed");
         throw new Error("Request to backend failed");
     }
 
@@ -39,6 +40,7 @@ function storeSessionData(data: SessionDataStorage) {
 
 function getStoredSessionData() {
     const item = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID);
+    const logger = window.Twilio.getLogger('sessionDataHandler');
     let storedData: Token;
 
     if (!item) {
@@ -48,7 +50,7 @@ function getStoredSessionData() {
     try {
         storedData = JSON.parse(item);
     } catch (e) {
-        log.log("Couldn't parse locally stored data");
+        logger.error("Couldn't parse locally stored data");
         return null;
     }
 
@@ -73,20 +75,21 @@ export const sessionDataHandler = {
     },
 
     tryResumeExistingSession(): Token | null {
-        log.debug("sessionDataHandler: trying to refresh existing session");
+        const logger = window.Twilio.getLogger('sessionDataHandler');
+        logger.info("trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
 
         if (!storedTokenData) {
-            log.debug("sessionDataHandler: no tokens stored, no session to refresh");
+            logger.warn("no tokens stored, no session to refresh");
             return null;
         }
 
         if (Date.now() >= new Date(storedTokenData.expiration).getTime()) {
-            log.debug("sessionDataHandler: token expired, ignoring existing sessions");
+            logger.warn("token expired, ignoring existing sessions");
             return null;
         }
 
-        log.debug("sessionDataHandler: existing token still valid, using existing session data");
+        logger.info("existing token still valid, using existing session data");
 
         storeSessionData({
             ...storedTokenData,
@@ -96,10 +99,12 @@ export const sessionDataHandler = {
     },
 
     async getUpdatedToken(): Promise<Token> {
-        log.debug("sessionDataHandler: trying to get updated token from BE");
+        const logger = window.Twilio.getLogger('sessionDataHandler');
+        logger.info("trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
 
         if (!storedTokenData) {
+            logger.error("Can't update token: current token doesn't exist");
             throw Error("Can't update token: current token doesn't exist");
         }
 
@@ -111,6 +116,7 @@ export const sessionDataHandler = {
                 token: storedTokenData.token
             });
         } catch (e) {
+            logger.error(`Something went wrong when trying to get an updated token: ${e}`);
             throw Error(`Something went wrong when trying to get an updated token: ${e}`);
         }
 
@@ -125,7 +131,8 @@ export const sessionDataHandler = {
     },
 
     fetchAndStoreNewSession: async ({ formData }: { formData: Record<string, unknown> }) => {
-        log.debug("sessionDataHandler: trying to create new session");
+        const logger = window.Twilio.getLogger('sessionDataHandler');
+        logger.info("trying to create new session");
         const loginTimestamp = Date.now();
 
         let newTokenData;
@@ -137,10 +144,11 @@ export const sessionDataHandler = {
                 preEngagementData: JSON.stringify(formData)
             });
         } catch (e) {
+            logger.error("No results from server");
             throw Error("No results from server");
         }
 
-        log.debug("sessionDataHandler: new session successfully created");
+        logger.info("new session successfully created");
         storeSessionData({
             ...newTokenData,
             loginTimestamp

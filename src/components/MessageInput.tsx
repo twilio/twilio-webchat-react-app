@@ -1,4 +1,3 @@
-import log from "loglevel";
 import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import throttle from "lodash.throttle";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,6 +48,7 @@ export const MessageInput = () => {
     );
     const { onUserInputSubmit } = useSanitizer();
 
+    const logger = window.Twilio.getLogger("MessageInput");
     const isSubmitDisabled = (!text.trim() && !attachedFiles?.length) || isSending;
 
     const send = async () => {
@@ -56,7 +56,7 @@ export const MessageInput = () => {
             return;
         }
         if (!conversation) {
-            log.error("Failed sending message: no conversation found");
+            logger.error("Failed sending message: no conversation found");
             return;
         }
         setIsSending(true);

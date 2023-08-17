@@ -1,6 +1,5 @@
 import { Client } from "@twilio/conversations";
 import { Dispatch } from "redux";
-import log from "loglevel";
 
 import { sessionDataHandler } from "../../../sessionDataHandler";
 import { notifications } from "../../../notifications";
@@ -10,11 +9,12 @@ import { ACTION_UPDATE_SESSION_DATA } from "../actionTypes";
 export const initClientListeners = (conversationClient: Client, dispatch: Dispatch) => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
     const connectionStateChangedEvent = "connectionStateChanged";
+    const logger = window.Twilio.getLogger("conversationClientListener");
 
     // remove any other refresh handler added before and add it again
     conversationClient.removeAllListeners(tokenAboutToExpireEvent);
     conversationClient.addListener(tokenAboutToExpireEvent, async () => {
-        log.debug("conversationClientListener: token about to expire");
+        logger.warn("token about to expire");
 
         const data = await sessionDataHandler.getUpdatedToken();
         if (data?.token && data?.conversationSid) {

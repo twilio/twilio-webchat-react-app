@@ -6,6 +6,7 @@ import { FilePreview } from "../FilePreview";
 import * as genericActions from "../../store/actions/genericActions";
 import { notifications } from "../../notifications";
 import { matchPartialNotificationObject } from "../../test-utils";
+import WebChatLogger from "../../logger";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -17,6 +18,7 @@ jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn(),
     useSelector: (callback: any) => callback({ config: { fileAttachment: fileAttachmentConfig } })
 }));
+jest.mock("../../logger");
 
 describe("File Preview", () => {
     const dumbFile = { name: "filename.jpg", type: "image/jpeg", size: 1, lastModified: 1 } as File;
@@ -30,6 +32,19 @@ describe("File Preview", () => {
     const closeIconTitle = "Remove file attachment";
     const fileButtonMainAreaSelector = `[data-test="file-preview-main-area"]`;
 
+    beforeAll(() => {
+        Object.defineProperty(window, "Twilio", {
+            value: {
+                getLogger: function(className: string) {
+                    return new WebChatLogger(className);
+                }
+            }
+        });
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+    
     it("renders the file preview", () => {
         const { container } = render(<FilePreview file={dumbFile} isBubble={false} focusable={false} />);
 

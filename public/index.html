@@ -40,6 +40,7 @@
 
 	<script>
 		window.addEventListener("DOMContentLoaded", () => {
+			Twilio.initLogger("info");
 			Twilio.initWebchat({
 				deploymentKey: "%REACT_APP_DEPLOYMENT_KEY%",
 				region: "%REACT_APP_REGION%",

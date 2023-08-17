@@ -1,12 +1,11 @@
-import log from "loglevel";
 
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-export const HEADER_SEC_DECODER = "X-Sec-Decoders";
-export const HEADER_SEC_BROWSEROS = "X-Sec-Browseros";
-export const HEADER_SEC_USERSETTINGS = "X-Sec-Usersettings";
-export const HEADER_SEC_WEBCHAT = "X-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
 
 type SecurityHeadersType = {
     [HEADER_SEC_BROWSEROS]: string;
@@ -38,13 +37,14 @@ const getUserSpecificSettings = () => {
 const getWebchatInfo = () => {
     const sessionStorage = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) as string;
     const reduxState = store.getState();
+    const logger = window.Twilio.getLogger('getWebchatInfo');
 
     let parsedStorage = null;
 
     try {
         parsedStorage = JSON.parse(sessionStorage);
     } catch (e) {
-        log.log("Couldn't parse locally stored data");
+        logger.error("Couldn't parse locally stored data");
     }
 
     return {
