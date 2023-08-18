@@ -124,4 +124,7 @@ workflows:
           requires:
             - runUnitTests
           context: SonarCloud
+          filters:
+            branches:
+              only: flex-webchat-ui
 
