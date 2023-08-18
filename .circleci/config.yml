@@ -6,6 +6,7 @@ version: 2.1
 orbs:
   node: circleci/node@4.7
   cypress: cypress-io/cypress@1
+  sonarcloud: sonarsource/sonarcloud@2.0.0
 
 executors:
   with-chrome:
@@ -38,9 +39,11 @@ jobs:
       - run:
           command: yarn test:nowatch
           name: Run YARN tests
+      - store_artifacts:
+          path: coverage
   cypressTestsOnSauce:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:14.18.1
     steps:
       - checkout
       - run:
@@ -84,7 +87,12 @@ jobs:
           name: "Run Cypress on Sauce"
           command: |
             saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e TEST_EMAIL=${TEST_EMAIL}
-
+  sonarqubeCloudScan:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - sonarcloud/scan
 workflows:
   build:
     jobs:
@@ -112,3 +120,8 @@ workflows:
       - cypressTestsOnSauce:
           requires:
             - cleanUp
+      - sonarqubeCloudScan:
+          requires:
+            - runUnitTests
+          context: SonarCloud
+
