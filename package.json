@@ -58,7 +58,7 @@
     "express": "4.17.2",
     "fetch-mock-jest": "^1.5.1",
     "filemanager-webpack-plugin": "^8.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.1",
     "node-fetch": "^2.6.6",
     "nodemon": "^2.0.15",
     "prettier": "^2.4.1",
