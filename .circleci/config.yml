@@ -38,14 +38,24 @@ jobs:
           pkg-manager: yarn-berry
           with-cache: true
       - run:
-          command: yarn test:nowatch
+          command: |
+            mkdir -p /tmp/test-reports
+            yarn test:nowatch
           name: Run YARN tests
       - store_test_results:
+<<<<<<< HEAD
           path: /coverage
       - persist_to_workspace:
           root: ~/repo
           paths:
             - ./coverage
+=======
+          path: /tmp/test-reports
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - ./tmp/test-reports
+>>>>>>> be5c3f4 (changing lcov report path)
   cypressTestsOnSauce:
     docker:
       - image: cimg/node:14.18.1
