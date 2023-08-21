@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, queryHelpers, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { NotificationBarItem } from "../NotificationBarItem";
@@ -9,6 +9,8 @@ jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn()
 }));
 
+export const queryByPasteElement = queryHelpers.queryByAttribute.bind(null, "data-paste-element");
+
 describe("Notification Bar Item", () => {
     const notification: Notification = {
         message: "Test notification",
@@ -18,6 +20,7 @@ describe("Notification Bar Item", () => {
     };
 
     const dismissButtonTitle = "Dismiss alert";
+    const dismissPasteElementName = "ALERT_DISMISS_BUTTON";
 
     it("renders a notification bar item", () => {
         const { container } = render(<NotificationBarItem {...notification} />);
@@ -32,9 +35,9 @@ describe("Notification Bar Item", () => {
     });
 
     it("renders a dismiss button if dismissible is true", () => {
-        const { queryByText } = render(<NotificationBarItem {...notification} dismissible={true} />);
+        const { container } = render(<NotificationBarItem {...notification} dismissible={true} />);
 
-        expect(queryByText(dismissButtonTitle)).toBeInTheDocument();
+        expect(queryByPasteElement(container, dismissPasteElementName)).toBeInTheDocument();
     });
 
     it("does not render a dismiss button if dismissible is false", () => {
@@ -45,22 +48,22 @@ describe("Notification Bar Item", () => {
 
     it("dismisses notification when dismiss button is clicked", () => {
         const removeNotificationSpy = jest.spyOn(genericActions, "removeNotification");
-        const { getByTitle } = render(<NotificationBarItem {...notification} dismissible={true} />);
+        const { container } = render(<NotificationBarItem {...notification} dismissible={true} />);
 
-        const dismissButton = getByTitle(dismissButtonTitle);
-        fireEvent.click(dismissButton);
+        const dismissButton = queryByPasteElement(container, dismissPasteElementName);
+        fireEvent.click(dismissButton as unknown as Element);
 
         expect(removeNotificationSpy).toHaveBeenCalledWith(notification.id);
     });
 
     it("runs onDismiss function prop when dismiss button is clicked", () => {
         const onDismiss = jest.fn();
-        const { getByTitle } = render(
+        const { container } = render(
             <NotificationBarItem {...notification} dismissible={true} onDismiss={onDismiss} />
         );
 
-        const dismissButton = getByTitle(dismissButtonTitle);
-        fireEvent.click(dismissButton);
+        const dismissButton = queryByPasteElement(container, dismissPasteElementName);
+        fireEvent.click(dismissButton as unknown as Element);
 
         expect(onDismiss).toHaveBeenCalled();
     });

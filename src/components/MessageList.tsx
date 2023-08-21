@@ -168,7 +168,7 @@ export const MessageList = () => {
                         Chat started
                     </Text>
                     <Text as="p" {...conversationEventDateStyles}>
-                        {conversation?.dateCreated.toLocaleString()}
+                        {conversation?.dateCreated?.toLocaleString()}
                     </Text>
                 </Box>
             </>
