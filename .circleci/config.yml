@@ -38,16 +38,14 @@ jobs:
           pkg-manager: yarn-berry
           with-cache: true
       - run:
-          command: |
-            mkdir -p /tmp/test-reports
-            yarn test:nowatch
+          command: yarn test:nowatch
           name: Run YARN tests
       - store_test_results:
-          path: /tmp/test-reports
+          path: /coverage
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - ./tmp/test-reports
+            - ./coverage
   cypressTestsOnSauce:
     docker:
       - image: cimg/node:14.18.1
