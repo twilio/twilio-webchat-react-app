@@ -94,6 +94,7 @@
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/coverage/"
     ],
+    "coverageDirectory": "<rootDir>/tmp/test-reports",
     "rootDir": "./"
   },
   "engines": {

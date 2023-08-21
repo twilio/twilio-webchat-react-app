@@ -29,6 +29,7 @@ jobs:
                 authToken=$TWILIO_AUTH_TOKEN \
           name: Cleanup existing tasks
   runUnitTests:
+    working_directory: ~/repo
     docker:
       - image: cimg/node:14.18.1
     steps:
@@ -37,10 +38,16 @@ jobs:
           pkg-manager: yarn-berry
           with-cache: true
       - run:
-          command: yarn test:nowatch
+          command: |
+            mkdir -p /tmp/test-reports
+            yarn test:nowatch
           name: Run YARN tests
-      - store_artifacts:
-          path: coverage
+      - store_test_results:
+          path: /tmp/test-reports
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - ./tmp/test-reports
   cypressTestsOnSauce:
     docker:
       - image: cimg/node:14.18.1
@@ -88,10 +95,13 @@ jobs:
           command: |
             saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e TEST_EMAIL=${TEST_EMAIL}
   sonarqubeCloudScan:
+    working_directory: ~/repo
     docker:
       - image: cimg/node:lts
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo
       - sonarcloud/scan
 workflows:
   build:
