@@ -1,8 +1,10 @@
 const axios = require("axios");
+
 const { createToken } = require("../helpers/createToken");
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { getTwilioClient } = require("../helpers/getTwilioClient");
 const { logFinalAction, logInitialAction, logInterimAction } = require("../helpers/logs");
+const { parseRegionForHTTP } = require("../helpers/regionUtil");
 
 const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     logInterimAction("Calling Webchat Orchestrator");
@@ -23,12 +25,16 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     let identity;
 
     try {
-        const res = await axios.post(`https://flex-api.twilio.com/v2/WebChats`, params, {
-            auth: {
-                username: process.env.ACCOUNT_SID,
-                password: process.env.AUTH_TOKEN
+        const res = await axios.post(
+            `https://flex-api${parseRegionForHTTP(process.env.REACT_APP_REGION)}.twilio.com/v2/WebChats`,
+            params,
+            {
+                auth: {
+                    username: process.env.ACCOUNT_SID,
+                    password: process.env.AUTH_TOKEN
+                }
             }
-        });
+        );
         ({ identity, conversation_sid: conversationSid } = res.data);
     } catch (e) {
         logInterimAction("Something went wrong during the orchestration:", e.response?.data?.message);
@@ -76,6 +82,7 @@ const sendWelcomeMessage = (conversationSid, customerFriendlyName) => {
         });
 };
 
+// eslint-disable-next-line consistent-return
 const initWebchatController = async (request, response) => {
     logInitialAction("Initiating webchat");
 

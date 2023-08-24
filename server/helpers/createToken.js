@@ -1,6 +1,8 @@
 const Twilio = require("twilio");
+
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { logInterimAction } = require("./logs");
+const { parseRegionForTwilioClient } = require("./regionUtil");
 
 const createToken = (identity) => {
     logInterimAction("Creating new token");
@@ -13,7 +15,8 @@ const createToken = (identity) => {
 
     const token = new AccessToken(process.env.ACCOUNT_SID, process.env.API_KEY, process.env.API_SECRET, {
         identity,
-        ttl: TOKEN_TTL_IN_SECONDS
+        ttl: TOKEN_TTL_IN_SECONDS,
+        region: parseRegionForTwilioClient(process.env.REACT_APP_REGION)
     });
     token.addGrant(chatGrant);
     const jwt = token.toJwt();
