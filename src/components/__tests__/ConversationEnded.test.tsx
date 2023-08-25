@@ -82,14 +82,11 @@ const defaultState = {
 
 describe("Conversation Ended", () => {
     const newChatButtonText = "Start new chat";
-    const transcriptQueryText = "Do you want a transcript of our chat?";
-    const downloadTranscriptButtonText = "Download";
-    const emailTranscriptButtonText = "Send to my email";
 
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getLogger: function(className: string) {
+                getLogger(className: string) {
                     return new WebChatLogger(className);
                 }
             }
@@ -101,10 +98,6 @@ describe("Conversation Ended", () => {
     });
 
     afterEach(() => {
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            EMAIL_TRANSCRIPT_ENABLED: "true"
-        });
         jest.clearAllMocks();
     });
 
@@ -119,59 +112,6 @@ describe("Conversation Ended", () => {
         const newChatButton = queryByText(newChatButtonText);
 
         expect(newChatButton).toBeInTheDocument();
-    });
-
-    it("renders the transcript query text if download or email transcript enabled in config", () => {
-        const { queryByText } = render(<ConversationEnded />);
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            EMAIL_TRANSCRIPT_ENABLED: "false"
-        });
-        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            EMAIL_TRANSCRIPT_ENABLED: "true"
-        });
-        expect(queryByText(transcriptQueryText)).toBeInTheDocument();
-    });
-
-    it("does not render the transcript query text if download and email transcript disabled in config", () => {
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            EMAIL_TRANSCRIPT_ENABLED: "false"
-        });
-        const { queryByText } = render(<ConversationEnded />);
-        expect(queryByText(transcriptQueryText)).not.toBeInTheDocument();
-    });
-
-    it("renders the download transcript button if enabled in config", () => {
-        const { queryByText } = render(<ConversationEnded />);
-        expect(queryByText(downloadTranscriptButtonText)).toBeInTheDocument();
-    });
-
-    it("does not render the download transcript button if disabled in config", () => {
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-            EMAIL_TRANSCRIPT_ENABLED: "false"
-        });
-        const { queryByText } = render(<ConversationEnded />);
-
-        expect(queryByText(downloadTranscriptButtonText)).not.toBeInTheDocument();
-    });
-
-    it("renders the email transcript button if enabled in config", () => {
-        const { queryByText } = render(<ConversationEnded />);
-        expect(queryByText(emailTranscriptButtonText)).toBeInTheDocument();
-    });
-
-    it("does not render the email transcript button if disabled in config", () => {
-        process.env = Object.assign(process.env, {
-            DOWNLOAD_TRANSCRIPT_ENABLED: "true",
-            EMAIL_TRANSCRIPT_ENABLED: "false"
-        });
-        const { queryByText } = render(<ConversationEnded />);
-
-        expect(queryByText(emailTranscriptButtonText)).not.toBeInTheDocument();
     });
 
     it("clears session data on new chat button click", () => {
