@@ -55,7 +55,7 @@
     "eslint-config-twilio-react": "^1.35.1",
     "eslint-config-twilio-ts": "^1.35.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "express": "4.17.2",
+    "express": "4.17.3",
     "fetch-mock-jest": "^1.5.1",
     "filemanager-webpack-plugin": "^8.0.0",
     "jsonwebtoken": "^8.5.1",
