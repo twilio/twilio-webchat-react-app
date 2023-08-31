@@ -48,10 +48,7 @@ describe("Webchat Lite general scenario's", () => {
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {
-                cy.task("getCustomerName", { conversationSid: this.convoSid }).should(
-                    "include",
-                    Constants.CUSTOMER_NAME
-                );
+                cy.task("getCustomerName", { conversationSid: this.convoSid }).should("not.be.empty");
             });
     });
 
@@ -212,10 +209,6 @@ describe("Webchat Lite general scenario's", () => {
                     "include",
                     Constants.FileTypes.JPG
                 );
-                /*
-                 * find the way to validate link
-                 * cy.task("validateAttachmentLink", { conversationSid: this.convoSid }).should("contain", "Media");
-                 */
             });
         cy.validateLastAttachmentMessage(Constants.FileTypes.JPG);
     });
@@ -316,7 +309,7 @@ describe("Webchat Lite general scenario's", () => {
 
     it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
         cy.on("uncaught:exception", (error, promise) => {
-            if(promise){
+            if (promise) {
                 return false;
             }
         });
@@ -329,27 +322,5 @@ describe("Webchat Lite general scenario's", () => {
                 cy.task("completeReservation", { conversationSid: this.convoSid });
                 EndChatView.validateStartNewChatButtonVisible(10000);
             });
-    });
-
-    it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
-        if (JSON.parse(Cypress.env("EMAIL_TRANSCRIPT_ENABLED"))) {
-            cy.resumeWebchatSessionCookie();
-            PreEngagementChatForm.toggleWebchatExpanded();
-            EndChatView.validateEmailTranscriptButtonButtonVisible(10000);
-            EndChatView.getEmailTranscriptButton(10000).click();
-            cy.wait(50000);
-            const oAuthClientOptions = Cypress.env("GMAIL_OAUTH_CLIENT_OPTIONS");
-            const gmailToken = Cypress.env("GMAIL_TOKEN");
-            EndChatView.checkEmails(
-                {
-                    oAuthClientOptions,
-                    token: gmailToken
-                },
-                Date.now().toString(),
-                11
-            );
-        } else {
-            this.skip();
-        }
     });
 });

@@ -16,7 +16,7 @@ describe("session data handler", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getLogger: function(className: string) {
+                getLogger(className: string) {
                     return new WebChatLogger(className);
                 }
             }
@@ -191,8 +191,25 @@ describe("session data handler", () => {
     });
 
     it("should clear the token from the local storage", () => {
-        const spy = jest.spyOn(Object.getPrototypeOf(window.localStorage), "removeItem");
+        const spyRemove = jest.spyOn(Object.getPrototypeOf(window.localStorage), "removeItem");
         sessionDataHandler.clear();
-        expect(spy).toHaveBeenCalled();
+        expect(spyRemove).toHaveBeenCalled();
+    });
+
+    describe("endpoint", () => {
+        it("should be able to store endpoint", () => {
+            sessionDataHandler.setEndpoint("http://localhost:4000");
+            expect(sessionDataHandler.getEndpoint()).toEqual("http://localhost:4000");
+        });
+    });
+
+    describe("contactBackend", () => {
+        it("should", async () => {
+            jest.spyOn(window, "fetch").mockRejectedValueOnce("ForcedFailure");
+
+            await expect(sessionDataHandler.fetchAndStoreNewSession({ formData: {} })).rejects.toThrowError(
+                new Error("No results from server")
+            );
+        });
     });
 });

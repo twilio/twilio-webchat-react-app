@@ -76,7 +76,8 @@
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
     "deploy": "yarn build && node scripts/deploy",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "test:e2e": "cypress open"
   },
   "browserslist": [
     ">0.2%",
