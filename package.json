@@ -69,6 +69,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "server": "nodemon server",
+    "server:debug": "nodemon --inspect server",
     "server:ci": "node server",
     "build": "react-app-rewired build",
     "test": "LC_ALL=\"en_GB.UTF-8\" react-app-rewired test --watchAll=false --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
