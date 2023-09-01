@@ -4,9 +4,13 @@ import { TaskInstance } from "twilio/lib/rest/taskrouter/v1/workspace/task";
 import { getTaskAndReservationFromConversationSid, getWorker, setWorkerOnline } from "./getWorker";
 import { getToken } from "./getToken";
 import { getTwilioClient } from "./twilioClient";
+import { parseRegionForEventBridge } from "./regionUtil";
 
-const EVENT_BRIDGE_URL = "https://event-bridge.twilio.com/v1/wschannels";
+const EVENT_BRIDGE_URL = `https://event-bridge${parseRegionForEventBridge(
+    process.env.REACT_APP_REGION
+)}.twilio.com/v1/wschannels`;
 
+console.log("hello world EVENT_BRIDGE_URL", EVENT_BRIDGE_URL);
 const buildInteractionEndpoint = ({
     target,
     interactionSid,
@@ -161,7 +165,7 @@ export const completeReservation = async ({ conversationSid }: { conversationSid
 };
 
 export const getCustomerName = async ({ conversationSid }: { conversationSid: string }) => {
-    await new Promise((res) => setTimeout(res, 2000)); // Add buffer to avoid api calls being made too close together
+    await new Promise((res) => setTimeout(res, 5000)); // Add buffer to avoid api calls being made too close together
 
     const { task } = await getTaskAndReservationFromConversationSid(conversationSid);
     return JSON.parse(task.attributes).from;
