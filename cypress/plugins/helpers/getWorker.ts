@@ -7,7 +7,6 @@ let worker: WorkerInstance;
 let workerActivities: ActivityInstance[];
 
 const taskByConversationSidCache = new Map();
-
 export const getWorker = async () => {
     if (worker) {
         return worker;
