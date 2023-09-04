@@ -165,7 +165,7 @@ export const completeReservation = async ({ conversationSid }: { conversationSid
 };
 
 export const getCustomerName = async ({ conversationSid }: { conversationSid: string }) => {
-    await new Promise((res) => setTimeout(res, 5000)); // Add buffer to avoid api calls being made too close together
+    await new Promise((res) => setTimeout(res, 2000)); // Add buffer to avoid api calls being made too close together
 
     const { task } = await getTaskAndReservationFromConversationSid(conversationSid);
     return JSON.parse(task.attributes).from;
@@ -208,7 +208,9 @@ export const validateAttachmentLink = async ({ conversationSid }: { conversation
     const conversationInstance = await client.conversations.conversations(conversationSid).fetch();
     const options = {
         method: "GET",
-        url: `https://mcs.${parseRegionForConversations}twilio.com/v1/Services/${conversationInstance.chatServiceSid}/Media/${mediaSid}`,
+        url: `https://mcs.${parseRegionForConversations(process.env.REACT_APP_REGION)}twilio.com/v1/Services/${
+            conversationInstance.chatServiceSid
+        }/Media/${mediaSid}`,
         auth: {
             username: client.username,
             password: client.password
