@@ -48,7 +48,7 @@ const getWebchatInfo = () => {
 
     return {
         loginTimestamp: parsedStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
-        deploymentKey: reduxState?.config?.deploymentKey ?? null
+        deploymentKey: reduxState?.config?.deploymentKey || null
     };
 };
 
