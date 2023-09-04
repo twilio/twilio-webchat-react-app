@@ -101,7 +101,7 @@ export const sessionDataHandler = {
 
         storeSessionData({
             ...storedTokenData,
-            loginTimestamp: storedTokenData.loginTimestamp || null,
+            loginTimestamp: storedTokenData.loginTimestamp ?? null
         });
         return { ...storedTokenData, region: _region };
     },
@@ -145,7 +145,7 @@ export const sessionDataHandler = {
         let newTokenData;
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/initWebchat", { formData }) as TokenResponse;
+            newTokenData = await contactBackend<TokenResponse>("/initWebchat", { formData });
         } catch (e) {
             logger.error("No results from server");
             throw Error("No results from server");
