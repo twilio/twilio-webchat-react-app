@@ -34,7 +34,7 @@ const getUserSpecificSettings = () => {
 };
 
 const getWebchatInfo = () => {
-    const sessionStorage: string = (localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) || "");
+    const sessionStorage: string = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
     const reduxState = store.getState();
     const logger = window.Twilio.getLogger("getWebchatInfo");
 
@@ -48,7 +48,7 @@ const getWebchatInfo = () => {
 
     return {
         loginTimestamp: parsedStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
-        deploymentKey: reduxState?.config?.deploymentKey || null
+        deploymentKey: reduxState?.config?.deploymentKey ?? null
     };
 };
 
