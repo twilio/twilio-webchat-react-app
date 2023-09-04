@@ -2,7 +2,7 @@ const Twilio = require("twilio");
 
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { logInterimAction } = require("./logs");
-const { parseRegionForTwilioClient } = require("./regionUtil");
+const { parseRegionForTwilioClient } = require("../../shared/regionUtil");
 
 const createToken = (identity) => {
     logInterimAction("Creating new token");
