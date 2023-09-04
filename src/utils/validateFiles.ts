@@ -1,4 +1,4 @@
-import { extension as mimeToExtension } from "mime-types";
+import { extensions as mimeToExtensions } from "mime-types";
 import { Dispatch } from "redux";
 
 import { addNotification } from "../store/actions/genericActions";
@@ -44,7 +44,11 @@ export const validateFiles = (
             );
         } else if (
             fileAttachmentConfig?.acceptedExtensions &&
-            !fileAttachmentConfig.acceptedExtensions.includes(mimeToExtension(file.type) as string)
+            !mimeToExtensions[file.type].some(
+                (type) =>
+                    fileAttachmentConfig?.acceptedExtensions &&
+                    fileAttachmentConfig.acceptedExtensions.indexOf(type) >= 0
+            )
         ) {
             dispatch(
                 addNotification(
