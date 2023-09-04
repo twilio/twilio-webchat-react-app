@@ -1,6 +1,6 @@
 const Twilio = require("twilio");
 
-const { parseRegionForTwilioClient } = require("./regionUtil");
+const { parseRegionForTwilioClient } = require("../../shared/regionUtil");
 
 let twilioClient;
 

@@ -1,4 +1,4 @@
-export function parseRegionForConversations(region: string| undefined = "") {
+export function parseRegionForConversations(region: string | undefined = "") {
     region = region || "";
     switch (region) {
         case "prod":
