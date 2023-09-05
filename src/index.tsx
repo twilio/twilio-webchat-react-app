@@ -30,7 +30,7 @@ const initWebchat = async (userConfig: UserConfig) => {
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
     // eslint-disable-next-line no-warning-comments
-    // TODO: deploymentKey validation must be added with PR #74
+    // TODO: Returning from here if no deployment key with PR #74
     if (!userConfig?.deploymentKey) {
         logger.error(`deploymentKey must exist to connect to webchat servers`);
     }
