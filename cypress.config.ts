@@ -26,6 +26,7 @@ export default defineConfig({
         trashAssetsBeforeRuns: true,
         responseTimeout: 100000,
         setupNodeEvents(on, config) {
+            // removing old tasks if any, before launching the browser, so worker is not occupied with previous ones
             on("before:browser:launch", async () => {
                 const client = getTwilioClient();
                 const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
