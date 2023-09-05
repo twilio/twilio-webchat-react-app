@@ -1,11 +1,13 @@
 import { jwt } from "twilio";
 
 import { getWorker } from "./getWorker";
+import { parseRegionForTwilioClient } from "./regionUtil";
 
 const getJwt = (identity: string, grants: any[], { ttl }: { ttl?: number } = {}) => {
     const { AccessToken } = jwt;
     const token = new AccessToken(process.env.ACCOUNT_SID!, process.env.API_KEY!, process.env.API_SECRET!, {
         identity,
+        region: parseRegionForTwilioClient(process.env.REACT_APP_REGION),
         ttl: ttl || 60 * 5
     });
 

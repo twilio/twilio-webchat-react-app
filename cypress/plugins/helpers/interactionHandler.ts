@@ -1,11 +1,15 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { TaskInstance } from "twilio/lib/rest/taskrouter/v1/workspace/task";
 
 import { getTaskAndReservationFromConversationSid, getWorker, setWorkerOnline } from "./getWorker";
 import { getToken } from "./getToken";
 import { getTwilioClient } from "./twilioClient";
+import { parseRegionForEventBridge } from "./regionUtil";
+import { parseRegionForConversations } from "../../../src/utils/regionUtil";
 
-const EVENT_BRIDGE_URL = "https://event-bridge.twilio.com/v1/wschannels";
+const EVENT_BRIDGE_URL = `https://event-bridge${parseRegionForEventBridge(
+    process.env.REACT_APP_REGION
+)}.twilio.com/v1/wschannels`;
 
 const buildInteractionEndpoint = ({
     target,
@@ -103,7 +107,7 @@ export const acceptReservation = async ({ conversationSid }: { conversationSid: 
 };
 
 export const sendMessage = async ({ conversationSid, messageText }) => {
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
     const worker = await getWorker();
     const message = await client.conversations
         .conversations(conversationSid)
@@ -170,7 +174,7 @@ export const getCustomerName = async ({ conversationSid }: { conversationSid: st
 export const getLastMessageMediaData = async ({ conversationSid }: { conversationSid: string }) => {
     await new Promise((res) => setTimeout(res, 2000)); // Add buffer to avoid api calls being made too close together
 
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
     const messageIM = await client.conversations
         .conversations(conversationSid)
         .messages.list({ order: "desc", limit: 1 });
@@ -179,7 +183,7 @@ export const getLastMessageMediaData = async ({ conversationSid }: { conversatio
 
 export const getLastMessageAllMediaFilenames = async ({ conversationSid }: { conversationSid: string }) => {
     await new Promise((res) => setTimeout(res, 2000)); // Add buffer to avoid api calls being made too close together
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
     const { 0: lastMessage } = await client.conversations
         .conversations(conversationSid)
         .messages.list({ order: "desc", limit: 1 });
@@ -187,7 +191,7 @@ export const getLastMessageAllMediaFilenames = async ({ conversationSid }: { con
 };
 
 export const getLastMessageText = async ({ conversationSid }: { conversationSid: string }) => {
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
     const messageIM = await client.conversations
         .conversations(conversationSid)
         .messages.list({ order: "desc", limit: 1 });
@@ -195,14 +199,18 @@ export const getLastMessageText = async ({ conversationSid }: { conversationSid:
 };
 
 export const validateAttachmentLink = async ({ conversationSid }: { conversationSid: string }) => {
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
     const messageIM = await client.conversations
         .conversations(conversationSid)
         .messages.list({ order: "desc", limit: 1 });
     const mediaSid = messageIM[0].media[0].sid;
+
+    const conversationInstance = await client.conversations.conversations(conversationSid).fetch();
     const options = {
         method: "GET",
-        url: `https://mcs.us1.twilio.com/v1/Services/ISefe4b42a882440c0adcfd843a197151a/Media/${mediaSid}`,
+        url: `https://mcs.${parseRegionForConversations(process.env.REACT_APP_REGION)}twilio.com/v1/Services/${
+            conversationInstance.chatServiceSid
+        }/Media/${mediaSid}`,
         auth: {
             username: client.username,
             password: client.password
@@ -210,7 +218,7 @@ export const validateAttachmentLink = async ({ conversationSid }: { conversation
         headers: {
             Accept: "*/*"
         }
-    };
+    } as AxiosRequestConfig;
 
     return new Promise((resolve, reject) => {
         axios
