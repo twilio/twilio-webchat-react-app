@@ -44,5 +44,4 @@ function parseRegionForTwilioClient(region) {
     }
 }
 
-
 module.exports = { parseRegionForHTTP, parseRegionForTwilioClient, parseRegionForEventBridge };

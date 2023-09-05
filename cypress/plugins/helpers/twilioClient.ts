@@ -1,6 +1,6 @@
 import { Twilio } from "twilio";
 
-import { parseRegionForTwilioClient } from "./regionUtil";
+import { parseRegionForTwilioClient } from "../../../shared/regionUtil";
 
 let twilioClient: Twilio;
 

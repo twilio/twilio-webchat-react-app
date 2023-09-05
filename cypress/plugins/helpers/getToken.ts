@@ -1,7 +1,7 @@
 import { jwt } from "twilio";
 
 import { getWorker } from "./getWorker";
-import { parseRegionForTwilioClient } from "./regionUtil";
+import { parseRegionForTwilioClient } from "../../../shared/regionUtil";
 
 const getJwt = (identity: string, grants: any[], { ttl }: { ttl?: number } = {}) => {
     const { AccessToken } = jwt;

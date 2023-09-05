@@ -4,7 +4,7 @@ import { TaskInstance } from "twilio/lib/rest/taskrouter/v1/workspace/task";
 import { getTaskAndReservationFromConversationSid, getWorker, setWorkerOnline } from "./getWorker";
 import { getToken } from "./getToken";
 import { getTwilioClient } from "./twilioClient";
-import { parseRegionForEventBridge } from "./regionUtil";
+import { parseRegionForEventBridge } from "../../../shared/regionUtil";
 import { parseRegionForConversations } from "../../../src/utils/regionUtil";
 
 const EVENT_BRIDGE_URL = `https://event-bridge${parseRegionForEventBridge(
