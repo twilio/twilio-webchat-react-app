@@ -34,7 +34,7 @@ const getUserSpecificSettings = () => {
 };
 
 const getWebchatInfo = () => {
-    const sessionStorage: string = (localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) || "");
+    const sessionStorage: string = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
     const reduxState = store.getState();
     const logger = window.Twilio.getLogger("getWebchatInfo");
 
