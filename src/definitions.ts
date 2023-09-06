@@ -5,10 +5,6 @@ export type TokenResponse = {
     expiration: string;
 };
 
-export type SessionInformation = TokenResponse & {
-    region: string;
-};
-
 export type FileAttachmentConfig = {
     enabled?: boolean;
     maxFileSize?: number;

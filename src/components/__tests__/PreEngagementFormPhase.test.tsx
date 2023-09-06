@@ -12,7 +12,8 @@ const token = "token";
 const conversationSid = "sid";
 jest.mock("../../sessionDataHandler", () => ({
     sessionDataHandler: {
-        fetchAndStoreNewSession: () => ({ token, conversationSid })
+        fetchAndStoreNewSession: () => ({ token, conversationSid }),
+        getRegion: jest.fn()
     }
 }));
 

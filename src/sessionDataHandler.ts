@@ -1,4 +1,4 @@
-import { SessionInformation, TokenResponse } from "./definitions";
+import { TokenResponse } from "./definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
@@ -82,7 +82,7 @@ export const sessionDataHandler = {
         return _endpoint;
     },
 
-    tryResumeExistingSession(): SessionInformation | null {
+    tryResumeExistingSession(): TokenResponse | null {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
@@ -103,10 +103,10 @@ export const sessionDataHandler = {
             ...storedTokenData,
             loginTimestamp: storedTokenData.loginTimestamp ?? null
         });
-        return { ...storedTokenData, region: _region };
+        return { ...storedTokenData };
     },
 
-    async getUpdatedToken(): Promise<SessionInformation> {
+    async getUpdatedToken(): Promise<TokenResponse> {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
@@ -119,7 +119,7 @@ export const sessionDataHandler = {
         let newTokenData: TokenResponse;
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/refreshToken", {
+            newTokenData = await contactBackend<TokenResponse>("/getUpdatedToken", {
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -134,7 +134,7 @@ export const sessionDataHandler = {
         };
 
         storeSessionData(updatedSessionData);
-        return { ...updatedSessionData, region: _region };
+        return { ...updatedSessionData };
     },
 
     fetchAndStoreNewSession: async ({ formData }: { formData: Record<string, unknown> }) => {
@@ -157,7 +157,7 @@ export const sessionDataHandler = {
             loginTimestamp
         });
 
-        return { ...newTokenData, region: _region } as SessionInformation;
+        return { ...newTokenData } as TokenResponse;
     },
 
     clear: () => {

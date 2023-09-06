@@ -33,7 +33,12 @@ export const PreEngagementFormPhase = () => {
                     query: query && onUserInputSubmit(query)
                 }
             });
-            dispatch(initSession({ token: data.token, conversationSid: data.conversationSid, region: data.region }));
+            dispatch(
+                initSession({
+                    token: data.token,
+                    conversationSid: data.conversationSid
+                })
+            );
         } catch (err) {
             dispatch(addNotification(notifications.failedToInitSessionNotification((err as Error).message)));
             dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));

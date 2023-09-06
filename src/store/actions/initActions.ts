@@ -11,6 +11,7 @@ import { ACTION_START_SESSION, ACTION_LOAD_CONFIG } from "./actionTypes";
 import { addNotification, changeEngagementPhase } from "./genericActions";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
 import { parseRegionForConversations } from "../../utils/regionUtil";
+import { sessionDataHandler } from "../../sessionDataHandler";
 
 export function initConfig(config: ConfigState) {
     return {
@@ -22,10 +23,9 @@ export function initConfig(config: ConfigState) {
 export type InitSessionPayload = {
     token: string;
     conversationSid: string;
-    region: string;
 };
 
-export function initSession({ token, conversationSid, region }: InitSessionPayload) {
+export function initSession({ token, conversationSid }: InitSessionPayload) {
     const logger = window.Twilio.getLogger("initSession");
     return async (dispatch: Dispatch) => {
         let conversationsClient: Client;
@@ -36,7 +36,7 @@ export function initSession({ token, conversationSid, region }: InitSessionPaylo
 
         try {
             conversationsClient = await Client.create(token, {
-                region: parseRegionForConversations(region)
+                region: parseRegionForConversations(sessionDataHandler.getRegion())
             });
             try {
                 conversation = await conversationsClient.getConversationBySid(conversationSid);
