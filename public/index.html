@@ -63,7 +63,7 @@
 			Twilio.initWebchat({
 				serverUrl: "%REACT_APP_SERVER_URL%",
         deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
-				region: "%REACT_APP_REGION%",
+				region: urlParams.get("region") || "%REACT_APP_REGION%",
 				theme: {
 					isLight: true
 				}
