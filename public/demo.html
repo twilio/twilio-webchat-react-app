@@ -44,11 +44,10 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		Twilio.initLogger("info");
 		Twilio.initWebchat({
-			serverUrl: "%REACT_APP_SERVER_URL%",
 			deploymentKey: urlParams.get("deploymentKey"),
-			region: "%REACT_APP_REGION%",
+			region: urlParams.get("region"),
 			theme: {
-				isLight: true
+        isLight: true
 			}
 		})
 	})
