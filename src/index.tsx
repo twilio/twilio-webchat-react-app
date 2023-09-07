@@ -7,11 +7,12 @@ import { store } from "./store/store";
 import { WebchatWidget } from "./components/WebchatWidget";
 import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
-import { ConfigState } from "./store/definitions";
+import { ConfigState, UserConfig } from "./store/definitions";
 import { initLogger, getLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
-    serverUrl: "http://localhost:3001",
+    deploymentKey: "",
+    region: "",
     theme: {
         isLight: true
     },
@@ -19,31 +20,38 @@ const defaultConfig: ConfigState = {
         enabled: true,
         maxFileSize: 16777216, // 16 MB
         acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf", "txt"]
-    },
-    transcript: {
-        downloadEnabled: false,
-        emailEnabled: false,
-        emailSubject: (agentNames) => {
-            let subject = "Transcript of your chat";
-            if (agentNames.length > 0) {
-                subject = subject.concat(` with ${agentNames[0]}`);
-                agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
-            }
-            return subject;
-        },
-        emailContent: (customerName, transcript) => {
-            return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
-        }
     }
 };
 
-const initWebchat = async (config: ConfigState) => {
-    const mergedConfig = merge({}, defaultConfig, config);
-    sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
-    store.dispatch(initConfig(mergedConfig));
+const initWebchat = async (userConfig: UserConfig) => {
+    // eslint-disable-next-line no-warning-comments
+    // TODO: serverUrl needs to be removed with PR #74
+    const validKeys = ["deploymentKey", "region", "theme", "serverUrl"];
+    const logger = window.Twilio.getLogger(`InitWebChat`);
+
+    // eslint-disable-next-line no-warning-comments
+    // TODO: Returning from here if no deployment key with PR #74
+    if (!userConfig?.deploymentKey) {
+        logger.error(`deploymentKey must exist to connect to webchat servers`);
+    }
+
+    Object.keys(userConfig).forEach((userConfigKey) => {
+        if (!validKeys.includes(userConfigKey)) {
+            logger.warn(`${userConfigKey} is not supported.`);
+        }
+    });
+
+    const webchatConfig = merge({}, defaultConfig, userConfig);
+
+    sessionDataHandler.setEndpoint(webchatConfig.serverUrl);
+    sessionDataHandler.setRegion(webchatConfig.region);
+    sessionDataHandler.setDeploymentKey(webchatConfig.deploymentKey);
+
+    store.dispatch(initConfig(webchatConfig));
+
     const rootElement = document.getElementById("twilio-webchat-widget-root");
-    const logger = window.Twilio.getLogger("initWebChat");
     logger.info("Now rendering the webchat");
+
     render(
         <Provider store={store}>
             <WebchatWidget />

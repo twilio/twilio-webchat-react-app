@@ -1,14 +1,13 @@
-
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
-const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
-const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
-const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "i-twilio-sec-decoders";
+const HEADER_SEC_USER_AGENT = "i-twilio-user-agent";
+const HEADER_SEC_USERSETTINGS = "i-twilio-sec-usersettings";
+const HEADER_SEC_WEBCHAT = "i-twilio-sec-webchatinfo";
 
 type SecurityHeadersType = {
-    [HEADER_SEC_BROWSEROS]: string;
+    [HEADER_SEC_USER_AGENT]: string;
     [HEADER_SEC_USERSETTINGS]: string;
     [HEADER_SEC_WEBCHAT]: string;
     [HEADER_SEC_DECODER]: string;
@@ -35,9 +34,9 @@ const getUserSpecificSettings = () => {
 };
 
 const getWebchatInfo = () => {
-    const sessionStorage = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) as string;
+    const sessionStorage: string = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
     const reduxState = store.getState();
-    const logger = window.Twilio.getLogger('getWebchatInfo');
+    const logger = window.Twilio.getLogger("getWebchatInfo");
 
     let parsedStorage = null;
 
@@ -102,7 +101,7 @@ export const generateSecurityHeaders = async (): Promise<SecurityHeadersType> =>
         headers[HEADER_SEC_WEBCHAT] = JSON.stringify(getWebchatInfo());
         headers[HEADER_SEC_USERSETTINGS] = JSON.stringify(getUserSpecificSettings());
         headers[HEADER_SEC_DECODER] = JSON.stringify(decoders);
-        headers[HEADER_SEC_BROWSEROS] = navigator.userAgent;
+        headers[HEADER_SEC_USER_AGENT] = navigator.userAgent;
 
         return headers;
     });

@@ -16,19 +16,24 @@ export function WebchatWidget() {
 
     useEffect(() => {
         const data = sessionDataHandler.tryResumeExistingSession();
-        const logger = window.Twilio.getLogger('WebChatWidget');
+        const logger = window.Twilio.getLogger("WebChatWidget");
         if (data) {
             try {
-                logger.info('Initialilizing session.');
-                dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
+                logger.info("Initializing session.");
+                dispatch(
+                    initSession({
+                        token: data.token,
+                        conversationSid: data.conversationSid
+                    })
+                );
             } catch (e) {
                 // if initSession fails, go to changeEngagement phase - most likely there's something wrong with the store token or conversation sis
-                logger.error('Something wrong with the store token or conversation sis. Changing engagement phase.');
+                logger.error("Something wrong with the store token or conversation sis. Changing engagement phase.");
                 dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
             }
         } else {
             // if no token is stored, got engagement form
-            logger.error('Found no token. Going to Engagement form.');
+            logger.warn("Found no token. Going to Engagement form.");
             dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
         }
     }, [dispatch]);

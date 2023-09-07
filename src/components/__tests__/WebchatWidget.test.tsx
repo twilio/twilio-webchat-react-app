@@ -15,7 +15,8 @@ jest.mock("react-redux", () => ({
 
 jest.mock("../../sessionDataHandler", () => ({
     sessionDataHandler: {
-        tryResumeExistingSession: jest.fn()
+        tryResumeExistingSession: jest.fn(),
+        getRegion: jest.fn()
     }
 }));
 
@@ -36,7 +37,7 @@ jest.mock("../../logger");
 beforeAll(() => {
     Object.defineProperty(window, "Twilio", {
         value: {
-            getLogger: function(className: string) {
+            getLogger(className: string) {
                 return new WebChatLogger(className);
             }
         }
@@ -52,9 +53,11 @@ describe("Webchat Lite", () => {
         token: "token",
         conversationSid: "sid"
     };
+    const region = "stage";
 
     beforeEach(() => {
         (sessionDataHandler.tryResumeExistingSession as jest.Mock).mockReturnValue(sessionData);
+        (sessionDataHandler.getRegion as jest.Mock).mockReturnValueOnce(region);
     });
 
     it("renders Webchat Lite", () => {

@@ -7,12 +7,11 @@ let worker: WorkerInstance;
 let workerActivities: ActivityInstance[];
 
 const taskByConversationSidCache = new Map();
-
 export const getWorker = async () => {
     if (worker) {
         return worker;
     }
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
 
     const [workspace] = await client.taskrouter.workspaces.list({ limit: 1 });
 
@@ -28,7 +27,7 @@ const getWorkerActivities = async () => {
     if (workerActivities) {
         return workerActivities;
     }
-    const client = await getTwilioClient();
+    const client = getTwilioClient();
 
     workerActivities = await client.taskrouter.workspaces(worker.workspaceSid).activities.list();
 
@@ -64,7 +63,7 @@ export const getTaskAndReservationFromConversationSid = async (
             await getWorker();
         }
         console.log(`getting task for conversation ${conversationSid}`);
-        const client = await getTwilioClient();
+        const client = getTwilioClient();
 
         [task] = await client.taskrouter
             .workspaces(worker.workspaceSid)
