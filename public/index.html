@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="theme-color" content="#000000">
-	<!--
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+  <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-	<!--
+  <link rel="shortcut icon" href="https://media.twiliocdn.com/sdk/js/webchat-v3/assets/favicon.ico">
+  <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -19,37 +19,57 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-	<title>Twilio Webchat React App</title>
-	<style>
-		html, body {
-			height: 100%;
-		}
+  <title>Twilio Webchat React App</title>
+  <style>
+    html, body {
+      height: 100%;
+    }
 
-		body {
-			margin: 0;
-			background: #e4eaf0;
-		}
-	</style>
+  </style>
 </head>
 
 <body>
-	<noscript>
-		You need to enable JavaScript to run this app.
-	</noscript>
-	<div id="twilio-webchat-widget-root"></div>
+  <noscript>
+    You need to enable JavaScript to run this app.
+  </noscript>
+  <div id="twilio-webchat-widget-root"></div>
 
-	<script>
-		window.addEventListener("DOMContentLoaded", () => {
-			Twilio.initLogger("info");
-			Twilio.initWebchat({
-				serverUrl: "%REACT_APP_SERVER_URL%",
-				region: "%REACT_APP_REGION%",
-				theme: {
-					isLight: true
-				}
-			})
-		})
-	</script>
+  <style>
+    body {
+      margin: 0;
+      position: relative;
+      background-size: cover;
+      background-image: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-background.png);
+      background-color: #6d7697;
+    }
+
+    body:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 174px;
+      height: 182px;
+      margin-left: -87px;
+      margin-top: -91px;
+      opacity: .2;
+      background: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-logo.svg);
+    }
+  </style>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      Twilio.initLogger("info");
+      Twilio.initWebchat({
+        serverUrl: "%REACT_APP_SERVER_URL%",
+        deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
+        region: urlParams.get("region") || "%REACT_APP_REGION%",
+        theme: {
+          isLight: true
+        }
+      })
+    })
+  </script>
 </body>
 
 </html>
