@@ -1,0 +1,23 @@
+html, body {
+  height: 100%;
+}
+html > body {
+  margin: 0;
+  position: relative;
+  background-size: cover;
+  background-image: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-background.png);
+  background-color: #6d7697;
+}
+body:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 174px;
+  height: 182px;
+  margin-left: -87px;
+  margin-top: -91px;
+  opacity: .2;
+  background: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-logo.svg);
+}
+
