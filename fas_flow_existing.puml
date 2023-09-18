@@ -1,0 +1,24 @@
+@startuml
+
+actor "Browser" as BRS
+participant "Federated Auth" as FAS
+participant "Scoped Auth" as SAS
+participant "Provisioning Service" as UPS
+
+
+BRS ->> FAS: /v1/Accounts/ACXXXXX/Token \nreq.body.token=generated_token
+activate FAS
+FAS ->> SAS: POST /v1/ScopedAuthTokens/generate/internal
+activate SAS
+SAS ->> FAS: {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+deactivate SAS
+
+FAS ->> UPS: Creates a new user.
+activate UPS
+UPS ->> FAS: Created user
+deactivate UPS
+FAS ->> BRS:  {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+deactivate FAS
+
+
+@enduml

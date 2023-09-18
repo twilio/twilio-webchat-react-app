@@ -1,0 +1,62 @@
+@startuml
+
+actor "Guest User" as C
+actor "Browser" as B
+participant "Starship" as S
+participant "FlexWebchatOrchestratorService" as FWO
+participant "FederatedAuthService" as FAS
+participant "ScopedAuthService" as SAS
+participant "ConversationService" as CN
+
+C ->> B: User loads Customer app and Webchat assets
+B ->> B: Customer app provides Deployment Key
+B ->> B: Webchat instantiates and visually appears
+C ->> B: Fills Pre Engagement Form and submits
+B ->> FWO : POST /v2/Webchat/Init \nreq.body.deploymentKey=<deployment_key>
+activate FWO
+
+FWO ->> FWO : Fetches accountSid with Deployment Key
+FWO ->> FWO : Fetches Account Configurations along with AllowedOrigins,\nAddressSid, DeploymentKeys, FingerprintSensitivity
+FWO ->> FWO : Keeps configurations locally till execution ends
+
+alt Webchat Security feature is turned off via Feature Flag
+	FWO ->> FAS : POST /v1/Accounts/ACXXXXX/Tokens
+    activate FAS
+	FAS ->> SAS : POST /v1/ScopedAuthTokens/generate/internal \nreq.body.accountSid=sid \nreq.body.grants=grants_json \nreq.body.ttl=ttl\nreq.body.encrypt=true
+	activate SAS
+    SAS ->> FAS : {token: generated_token, identity: random_generated_uuid}
+    FAS ->> FWO : {token: generated_token, identity: random_generated_uuid}
+end
+
+alt Feature is turned on & Fingerprint is generated
+    FWO ->> FWO: Generating Fingerprint
+	FWO ->> FAS : POST /v1/Accounts/ACXXXXX/Tokens/webchat \nreq.body.fingerprint=generated_finger_print \n 
+    FAS ->> SAS : POST /v1/ScopedAuthTokens/generate/internal \nreq.body.fingerprint=<generated_finger_print \nreq.body.accountSid=sid \nreq.body.grants=grants_json \nreq.body.ttl=ttl\nreq.body.encrypt=true
+    SAS ->> FAS : {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+	deactivate SAS	
+    FAS ->> FWO : {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+    deactivate FAS
+    FWO ->> CN: Create User with the new identity
+    activate CN
+    CN ->> FWO: {userSid: user_sid}
+    FWO ->> CN: Create Conversation with generated identity for the user
+    CN ->> CN: Conversation is created and\nconversation sid is returned
+    CN ->> FWO: ConversationSid is returned
+    deactivate CN
+end
+
+
+
+FWO ->> FWO : Sets ACAO response \nheader to * if allowedOrigins is \nempty. otherwise sets comma separated value
+FWO ->> S : res.body={token: generated_token_with_fingerprint, \n conversation_sid: conversation_sid}\nres.header.ACAO='*.twilio.com'
+activate S
+deactivate FWO
+S ->> S : If ACAO header exists, then passes through, \nelse sets to *
+S ->> B : res.body={token: generated_token_with_fingerprint}\nres.header.ACAO='*.twilio.com'
+deactivate S
+
+B ->> B: Receives conversationSID
+Note right of B: Saves token and conversation SID on localStorage
+B ->> C: User Sees Welcome message
+
+@enduml
