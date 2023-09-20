@@ -1,24 +1,14 @@
 @startuml
 
-actor "Browser" as BRS
-participant "Federated Auth" as FAS
-participant "Scoped Auth" as SAS
-participant "Provisioning Service" as UPS
+actor "Provisioning Service" as UPS
+participant "Channel Orchestrator" as CO
 
-
-BRS ->> FAS: /v1/Accounts/ACXXXXX/Token \nreq.body.token=generated_token
-activate FAS
-FAS ->> SAS: POST /v1/ScopedAuthTokens/generate/internal
-activate SAS
-SAS ->> FAS: {token: generated_token_with_fingerprint, identity: random_generated_uuid}
-deactivate SAS
-
-FAS ->> UPS: Creates a new user.
-activate UPS
-UPS ->> FAS: Created user
-deactivate UPS
-FAS ->> BRS:  {token: generated_token_with_fingerprint, identity: random_generated_uuid}
-deactivate FAS
-
+UPS ->> CO: Create chat user
+activate CO
+CO ->> CO: Finds flexFlowSid with ChannelType.WEB
+CO ->> CO: If exists, then Creates new ChatUser
+CO ->> CO: Else, throws error
+deactivate CO
+CO ->> UPS: User Created
 
 @enduml

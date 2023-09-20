@@ -1,14 +1,35 @@
 @startuml
 
-actor "Provisioning Service" as UPS
-participant "Channel Orchestrator" as CO
+actor "Browser" as BRS
+participant "Flex Webchat Orchestrator" as FWO
+participant "Federated Auth" as FAS
+participant "Scoped Auth" as SAS
+participant "Provisioning Service" as UPS
 
-UPS ->> CO: Create chat user
-activate CO
-CO ->> CO: Finds flexFlowSid with ChannelType.WEB
-CO ->> CO: If exists, then Creates new ChatUser
-CO ->> CO: Else, throws error
-deactivate CO
-CO ->> UPS: User Created
+
+BRS ->> FWO: /V2/Webchat/Init \n req.body.deploymentKey=<CV...>
+activate FWO
+FWO -> FWO: Retrives ACXXXX
+FWO ->> FAS: /v1/Accounts/ACXXXXX/Token \nreq.body.token=generated_token \nreq.body.skipUserCreation=true (defaults to false)
+activate FAS
+FAS ->> SAS: POST /v1/ScopedAuthTokens/generate/internal
+activate SAS
+SAS ->> FAS: {token: generated_token_with_fingerprint}
+deactivate SAS
+
+alt "If skipUserCreation is defaulted to false"
+    FAS ->> UPS: Creates a new user.
+    activate UPS
+    UPS ->> FAS: Created user
+    deactivate UPS
+    FAS ->> FWO:  {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+end
+
+alt "If skipUserCreation is set to true"
+    FAS ->> FWO:  {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+end
+
+FWO ->> BRS:  {token: generated_token_with_fingerprint, identity: random_generated_uuid}
+deactivate FAS
 
 @enduml
