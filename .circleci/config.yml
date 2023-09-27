@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: npm install twilio --no-save
+          command: yarn add twilio --no-save
           name: Install Twilio client
       - run:
           command: |
