@@ -11,12 +11,12 @@ orbs:
 executors:
   with-chrome:
     docker:
-      - image: 'cypress/browsers:node14.17.0-chrome91-ff89'
+      - image: 'cypress/browsers:node18.12.0-chrome103-ff107'
 
 jobs:
   cleanUp:
     docker:
-      - image: cimg/node:14.18.1
+      - image: cimg/node:18.18.0
     steps:
       - checkout
       - run:
@@ -31,7 +31,7 @@ jobs:
   runUnitTests:
     working_directory: ~/repo
     docker:
-      - image: cimg/node:14.18.1
+      - image: cimg/node:18.18.0
     steps:
       - checkout
       - node/install-packages:
@@ -48,7 +48,7 @@ jobs:
             - ./coverage
   cypressTestsOnSauce:
     docker:
-      - image: cimg/node:14.18.1
+      - image: cimg/node:18.18.0
     steps:
       - checkout
       - run:
@@ -95,7 +95,7 @@ jobs:
   sonarqubeCloudScan:
     working_directory: ~/repo
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:18.18.0
     steps:
       - checkout
       - attach_workspace:
@@ -134,7 +134,7 @@ workflows:
           context: SonarCloud
           filters:
             branches:
-              only: 
+              only:
                 - flex-webchat-ui
                 - /.*FLEXIN-\d+.*/
 
