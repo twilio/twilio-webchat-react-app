@@ -3,6 +3,8 @@ import { GenericThemeShape } from "@twilio-paste/theme";
 export type Token = {
     token: string;
     conversationSid: string;
+    // eslint-disable-next-line camelcase
+    conversation_sid: string;
     identity: string;
     expiration: string;
 };

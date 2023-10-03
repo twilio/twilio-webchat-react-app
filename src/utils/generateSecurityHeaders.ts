@@ -2,10 +2,10 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-const HEADER_SEC_DECODER = "I-Twilio-Sec-Decoders";
-const HEADER_SEC_BROWSEROS = "I-Twilio-Sec-Browseros";
-const HEADER_SEC_USERSETTINGS = "I-Twilio-Sec-Usersettings";
-const HEADER_SEC_WEBCHAT = "I-Twilio-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "X-Twilio-Sec-Decoders";
+const HEADER_SEC_BROWSEROS = "X-Twilio-Sec-Browseros";
+const HEADER_SEC_USERSETTINGS = "X-Twilio-Sec-Usersettings";
+const HEADER_SEC_WEBCHAT = "X-Twilio-Sec-Webchatinfo";
 
 type SecurityHeadersType = {
     [HEADER_SEC_BROWSEROS]: string;

@@ -28,7 +28,9 @@ export function initSession({ token, conversationSid }: { token: string; convers
         let messages;
 
         try {
-            conversationsClient = await Client.create(token);
+            conversationsClient = await Client.create(token, {
+                region: process.env.REACT_APP_REGION
+            });
             try {
                 conversation = await conversationsClient.getConversationBySid(conversationSid);
             } catch (e) {
