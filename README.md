@@ -42,6 +42,8 @@ apiKey=YOUR_API_KEY_SID \
 apiSecret=YOUR_API_SECRET \
 addressSid=YOUR_ADDRESS_SID \
 conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
+REACT_APP_DEPLOYMENT_KEY=YOUR_REACT_APP_DEPLOYMENT_KEY
+REACT_APP_REGION=YOUR_REACT_APP_REGION
 ```
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
@@ -52,7 +54,7 @@ You can find your **Conversations Service Sid** on the [services page](https://c
 
 For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
 
-The environment variables associated with enabling and configuring customer transcripts can be found in the `.env.sample` file and their use will be covered [here](#chat-transcripts).
+The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file.
 
 ## Working Locally
 
@@ -104,41 +106,6 @@ See how to re-use Paste alert component to build custom notifications in our [Ho
 Twilio Webchat React App comes out-of-the-box with a pre-engagement form. The data gathered on submission will be passed by default to the `initWebchat` endpoint of your server.
 More info [here](#a-note-about-the-pre-engagement-form-data).
 
-## Chat Transcripts
-
-Twilio Webchat React App can provide customers with chat transcripts, if enabled. Chat transcripts can be provided to a customer through a direct download or email, at the end of a chat session. All files attached within the chat will be also be provided if a transcript is requested. This feature is disabled by default, but can be enabled by following the steps below.
-
-### Downloading Transcripts
-
-Customers can download chat transcripts as a plain text file. If attachments are present within the chat conversation, a zip file containing the plain text transcript file and the attached files will be downloaded.
-
-**Setup**
-
-Allowing customers to download transcripts requires no additional setup beyond adding the below entry to the `.env` file.
-
-```
-DOWNLOAD_TRANSCRIPT_ENABLED=true
-```
-
-### Emailing Transcripts
-
-Customers can email chat transcripts to the email address provided in the pre-engagement form. The transcript will be provided within the body of the email and any associated files will be added as attachments to the email. Emails will be sent using the [SendGrid](https://sendgrid.com/) API.
-
-**Setup**
-
-1. Add the following entry to the `.env` file.
-    ```
-    EMAIL_TRANSCRIPT_ENABLED=true
-    ```
-2. Create a [SendGrid](https://sendgrid.com/) account with a verified domain or email. This will be used to send the email transcripts to customers.
-3. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
-
-The email subject and content can be customised in the configuration object, as described [here](#configuration).
-
-**Customisation**
-
-The email subject and HTML email content can be customised using the configuration object, as described [here](#configuration).
-
 # Project Structure
 
 Twilio Webchat React App is an open source repository that includes:
@@ -166,6 +133,8 @@ Here's an example of how to use this config object in your `index.html` template
 window.addEventListener("DOMContentLoaded", () => {
     Twilio.initWebchat({
         serverUrl: "%YOUR_SERVER_URL%",
+        deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
+        region: urlParams.get("region") || "%REACT_APP_REGION%",
         theme: {
             isLight: true,
             overrides: {
@@ -173,24 +142,6 @@ window.addEventListener("DOMContentLoaded", () => {
                     colorBackgroundBody: "#faebd7"
                     // .. other Paste tokens
                 }
-            }
-        },
-        fileAttachment: {
-            enabled: true,
-            maxFileSize: 16777216, // 16 MB
-            acceptedExtensions: ["jpg", "jpeg", "png", "amr", "mp3", "mp4", "pdf"]
-        },
-        transcript: {
-            emailSubject: (agentNames) => {
-                let subject = "Transcript of your chat";
-                if (agentNames.length > 0) {
-                    subject = subject.concat(` with ${agentNames[0]}`);
-                    agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
-                }
-                return subject;
-            },
-            emailContent: (customerName, transcript) => {
-                return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
             }
         }
     });
@@ -201,13 +152,8 @@ window.addEventListener("DOMContentLoaded", () => {
 2. `theme` can be used to quickly customise the look and feel of the app.
     1. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
     2. `theme.overrides` is an object that you can fill with all the theme tokens you want to customise. Here's the full [list of tokens](https://paste.twilio.design/tokens/). **Note** remember to change the keys from `kebab-case` to `camelCase`.
-3. `fileAttachment` allows you to enable and configure what files your customers can send to your agents.
-    1. `fileAttachment.enabled` describes whether customers can send agents any file at all.
-    2. `fileAttachment.maxSize` describes the max file size that customers can send (in bytes).
-    3. `fileAttachment.acceptedExtensions` is an array describing the file types that customers can send.
-4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
-    1. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
-    2. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
+3. `deploymentKey` is a UUID with a fixed length. An AccountSid has one-to-many relationship with deploymentKey. Customers are to use this deploymentKey to initiate Webchat UI.
+4. `region` for the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod)
 
 ## 2. Local Backend Server
 
@@ -287,7 +233,12 @@ For more information about the available options, please check the [Configuratio
 <script>
     window.addEventListener("DOMContentLoaded", () => {
         Twilio.initWebchat({
-            serverUrl: "%SERVER_URL%" // IMPORTANT, UPDATE THIS!!
+            serverUrl: "%SERVER_URL%", // IMPORTANT, UPDATE THIS!!
+            deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
+            region: urlParams.get("region") || "%REACT_APP_REGION%",
+            theme: {
+                isLight: true
+            }
         });
     });
 </script>
