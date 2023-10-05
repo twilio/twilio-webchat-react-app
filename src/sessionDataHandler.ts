@@ -26,7 +26,6 @@ export async function contactBackend<T>(endpointRoute: string, body: Record<stri
         headers: {
             Accept: "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: "Basic AXXXXX",
             ...securityHeaders
         },
         body: urlEncodedBody.toString()

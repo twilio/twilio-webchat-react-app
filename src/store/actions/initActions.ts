@@ -10,6 +10,8 @@ import { notifications } from "../../notifications";
 import { ACTION_START_SESSION, ACTION_LOAD_CONFIG } from "./actionTypes";
 import { addNotification, changeEngagementPhase } from "./genericActions";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
+import { sessionDataHandler } from "../../sessionDataHandler";
+import { parseRegionForConversations } from "../../utils/regionUtil";
 
 export function initConfig(config: ConfigState) {
     return {
@@ -29,7 +31,7 @@ export function initSession({ token, conversationSid }: { token: string; convers
 
         try {
             conversationsClient = await Client.create(token, {
-                region: process.env.REACT_APP_REGION
+                region: parseRegionForConversations(sessionDataHandler.getRegion())
             });
             try {
                 conversation = await conversationsClient.getConversationBySid(conversationSid);

@@ -40,10 +40,11 @@
 
 	<script>
 		window.addEventListener("DOMContentLoaded", () => {
+			const urlParams = new URLSearchParams(window.location.search);
 			Twilio.initLogger("info");
 			Twilio.initWebchat({
-				deploymentKey: "%REACT_APP_DEPLOYMENT_KEY%",
-				region: "%REACT_APP_REGION%",
+				deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
+				region: urlParams.get("region") || "%REACT_APP_REGION%",
 				theme: {
 					isLight: true
 				}
