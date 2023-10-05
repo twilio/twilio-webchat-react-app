@@ -20,6 +20,10 @@ const getPhaseComponent = (phase: EngagementPhase) => {
     }
 };
 
+const defaultFont: React.CSSProperties = {
+    fontFamily: "Oxygen, Ubuntu, sans-serif"
+};
+
 export function RootContainer() {
     const { currentPhase, expanded } = useSelector(({ session }: AppState) => ({
         currentPhase: session.currentPhase,
@@ -27,7 +31,7 @@ export function RootContainer() {
     }));
 
     return (
-        <Box>
+        <Box style={defaultFont}>
             <Box {...outerContainerStyles}>
                 {expanded && (
                     <Box data-test="root-container" {...innerContainerStyles}>
