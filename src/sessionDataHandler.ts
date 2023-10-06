@@ -145,8 +145,8 @@ export const sessionDataHandler = {
         try {
             newTokenData = await contactBackend<Token>("/Webchat/Init", {
                 DeploymentKey: _deploymentKey,
-                CustomerFriendlyName: formData?.friendlyName || "Customer"
-                // PreEngagementData:  "{\"friendlyName\":\"Ashish\",\"email\":\"Ashish@twio.com\",\"query\":\"Hello+world\"}"
+                CustomerFriendlyName: formData?.friendlyName || "Customer",
+                PreEngagementData: JSON.stringify(formData)
             });
         } catch (e) {
             logger.error("No results from server");
