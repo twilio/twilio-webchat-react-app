@@ -1,24 +1,47 @@
-html, body {
+html {
+  font-size: 16px;
   height: 100%;
 }
 html > body {
+  height: 100%;
   margin: 0;
   position: relative;
   background-size: cover;
-  background-image: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-background.png);
-  background-color: #6d7697;
 }
-body:after {
+[data-theme-pref] {
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: cover; 
+  background-color: transparent;
+}
+[data-theme-pref]::after {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 174px;
-  height: 182px;
-  margin-left: -87px;
-  margin-top: -91px;
-  opacity: .2;
-  background: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-logo.svg);
+  left: 1.25rem;
+  bottom: 1rem;
+  width: 8rem;
+  height: 3rem;
+  margin-left: 0rem;
+  margin-top: 0rem;  
+  background-repeat: no-repeat;
+  background-size: cover; 
+  background-color: transparent;
+}
+[data-theme-pref="light-theme"] {
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-webchat-bg-light.jpg");
+}
+[data-theme-pref="light-theme"]::after {
+  background-color: transparent;
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-transparent-light.png");
+}
+[data-theme-pref="dark-theme"] {
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-webchat-bg-dark.jpg");
+}
+[data-theme-pref="dark-theme"]::after {
+  background-color: transparent;
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-transparent-dark.png");
 }
 
 @font-face {
