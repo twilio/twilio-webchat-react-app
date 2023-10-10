@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="./app.css">
 </head>
 
-<body>
+<body data-theme-pref="light-theme">
   <noscript>
     You need to enable JavaScript to run this app.
   </noscript>
@@ -31,15 +31,20 @@
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const isLightTheme = urlParams.get("theme") === "light";
+      const el = document.querySelector("[data-theme-pref]");
+
+      el && el.setAttribute("data-theme-pref", isLightTheme ? "light-theme" : "dark-theme");
+
       Twilio.initLogger("info");
       Twilio.initWebchat({
         deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
         region: urlParams.get("region") || "%REACT_APP_REGION%",
         theme: {
-          isLight: true
+          isLight: isLightTheme
         }
       })
-    })
+    });
   </script>
 </body>
 
