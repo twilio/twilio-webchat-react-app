@@ -1,10 +1,10 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { store } from "../store/store";
 
-const HEADER_SEC_DECODER = "i-twilio-sec-decoders";
-const HEADER_SEC_USER_AGENT = "i-twilio-user-agent";
-const HEADER_SEC_USERSETTINGS = "i-twilio-sec-usersettings";
-const HEADER_SEC_WEBCHAT = "i-twilio-sec-webchatinfo";
+const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
+const HEADER_SEC_USER_AGENT = "x-twilio-user-agent";
+const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
+const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
 
 type SecurityHeadersType = {
     [HEADER_SEC_USER_AGENT]: string;
