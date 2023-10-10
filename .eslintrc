@@ -42,7 +42,7 @@
   },
   "overrides": [
     {
-      "files": ["sessionDataHandler.ts"],
+      "files": ["src/definitions.ts"],
       "rules": {
         "camelcase": ["off"]
       }

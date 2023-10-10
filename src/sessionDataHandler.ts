@@ -104,7 +104,7 @@ export const sessionDataHandler = {
     },
 
     async getUpdatedToken(): Promise<TokenResponse> {
-        const logger = window.Twilio.getLogger('sessionDataHandler');
+        const logger = window.Twilio.getLogger("sessionDataHandler");
         logger.info("trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
 

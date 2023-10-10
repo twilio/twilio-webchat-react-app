@@ -37,7 +37,6 @@ export type SessionState = {
 };
 
 export type UserConfig = {
-    serverUrl?: string;
     deploymentKey: string;
     region?: string;
     theme?: {

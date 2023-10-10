@@ -24,13 +24,9 @@ const defaultConfig: ConfigState = {
 };
 
 const initWebchat = async (userConfig: UserConfig) => {
-    // eslint-disable-next-line no-warning-comments
-    // TODO: serverUrl needs to be removed with PR #74
-    const validKeys = ["deploymentKey", "region", "theme", "serverUrl"];
+    const validKeys = ["deploymentKey", "region", "theme"];
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
-    // eslint-disable-next-line no-warning-comments
-    // TODO: Returning from here if no deployment key with PR #74
     if (!userConfig?.deploymentKey) {
         logger.error(`deploymentKey must exist to connect to webchat servers`);
     }
@@ -43,7 +39,6 @@ const initWebchat = async (userConfig: UserConfig) => {
 
     const webchatConfig = merge({}, defaultConfig, userConfig);
 
-    sessionDataHandler.setEndpoint(webchatConfig.serverUrl);
     sessionDataHandler.setRegion(webchatConfig.region);
     sessionDataHandler.setDeploymentKey(webchatConfig.deploymentKey);
 
