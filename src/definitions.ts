@@ -1,6 +1,6 @@
 import { GenericThemeShape } from "@twilio-paste/theme";
 
-export type Token = {
+export type TokenResponse = {
     token: string;
     conversationSid: string;
     // eslint-disable-next-line camelcase
@@ -13,13 +13,6 @@ export type FileAttachmentConfig = {
     enabled?: boolean;
     maxFileSize?: number;
     acceptedExtensions?: string[];
-};
-
-export type TranscriptConfig = {
-    downloadEnabled?: boolean;
-    emailEnabled?: boolean;
-    emailSubject?: (agentNames: (string | undefined)[]) => string;
-    emailContent?: (customerName: string | undefined, transcript: string) => string;
 };
 
 export type InitialConfig = {

@@ -3,7 +3,9 @@ import { AnyAction, Reducer } from "redux";
 import { ConfigState } from "./definitions";
 import { ACTION_LOAD_CONFIG } from "./actions/actionTypes";
 
-const initialState: ConfigState = {};
+const initialState: ConfigState = {
+    deploymentKey: ""
+};
 
 export const ConfigReducer: Reducer = (state: ConfigState = initialState, action: AnyAction): ConfigState => {
     switch (action.type) {

@@ -37,7 +37,7 @@ describe("validateFiles", () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
         const validFiles = validateFiles(
-            [{ ...dumbFile, size: 999999999 }],
+            [{ ...dumbFile, size: 999999999 } as File],
             mockDispatch,
             [alreadyAttachedFile],
             fileAttachmentConfig
@@ -55,7 +55,7 @@ describe("validateFiles", () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
         const validFiles = validateFiles(
-            [{ ...dumbFile, type: "unknown/type" }],
+            [{ ...dumbFile, type: "unknown/type" } as File],
             mockDispatch,
             [alreadyAttachedFile],
             fileAttachmentConfig

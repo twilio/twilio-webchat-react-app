@@ -1,4 +1,6 @@
-require('dotenv').config();
+require("dotenv").config();
+
+import { getTwilioClient } from "./cypress/plugins/helpers/twilioClient";
 import { defineConfig } from "cypress";
 import * as fs from "fs";
 
@@ -24,6 +26,19 @@ export default defineConfig({
         trashAssetsBeforeRuns: true,
         responseTimeout: 100000,
         setupNodeEvents(on, config) {
+            // removing old tasks if any, before launching the browser, so worker is not occupied with previous ones
+            on("before:browser:launch", async () => {
+                const client = getTwilioClient();
+                const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
+                const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
+
+                // eslint-disable-next-line no-console
+                console.log("proceeding to remove older tasks");
+                await Promise.all(
+                    tasks.map(async (t) => t.remove())
+                );
+
+            });
             on("task", {
                 acceptReservation,
                 sendMessage,
@@ -53,24 +68,10 @@ export default defineConfig({
                 }
             });
             config.env = {
-                ...process.env,
-                ...config.env
+                ...process.env
             };
 
             return config;
-        },
+        }
     },
-    env: {
-        GMAIL_OAUTH_CLIENT_OPTIONS: {
-            clientId: "",
-            clientSecret: "",
-            redirectUri: ""
-          },
-          GMAIL_TOKEN: {
-            refresh_token: ""
-          },
-          TEST_EMAIL: "test@sbc.com",
-          DOWNLOAD_TRANSCRIPT_ENABLED: "false",
-          EMAIL_TRANSCRIPT_ENABLED: "false" 
-    }
 });

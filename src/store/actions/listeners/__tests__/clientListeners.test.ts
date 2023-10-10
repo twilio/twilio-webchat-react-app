@@ -4,9 +4,9 @@ import "@testing-library/jest-dom";
 import { notifications } from "../../../../notifications";
 import * as genericActions from "../../genericActions";
 import { initClientListeners } from "../clientListener";
-import { Token } from "../../../../definitions";
+import { TokenResponse } from "../../../../definitions";
 import { sessionDataHandler } from "../../../../sessionDataHandler";
-import { Client } from "../../../../__mocks__/@twilio/conversations/client";
+import { Client } from "../../../../__mocks__/@twilio/conversations";
 import WebChatLogger from "../../../../logger";
 
 jest.mock("../../../../logger");
@@ -20,19 +20,19 @@ describe("Client Listeners", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getLogger: function(className: string) {
+                getLogger(className: string) {
                     return new WebChatLogger(className);
                 }
             }
         });
     });
-    
+
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     it("updates token on tokenAboutToExpire event", async () => {
-        const tokenResponsePayload: Token = {
+        const tokenResponsePayload: TokenResponse = {
             token: "myToken",
             conversationSid: "myConversationSid",
             identity: "id",
@@ -45,7 +45,10 @@ describe("Client Listeners", () => {
                 conversationSid: tokenResponsePayload.conversationSid
             }
         };
-        jest.spyOn(sessionDataHandler, "getUpdatedToken").mockImplementation(async () => tokenResponsePayload);
+        jest.spyOn(sessionDataHandler, "getUpdatedToken").mockImplementation(async () => ({
+            ...tokenResponsePayload,
+            region: process.env.REACT_APP_REGION || ""
+        }));
 
         initClientListeners(mockClient, mockDispatch);
         mockClient.emit(tokenAboutToExpireEvent, 1000);

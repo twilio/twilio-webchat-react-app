@@ -8,15 +8,16 @@ import WebChatLogger from "../logger";
 
 jest.mock("../logger");
 
-const HEADER_SEC_DECODER = "X-Twilio-Sec-Decoders";
-const HEADER_SEC_BROWSEROS = "X-Twilio-Sec-Browseros";
-const HEADER_SEC_USERSETTINGS = "X-Twilio-Sec-Usersettings";
-const HEADER_SEC_WEBCHAT = "X-Twilio-Sec-Webchatinfo";
+const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
+const HEADER_SEC_USERAGENT = "x-twilio-user-agent";
+const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
+const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
+
 describe("Generate Security Headers", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
             value: {
-                getLogger: function(className: string) {
+                getLogger(className: string) {
                     return new WebChatLogger(className);
                 }
             }
@@ -58,7 +59,7 @@ describe("Generate Security Headers", () => {
         const headers = await generateSecurityHeaders();
 
         expect(headers).not.toBeFalsy();
-        expect(headers[HEADER_SEC_BROWSEROS]).toEqual("USER_AGENT");
+        expect(headers[HEADER_SEC_USERAGENT]).toEqual("USER_AGENT");
         expect(JSON.parse(headers[HEADER_SEC_USERSETTINGS])).toMatchObject({
             language: "en_US",
             cookieEnabled: true,
@@ -112,7 +113,7 @@ describe("Generate Security Headers", () => {
         let headers = await generateSecurityHeaders();
 
         expect(headers).not.toBeFalsy();
-        expect(headers[HEADER_SEC_BROWSEROS]).toEqual("USER_AGENT_2");
+        expect(headers[HEADER_SEC_USERAGENT]).toEqual("USER_AGENT_2");
         expect(JSON.parse(headers[HEADER_SEC_USERSETTINGS])).toMatchObject({
             language: DEFAULT_NAVIGATOR_LANG,
             cookieEnabled: DEFAULT_COOKIE_ENABLED,

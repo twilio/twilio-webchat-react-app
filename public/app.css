@@ -1,0 +1,100 @@
+html, body {
+  height: 100%;
+}
+html > body {
+  margin: 0;
+  position: relative;
+  background-size: cover;
+  background-image: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-background.png);
+  background-color: #6d7697;
+}
+body:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 174px;
+  height: 182px;
+  margin-left: -87px;
+  margin-top: -91px;
+  opacity: .2;
+  background: url(https://media.twiliocdn.com/sdk/js/webchat-v3/assets/webchat-logo.svg);
+}
+
+@font-face {
+  font-family: Oxygen;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Oxygen-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Oxygen;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Oxygen-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Oxygen;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Oxygen-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Ubuntu;
+  src: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/fonts/Ubuntu-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
