@@ -1,6 +1,5 @@
 export type TokenResponse = {
     token: string;
-    conversationSid: string;
     conversation_sid: string;
     identity: string;
     expiration: string;

@@ -27,15 +27,15 @@ const initWebchat = async (userConfig: UserConfig) => {
     const validKeys = ["deploymentKey", "region", "theme"];
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
-    if (!userConfig?.deploymentKey) {
-        logger.error(`deploymentKey must exist to connect to webchat servers`);
+    if (!userConfig || !userConfig.deploymentKey) {
+        logger.error(`deploymentKey must exist to connect to Webchat servers`);
     }
 
-    Object.keys(userConfig).forEach((userConfigKey) => {
-        if (!validKeys.includes(userConfigKey)) {
-            logger.warn(`${userConfigKey} is not supported.`);
+    for (const key in userConfig) {
+        if (!validKeys.includes(key)) {
+            logger.warn(`${key} is not supported.`);
         }
-    });
+    }
 
     const webchatConfig = merge({}, defaultConfig, userConfig);
 

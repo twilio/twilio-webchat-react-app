@@ -1,4 +1,4 @@
-import { initLogger , getLogger } from "../logger";
+import { initLogger, getLogger } from "../logger";
 
 describe("loggerManager", () => {
     it("should show a proper message if an invalid log level `DEBUG` is selected", () => {

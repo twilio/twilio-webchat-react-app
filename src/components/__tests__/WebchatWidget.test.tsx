@@ -51,7 +51,7 @@ afterEach(() => {
 describe("Webchat Lite", () => {
     const sessionData = {
         token: "token",
-        conversationSid: "sid"
+        conversation_sid: "sid"
     };
     const region = "stage";
 
@@ -77,7 +77,10 @@ describe("Webchat Lite", () => {
 
         render(<WebchatWidget />);
 
-        expect(initSessionSpy).toHaveBeenCalledWith(sessionData);
+        expect(initSessionSpy).toHaveBeenCalledWith({
+            token: sessionData.token,
+            conversationSid: sessionData.conversation_sid
+        });
     });
 
     it("start pre-engagement form if no pre-existing session data", () => {

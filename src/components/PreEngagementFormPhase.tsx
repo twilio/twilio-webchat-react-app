@@ -26,21 +26,17 @@ export const PreEngagementFormPhase = () => {
         e.preventDefault();
         dispatch(changeEngagementPhase({ phase: EngagementPhase.Loading }));
         try {
-            let data = await sessionDataHandler.fetchAndStoreNewSession({
+            const data = await sessionDataHandler.fetchAndStoreNewSession({
                 formData: {
                     friendlyName: name && onUserInputSubmit(name, true),
                     email,
                     query: query && onUserInputSubmit(query)
                 }
             });
-            data = {
-                ...data,
-                conversationSid: data.conversation_sid
-            };
             dispatch(
                 initSession({
                     token: data.token,
-                    conversationSid: data.conversationSid
+                    conversationSid: data.conversation_sid
                 })
             );
         } catch (err) {

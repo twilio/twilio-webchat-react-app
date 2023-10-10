@@ -11,7 +11,7 @@ type SessionDataStorage = TokenResponse & {
     loginTimestamp: number | null;
 };
 
-async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
+export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
     const logger = window.Twilio.getLogger("sessionDataHandler");

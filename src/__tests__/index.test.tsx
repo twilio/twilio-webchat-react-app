@@ -77,13 +77,15 @@ describe("Index", () => {
             const logger = window.Twilio.getLogger("initWebChat");
             const errorLoggerSpy = jest.spyOn(logger, "error");
             initWebchat();
-            expect(errorLoggerSpy).toHaveBeenCalledWith("`deploymentKey` is required.");
+            expect(errorLoggerSpy).toBeCalledTimes(1);
+            expect(errorLoggerSpy).toHaveBeenCalledWith("deploymentKey must exist to connect to Webchat servers");
         });
 
         it("gives warning when unsupported params are passed", () => {
             const logger = window.Twilio.getLogger("initWebChat");
             const warningSpy = jest.spyOn(logger, "warn");
             initWebchat({ deploymentKey: "xyz", someKey: "abc" });
+            expect(warningSpy).toBeCalledTimes(1);
             expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
         });
     });

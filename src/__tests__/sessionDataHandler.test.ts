@@ -231,13 +231,6 @@ describe("session data handler", () => {
         expect(spyRemove).toHaveBeenCalled();
     });
 
-    describe("endpoint", () => {
-        it("should be able to store endpoint", () => {
-            sessionDataHandler.setEndpoint("http://localhost:4000");
-            expect(sessionDataHandler.getEndpoint()).toEqual("http://localhost:4000");
-        });
-    });
-
     describe("contactBackend", () => {
         it("should", async () => {
             jest.spyOn(window, "fetch").mockRejectedValueOnce("ForcedFailure");
