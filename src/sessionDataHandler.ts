@@ -18,7 +18,7 @@ export async function contactBackend<T>(endpointRoute: string, body: Record<stri
     const urlEncodedBody = new URLSearchParams();
     for (const key in body) {
         if (body.hasOwnProperty(key)) {
-            urlEncodedBody.append(key, body[key] as string);
+            urlEncodedBody.append(key, (body[key] as string).toString());
         }
     }
     const response = await fetch(_endpoint + endpointRoute, {

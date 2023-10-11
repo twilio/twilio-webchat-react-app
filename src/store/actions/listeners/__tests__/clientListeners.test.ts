@@ -34,7 +34,7 @@ describe("Client Listeners", () => {
     it("updates token on tokenAboutToExpire event", async () => {
         const tokenResponsePayload: TokenResponse = {
             token: "myToken",
-            conversationSid: "myConversationSid",
+            conversation_sid: "myConversationSid",
             identity: "id",
             expiration: "never"
         };
@@ -42,7 +42,7 @@ describe("Client Listeners", () => {
             type: "ACTION_UPDATE_SESSION_DATA",
             payload: {
                 token: tokenResponsePayload.token,
-                conversationSid: tokenResponsePayload.conversationSid
+                conversationSid: tokenResponsePayload.conversation_sid
             }
         };
         jest.spyOn(sessionDataHandler, "getUpdatedToken").mockImplementation(async () => ({

@@ -1,4 +1,4 @@
-export function buildRegionalHost(region: string = ""): string {
+export function buildRegionalHost(region: string | undefined = ""): string {
     switch (region) {
         case "prod":
         case "us1":
@@ -13,8 +13,7 @@ export function buildRegionalHost(region: string = ""): string {
     }
 }
 
-export function parseRegionForConversations(region: string | undefined = "") {
-    region = region || "";
+export function parseRegionForConversations(region: string | undefined = ""): string {
     switch (region) {
         case "prod":
         case "":
