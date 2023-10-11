@@ -54,7 +54,7 @@ You can find your **Conversations Service Sid** on the [services page](https://c
 
 For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
 
-The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file.
+The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file. These values can also be part of queryParams. If present in both, precedence will be given to queryParams.
 
 ## Working Locally
 
@@ -111,7 +111,6 @@ More info [here](#a-note-about-the-pre-engagement-form-data).
 Twilio Webchat React App is an open source repository that includes:
 
 1. A React App
-2. A local backend server
 
 ## 1. React App
 
@@ -132,87 +131,57 @@ Here's an example of how to use this config object in your `index.html` template
 ```javascript
 window.addEventListener("DOMContentLoaded", () => {
     Twilio.initWebchat({
-        serverUrl: "%YOUR_SERVER_URL%",
         deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
         region: urlParams.get("region") || "%REACT_APP_REGION%",
         theme: {
-            isLight: true,
-            overrides: {
-                backgroundColors: {
-                    colorBackgroundBody: "#faebd7"
-                    // .. other Paste tokens
-                }
-            }
+            isLight: true
         }
     });
 });
 ```
 
-1. `serverUrl` represents the base server url that the app will hit to initialise the session or refresh the token.
-2. `theme` can be used to quickly customise the look and feel of the app.
+1. `theme` can be used to quickly customise the look and feel of the app.
     1. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
-    2. `theme.overrides` is an object that you can fill with all the theme tokens you want to customise. Here's the full [list of tokens](https://paste.twilio.design/tokens/). **Note** remember to change the keys from `kebab-case` to `camelCase`.
-3. `deploymentKey` is a UUID with a fixed length. An AccountSid has one-to-many relationship with deploymentKey. Customers are to use this deploymentKey to initiate Webchat UI.
-4. `region` for the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod)
-
-## 2. Local Backend Server
-
-As mentioned before, Twilio Webchat App requires a backend to hit in order to work correctly.
-This server — found in the `server` folder — exposes two main controllers.
-
-### 1. InitWebchat
-
-This first controller, hit by the application when the pre-engagement form is submitted, takes care of a few things:
-
-1. Contacts Twilio Webchats endpoint to create a conversation and get a `conversationSid` and a participant `identity`
-2. Creates a token with the correct grants for the provided participant identity
-3. (optional) Programmatically send a message in behalf of the user with their query and then a welcome message
+2. `deploymentKey` is a UUID with a fixed length. An AccountSid has one-to-many relationship with deploymentKey. Customers are to use this deploymentKey to initiate Webchat UI.
+3. `region` for the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod)
 
 #### A note about the pre-engagement form data
 
 By default, this endpoint takes the `friendlyName` field of the form and uses it to set the customer User's name via the webchat orchestration endpoint.
 
-In addition to that, all the fields (including `friendlyName`) will be saved as the conversation `attributes`, under the `pre_engagement_data` key. You can find additional information on the Conversation object [here](https://www.twilio.com/docs/conversations/api/conversation-resource#conversation-properties).
-
-### 2. RefreshToken
-
-This second controller is in charge of refreshing a token that is about to expire. If the token is invalid or already expired, it will fail.
-
 # Working in Production
 
-In order to use this widget in production you will need to follow these three steps:
+In order to use this widget in production you will need to follow these two steps:
 
-1. Create remote server endpoints.
-2. Upload compiled and minimised React App code.
-3. Update your website template.
+1. Either you can directly work with our CDN urls or upload compiled and minimised React App code.
+2. Update your website template.
 
-## 1. Create Remote Server Endpoints
+## 1. Work With Our CDN Urls Or Upload Compiled And Minimised React App Code
 
-It is necessary to create two endpoints on a remote server or as serverless functions, for [initWebchat](#1-initwebchat) and [refreshToken](#2-refreshtoken) logic.
+We have CDN urls in place that you can directly integrate in your application to make the widget work. You can point to a specific version of the webchat or  else point to latest. 
 
-### Security Best Practises
+```shell
+CDN url to point to a specific version:
 
-We highly recommend that you implement as many of the following security controls as possible, in order to have a more secure backend.
+https://media.twiliocdn.com/sdk/js/webchat-v3/releases/<VERSION_NUMBER>/webchat.min.js
 
-1. **Create an allow-list on the server side.** It is necessary to verify on the server side that all the requests are sent from an allowed domain (by checking the origin header).
-2. **Configure the Access-Control-Allow-Origin header** using the allow-list described above. This will prevent browsers from sending requests from malicious websites.
-3. **Create logs to detect and find anomalous behaviors.**
-4. **Block requests by IP, by geolocation/country and by URL**. Thanks to the logs created, it is possible to detect suspicious behaviours, depending on those behaviours it is possible to block requests for specific IP addresses, domains and even geolocations.
-5. **Include a fingerprint in the token.** Generate a fingerprint to try to identify the client and include it in the token. When the token is sent, the fingerprint is generated again and compared with the token's fingerprint.
+or
 
-## 2. Upload Compiled and Minimised React App Code
+CDN url to point to the latest version
 
-To create a bundle file for the whole Webchat React App.
+https://media.twiliocdn.com/sdk/js/webchat-v3/releases/latest/webchat.min.js
+```
+If you wish to not work with the above CDNs, then you need to create a bundle file for the whole Webchat React App via.
 
 ```shell
 yarn build
 ```
 
-Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
+And then, make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
 
-## 3. Update Your Website Template
+## 2. Update Your Website Template
 
-Once the bundle is uploaded, make sure to have it loaded in your website page, as per example below:
+Based on your choice in the previous step, make sure to have it loaded in your website page, as per example below:
 
 ```html
 <script src="https://[...]webchat.js"></script>
@@ -224,7 +193,7 @@ Next, declare the root element that the webchat widget will be rendered into:
 <div id="twilio-webchat-widget-root"></div>
 ```
 
-Finally, add the code to initialize the webchat widget as per following example. It is crucial that you update the `serverUrl` with the base URL of your endpoints.
+Finally, add the code to initialize the webchat widget as per following example.
 The React App will then target `/initWebchat` and `/refreshToken` endpoints. If you want to use different endpoint urls, make sure to upload the code in `src/sessionDataHandler.ts`.
 
 For more information about the available options, please check the [Configuration section](#configuration).
@@ -233,7 +202,6 @@ For more information about the available options, please check the [Configuratio
 <script>
     window.addEventListener("DOMContentLoaded", () => {
         Twilio.initWebchat({
-            serverUrl: "%SERVER_URL%", // IMPORTANT, UPDATE THIS!!
             deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
             region: urlParams.get("region") || "%REACT_APP_REGION%",
             theme: {
