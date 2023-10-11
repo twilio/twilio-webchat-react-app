@@ -28,7 +28,6 @@ const initWebchat = async (userConfig: UserConfig) => {
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
     if (!userConfig || !userConfig.deploymentKey) {
-        console.log("hello world", logger);
         logger.error(`deploymentKey must exist to connect to Webchat servers`);
     }
 
