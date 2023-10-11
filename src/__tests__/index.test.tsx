@@ -74,7 +74,7 @@ describe("Index", () => {
         });
 
         it("gives error when deploymentKey is missing", () => {
-            const logger = window.Twilio.getLogger("initWebChat");
+            const logger = window.Twilio.getLogger("InitWebChat");
             const errorLoggerSpy = jest.spyOn(logger, "error");
             initWebchat();
             expect(errorLoggerSpy).toBeCalledTimes(1);
@@ -82,7 +82,7 @@ describe("Index", () => {
         });
 
         it("gives warning when unsupported params are passed", () => {
-            const logger = window.Twilio.getLogger("initWebChat");
+            const logger = window.Twilio.getLogger("InitWebChat");
             const warningSpy = jest.spyOn(logger, "warn");
             initWebchat({ deploymentKey: "xyz", someKey: "abc" });
             expect(warningSpy).toBeCalledTimes(1);

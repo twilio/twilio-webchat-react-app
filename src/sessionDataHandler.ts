@@ -14,7 +14,7 @@ type SessionDataStorage = TokenResponse & {
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
     const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
-    const logger = window.Twilio.getLogger("sessionDataHandler");
+    const logger = window.Twilio.getLogger("SessionDataHandler");
     const urlEncodedBody = new URLSearchParams();
     for (const key in body) {
         if (body.hasOwnProperty(key)) {
@@ -45,7 +45,7 @@ function storeSessionData(data: SessionDataStorage) {
 
 function getStoredSessionData() {
     const item = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID);
-    const logger = window.Twilio.getLogger("sessionDataHandler");
+    const logger = window.Twilio.getLogger("SessionDataHandler");
     let storedData: TokenResponse;
 
     if (!item) {
@@ -80,7 +80,7 @@ export const sessionDataHandler = {
     },
 
     tryResumeExistingSession(): TokenResponse | null {
-        const logger = window.Twilio.getLogger("sessionDataHandler");
+        const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to refresh existing session");
         const storedTokenData = getStoredSessionData();
 
@@ -104,7 +104,7 @@ export const sessionDataHandler = {
     },
 
     async getUpdatedToken(): Promise<TokenResponse> {
-        const logger = window.Twilio.getLogger("sessionDataHandler");
+        const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to get updated token from BE");
         const storedTokenData = getStoredSessionData();
 
