@@ -27,7 +27,7 @@ const defaultConfig: ConfigState = {
 const initWebchat = async (userConfig: UserConfig) => {
     // eslint-disable-next-line no-warning-comments
     // TODO: serverUrl needs to be removed with PR #74
-    const validKeys = ["deploymentKey", "region", "theme", "serverUrl", "applicationStatus"];
+    const validKeys = ["deploymentKey", "region", "theme", "serverUrl", "appStatus"];
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
     // eslint-disable-next-line no-warning-comments
