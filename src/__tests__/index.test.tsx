@@ -79,7 +79,7 @@ describe("Index", () => {
             expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
         });
 
-        it("triggers expaneded true with default appStatus", () => {
+        it("triggers expaneded false with default appStatus", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
             initWebchat({ deploymentKey: "CV000000" });
