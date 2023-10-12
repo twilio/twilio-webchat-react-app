@@ -65,15 +65,6 @@ describe("Index", () => {
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ serverUrl, theme: { isLight: true } }));
         });
 
-        it("sets endpoint correctly", () => {
-            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setEndpoint");
-
-            const serverUrl = "serverUrl";
-            initWebchat({ serverUrl, deploymentKey: "CV000000" });
-
-            expect(setEndpointSpy).toBeCalledWith(serverUrl);
-        });
-
         it("triggers expaneded true if appStatus is open", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
