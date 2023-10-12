@@ -6,17 +6,18 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
 import * as initActions from "../store/actions/initActions";
+import * as genericActions from "../store/actions/genericActions";
 
 jest.mock("react-dom");
 
 store.dispatch = jest.fn();
 
 describe("Index", () => {
-    let { initWebchat, getLogger } = window.Twilio;
+    const { initWebchat, getLogger } = window.Twilio;
     beforeAll(() => {
         getLogger = jest.fn();
     });
-    
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -28,7 +29,7 @@ describe("Index", () => {
             const root = document.createElement("div");
             root.id = "twilio-webchat-widget-root";
             document.body.appendChild(root);
-            initWebchat({});
+            initWebchat({ deploymentKey: "CV000000" });
 
             expect(renderSpy).toBeCalledWith(
                 <Provider store={store}>
@@ -42,7 +43,7 @@ describe("Index", () => {
             const setEndpointSpy = jest.spyOn(sessionDataHandler, "setEndpoint");
 
             const serverUrl = "serverUrl";
-            initWebchat({ serverUrl });
+            initWebchat({ serverUrl, deploymentKey: "CV000000" });
 
             expect(setEndpointSpy).toBeCalledWith(serverUrl);
         });
@@ -50,7 +51,7 @@ describe("Index", () => {
         it("initializes config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
-            initWebchat({});
+            initWebchat({ deploymentKey: "CV000000" });
 
             expect(initConfigSpy).toBeCalled();
         });
@@ -59,9 +60,39 @@ describe("Index", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
             const serverUrl = "serverUrl";
-            initWebchat({ serverUrl });
+            initWebchat({ serverUrl, deploymentKey: "CV000000" });
 
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ serverUrl, theme: { isLight: true } }));
+        });
+
+        it("sets endpoint correctly", () => {
+            const setEndpointSpy = jest.spyOn(sessionDataHandler, "setEndpoint");
+
+            const serverUrl = "serverUrl";
+            initWebchat({ serverUrl, deploymentKey: "CV000000" });
+
+            expect(setEndpointSpy).toBeCalledWith(serverUrl);
+        });
+
+        it("triggers expaneded true if appStatus is open", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000", appStatus: "open" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: true });
+        });
+
+        it("triggers expaneded false if appStatus is closed", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000", appStatus: "closed" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
+        });
+
+        it("triggers expaneded true with default appStatus", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
         });
     });
 });
