@@ -13,7 +13,7 @@ jest.mock("react-dom");
 store.dispatch = jest.fn();
 
 describe("Index", () => {
-    const { initWebchat, getLogger } = window.Twilio;
+    let { initWebchat, getLogger } = window.Twilio;
     beforeAll(() => {
         getLogger = jest.fn();
     });
