@@ -9,6 +9,7 @@ import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState, UserConfig } from "./store/definitions";
 import { initLogger, getLogger } from "./logger";
+import { changeExpandedStatus } from "./store/actions/genericActions";
 
 const defaultConfig: ConfigState = {
     deploymentKey: "",
@@ -26,7 +27,7 @@ const defaultConfig: ConfigState = {
 const initWebchat = async (userConfig: UserConfig) => {
     // eslint-disable-next-line no-warning-comments
     // TODO: serverUrl needs to be removed with PR #74
-    const validKeys = ["deploymentKey", "region", "theme", "serverUrl"];
+    const validKeys = ["deploymentKey", "region", "theme", "serverUrl", "appStatus"];
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
     // eslint-disable-next-line no-warning-comments
@@ -40,6 +41,9 @@ const initWebchat = async (userConfig: UserConfig) => {
             logger.warn(`${userConfigKey} is not supported.`);
         }
     });
+
+    store.dispatch(changeExpandedStatus({ expanded: userConfig.appStatus === "open" }));
+    delete userConfig.appStatus;
 
     const webchatConfig = merge({}, defaultConfig, userConfig);
 
