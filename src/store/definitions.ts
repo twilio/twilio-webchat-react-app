@@ -40,7 +40,7 @@ export type UserConfig = {
     serverUrl?: string;
     deploymentKey: string;
     region?: string;
-    appStatus?: "open" | "closed";
+    appStatus?: "open";
     theme?: {
         isLight?: boolean;
         overrides?: Partial<GenericThemeShape>;

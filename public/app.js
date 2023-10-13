@@ -9,7 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
   Twilio.initWebchat({
     deploymentKey: urlParams.get("deploymentKey"),
     region: urlParams.get("region"),
-    appStatus: urlParams.get("appStatus") || "open",
+    appStatus: urlParams.get("appStatus"),
     theme: {
       isLight: isLightTheme
     }
