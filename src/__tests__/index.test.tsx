@@ -90,21 +90,21 @@ describe("Index", () => {
             expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
         });
 
-        it("triggers expaneded true if appStatus is open", () => {
+        it("triggers expanded true if appStatus is open", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
             initWebchat({ deploymentKey: "CV000000", appStatus: "open" });
             expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: true });
         });
 
-        it("triggers expaneded false if appStatus is closed", () => {
+        it("triggers expanded false if appStatus is closed", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
             initWebchat({ deploymentKey: "CV000000", appStatus: "closed" });
             expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
         });
 
-        it("triggers expaneded false with default appStatus", () => {
+        it("triggers expanded false with default appStatus", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
             initWebchat({ deploymentKey: "CV000000" });
