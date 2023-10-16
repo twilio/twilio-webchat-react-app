@@ -38,8 +38,6 @@ const initWebchat = async (userConfig: UserConfig) => {
         }
     }
 
-    console.log("hello world userConfig", userConfig);
-
     store.dispatch(changeExpandedStatus({ expanded: userConfig?.appStatus === "open" }));
     delete userConfig?.appStatus;
 
