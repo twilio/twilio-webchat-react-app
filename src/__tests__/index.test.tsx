@@ -6,6 +6,7 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { WebchatWidget } from "../components/WebchatWidget";
 import { store } from "../store/store";
 import * as initActions from "../store/actions/initActions";
+import * as genericActions from "../store/actions/genericActions";
 
 jest.mock("react-dom");
 
@@ -28,7 +29,7 @@ describe("Index", () => {
             const root = document.createElement("div");
             root.id = "twilio-webchat-widget-root";
             document.body.appendChild(root);
-            initWebchat({ deploymentKey: "xyz" });
+            initWebchat({ deploymentKey: "CV000000" });
 
             expect(renderSpy).toBeCalledWith(
                 <Provider store={store}>
@@ -42,7 +43,7 @@ describe("Index", () => {
             const setRegionSpy = jest.spyOn(sessionDataHandler, "setRegion");
 
             const region = "Foo";
-            initWebchat({ deploymentKey: "xyz", region });
+            initWebchat({ deploymentKey: "CV000000", region });
 
             expect(setRegionSpy).toBeCalledWith(region);
         });
@@ -59,7 +60,7 @@ describe("Index", () => {
         it("initializes config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
-            initWebchat({ deploymentKey: "xyz" });
+            initWebchat({ deploymentKey: "CV000000" });
 
             expect(initConfigSpy).toBeCalled();
         });
@@ -67,7 +68,7 @@ describe("Index", () => {
         it("initializes config with provided config merged with default config", () => {
             const initConfigSpy = jest.spyOn(initActions, "initConfig");
 
-            const deploymentKey = "DKxxxxxxxxxxxx";
+            const deploymentKey = "CV000000";
             initWebchat({ deploymentKey });
 
             expect(initConfigSpy).toBeCalledWith(expect.objectContaining({ deploymentKey, theme: { isLight: true } }));
@@ -87,6 +88,27 @@ describe("Index", () => {
             initWebchat({ deploymentKey: "xyz", someKey: "abc" });
             expect(warningSpy).toBeCalledTimes(1);
             expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
+        });
+
+        it("triggers expaneded true if appStatus is open", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000", appStatus: "open" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: true });
+        });
+
+        it("triggers expaneded false if appStatus is closed", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000", appStatus: "closed" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
+        });
+
+        it("triggers expaneded false with default appStatus", () => {
+            const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
+
+            initWebchat({ deploymentKey: "CV000000" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
         });
     });
 });

@@ -9,6 +9,7 @@ import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState, UserConfig } from "./store/definitions";
 import { initLogger, getLogger } from "./logger";
+import { changeExpandedStatus } from "./store/actions/genericActions";
 
 const defaultConfig: ConfigState = {
     deploymentKey: "",
@@ -24,7 +25,7 @@ const defaultConfig: ConfigState = {
 };
 
 const initWebchat = async (userConfig: UserConfig) => {
-    const validKeys = ["deploymentKey", "region", "theme"];
+    const validKeys = ["deploymentKey", "region", "theme", "appStatus"];
     const logger = window.Twilio.getLogger(`InitWebChat`);
 
     if (!userConfig || !userConfig.deploymentKey) {
@@ -36,6 +37,9 @@ const initWebchat = async (userConfig: UserConfig) => {
             logger.warn(`${key} is not supported.`);
         }
     }
+
+    store.dispatch(changeExpandedStatus({ expanded: userConfig.appStatus === "open" }));
+    delete userConfig.appStatus;
 
     const webchatConfig = merge({}, defaultConfig, userConfig);
 
