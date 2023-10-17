@@ -36,7 +36,7 @@ export const PreEngagementFormPhase = () => {
             dispatch(
                 initSession({
                     token: data.token,
-                    conversationSid: data.conversationSid
+                    conversationSid: data.conversation_sid
                 })
             );
         } catch (err) {
@@ -97,7 +97,7 @@ export const PreEngagementFormPhase = () => {
                         data-test="pre-engagement-chat-form-query-textarea"
                         value={query}
                         onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyPress}
                         required
                     />
                 </Box>

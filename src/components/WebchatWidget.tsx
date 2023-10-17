@@ -20,15 +20,10 @@ export function WebchatWidget() {
         if (data) {
             try {
                 logger.info("Initializing session.");
-                dispatch(
-                    initSession({
-                        token: data.token,
-                        conversationSid: data.conversationSid
-                    })
-                );
+                dispatch(initSession({ token: data.token, conversationSid: data.conversation_sid }));
             } catch (e) {
                 // if initSession fails, go to changeEngagement phase - most likely there's something wrong with the store token or conversation sis
-                logger.error("Something wrong with the store token or conversation sis. Changing engagement phase.");
+                logger.error("Something wrong with the store token or conversation_sid. Changing engagement phase.");
                 dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
             }
         } else {

@@ -37,10 +37,9 @@ export type SessionState = {
 };
 
 export type UserConfig = {
-    serverUrl?: string;
     deploymentKey: string;
     region?: string;
-    appStatus?: "open";
+    appStatus?: "open" | "closed";
     theme?: {
         isLight?: boolean;
         overrides?: Partial<GenericThemeShape>;

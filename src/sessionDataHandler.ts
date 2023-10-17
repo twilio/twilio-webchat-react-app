@@ -1,11 +1,9 @@
 import { TokenResponse } from "./definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
+import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
-// eslint-disable-next-line no-warning-comments
-// TODO: To be removed with PR#46
-let _endpoint = "";
 let _region = "";
 let _deploymentKey = "";
 
@@ -13,17 +11,24 @@ type SessionDataStorage = TokenResponse & {
     loginTimestamp: number | null;
 };
 
-async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
+export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
+    const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
     const logger = window.Twilio.getLogger("SessionDataHandler");
+    const urlEncodedBody = new URLSearchParams();
+    for (const key in body) {
+        if (body.hasOwnProperty(key)) {
+            urlEncodedBody.append(key, (body[key] as string).toString());
+        }
+    }
     const response = await fetch(_endpoint + endpointRoute, {
         method: "POST",
         headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
             ...securityHeaders
         },
-        body: JSON.stringify(body)
+        body: urlEncodedBody.toString()
     });
 
     if (!response.ok) {
@@ -74,14 +79,6 @@ export const sessionDataHandler = {
         return _deploymentKey;
     },
 
-    setEndpoint(endpoint: string = "") {
-        _endpoint = endpoint;
-    },
-
-    getEndpoint() {
-        return _endpoint;
-    },
-
     tryResumeExistingSession(): TokenResponse | null {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to refresh existing session");
@@ -119,7 +116,8 @@ export const sessionDataHandler = {
         let newTokenData: TokenResponse;
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/getUpdatedToken", {
+            newTokenData = await contactBackend<TokenResponse>("/Webchat/Tokens/Refresh", {
+                DeploymentKey: _deploymentKey,
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -145,7 +143,11 @@ export const sessionDataHandler = {
         let newTokenData;
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/initWebchat", { formData });
+            newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", {
+                DeploymentKey: _deploymentKey,
+                CustomerFriendlyName: formData?.friendlyName || "Customer",
+                PreEngagementData: JSON.stringify(formData)
+            });
         } catch (e) {
             logger.error("No results from server");
             throw Error("No results from server");

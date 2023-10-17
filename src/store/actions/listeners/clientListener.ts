@@ -17,13 +17,13 @@ export const initClientListeners = (conversationClient: Client, dispatch: Dispat
         logger.warn("token about to expire");
 
         const data = await sessionDataHandler.getUpdatedToken();
-        if (data?.token && data?.conversationSid) {
+        if (data?.token && data?.conversation_sid) {
             await conversationClient.updateToken(data.token);
             dispatch({
                 type: ACTION_UPDATE_SESSION_DATA,
                 payload: {
                     token: data.token,
-                    conversationSid: data.conversationSid
+                    conversationSid: data.conversation_sid
                 }
             });
         }

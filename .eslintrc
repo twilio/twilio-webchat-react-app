@@ -39,5 +39,13 @@
     "import/no-duplicates": ["error"],
     "spaced-comment": "warn",
     "prefer-named-capture-group": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/definitions.ts"],
+      "rules": {
+        "camelcase": ["off"]
+      }
+    }
+  ]
 }

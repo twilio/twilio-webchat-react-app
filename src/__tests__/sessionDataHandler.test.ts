@@ -1,6 +1,6 @@
 import fetchMock from "fetch-mock-jest";
 
-import { sessionDataHandler } from "../sessionDataHandler";
+import { sessionDataHandler, contactBackend } from "../sessionDataHandler";
 import WebChatLogger from "../logger";
 
 jest.mock("../logger");
@@ -26,9 +26,44 @@ describe("session data handler", () => {
         jest.clearAllMocks();
     });
 
-    it("should set an endpoint", () => {
-        sessionDataHandler.setEndpoint("foo");
-        expect(sessionDataHandler.getEndpoint()).toBe("foo");
+    it("should set the region", () => {
+        sessionDataHandler.setRegion("Foo");
+        expect(sessionDataHandler.getRegion()).toBe("Foo");
+    });
+
+    it("should set the deployment key", () => {
+        sessionDataHandler.setDeploymentKey("key1");
+        expect(sessionDataHandler.getDeploymentKey()).toBe("key1");
+    });
+
+    describe("contactBackend", () => {
+        beforeEach(() => () => {
+            sessionDataHandler.setRegion("");
+        });
+
+        afterEach(() => {
+            sessionDataHandler.setRegion("");
+            fetchMock.reset();
+        });
+
+        it("should call correct stage url", async () => {
+            const mockFetch = Promise.resolve({ ok: true, json: async () => Promise.resolve("okay") });
+            const fetchSpy = jest
+                .spyOn(window, "fetch")
+                .mockImplementation(async (): Promise<never> => mockFetch as Promise<never>);
+            sessionDataHandler.setRegion("stage");
+            await contactBackend("/Webchat/Tokens/Refresh", { formData: {} });
+            expect(fetchSpy.mock.calls[0][0]).toEqual("https://flex-api.stage.twilio.com/v2/Webchat/Tokens/Refresh");
+        });
+
+        it("should call correct prod url", async () => {
+            const mockFetch = Promise.resolve({ ok: true, json: async () => Promise.resolve("okay") });
+            const fetchSpy = jest
+                .spyOn(window, "fetch")
+                .mockImplementation(async (): Promise<never> => mockFetch as Promise<never>);
+            await contactBackend("/Webchat/Tokens/Refresh", { formData: {} });
+            expect(fetchSpy.mock.calls[0][0]).toEqual("https://flex-api.twilio.com/v2/Webchat/Tokens/Refresh");
+        });
     });
 
     describe("fetch and store new session", () => {
@@ -194,13 +229,6 @@ describe("session data handler", () => {
         const spyRemove = jest.spyOn(Object.getPrototypeOf(window.localStorage), "removeItem");
         sessionDataHandler.clear();
         expect(spyRemove).toHaveBeenCalled();
-    });
-
-    describe("endpoint", () => {
-        it("should be able to store endpoint", () => {
-            sessionDataHandler.setEndpoint("http://localhost:4000");
-            expect(sessionDataHandler.getEndpoint()).toEqual("http://localhost:4000");
-        });
     });
 
     describe("contactBackend", () => {
