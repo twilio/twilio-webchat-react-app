@@ -4,15 +4,13 @@ import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
-let _region = "";
-let _deploymentKey = "";
-
 type SessionDataStorage = TokenResponse & {
     loginTimestamp: number | null;
 };
 
 export async function contactBackend<T>(endpointRoute: string, body: Record<string, unknown> = {}): Promise<T> {
-    const _endpoint = `https://flex-api${buildRegionalHost(_region)}.twilio.com/v2`;
+    /* eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define */
+    const _endpoint = `https://flex-api${buildRegionalHost(sessionDataHandler.getRegion())}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
     const logger = window.Twilio.getLogger("SessionDataHandler");
     const urlEncodedBody = new URLSearchParams();
@@ -62,22 +60,24 @@ function getStoredSessionData() {
     return storedData as SessionDataStorage;
 }
 
-export const sessionDataHandler = {
+class SessionDataHandler {
+    private _region = "";
+    private _deploymentKey = "";
+
+    getRegion() {
+        return this._region;
+    }
+
     setRegion(region: string = "") {
-        _region = region;
-    },
-
-    getRegion(): string {
-        return _region;
-    },
-
+        this._region = region;
+    }
     setDeploymentKey(key: string) {
-        _deploymentKey = key;
-    },
+        this._deploymentKey = key;
+    }
 
     getDeploymentKey(): string {
-        return _deploymentKey;
-    },
+        return this._deploymentKey;
+    }
 
     tryResumeExistingSession(): TokenResponse | null {
         const logger = window.Twilio.getLogger("SessionDataHandler");
@@ -101,7 +101,7 @@ export const sessionDataHandler = {
             loginTimestamp: storedTokenData.loginTimestamp ?? null
         });
         return { ...storedTokenData };
-    },
+    }
 
     async getUpdatedToken(): Promise<TokenResponse> {
         const logger = window.Twilio.getLogger("SessionDataHandler");
@@ -114,10 +114,9 @@ export const sessionDataHandler = {
         }
 
         let newTokenData: TokenResponse;
-
         try {
             newTokenData = await contactBackend<TokenResponse>("/Webchat/Tokens/Refresh", {
-                DeploymentKey: _deploymentKey,
+                DeploymentKey: this._deploymentKey,
                 token: storedTokenData.token
             });
         } catch (e) {
@@ -133,9 +132,9 @@ export const sessionDataHandler = {
 
         storeSessionData(updatedSessionData);
         return { ...updatedSessionData };
-    },
+    }
 
-    fetchAndStoreNewSession: async ({ formData }: { formData: Record<string, unknown> }) => {
+    async fetchAndStoreNewSession({ formData }: { formData: Record<string, unknown> }) {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to create new session");
         const loginTimestamp = Date.now();
@@ -144,7 +143,7 @@ export const sessionDataHandler = {
 
         try {
             newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", {
-                DeploymentKey: _deploymentKey,
+                DeploymentKey: this.getDeploymentKey(),
                 CustomerFriendlyName: formData?.friendlyName || "Customer",
                 PreEngagementData: JSON.stringify(formData)
             });
@@ -160,9 +159,11 @@ export const sessionDataHandler = {
         });
 
         return { ...newTokenData } as TokenResponse;
-    },
+    }
 
-    clear: () => {
+    clear() {
         localStorage.removeItem(LOCALSTORAGE_SESSION_ITEM_ID);
     }
-};
+}
+
+export const sessionDataHandler = new SessionDataHandler();

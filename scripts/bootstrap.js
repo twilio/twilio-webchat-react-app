@@ -2,7 +2,7 @@ const fs = require("fs");
 const params = process.argv.slice(2);
 
 const getParams = () => {
-    const { accountSid, authToken, addressSid, apiKey, apiSecret, conversationsServiceSid } = params.reduce(
+    const { accountSid, authToken, apiKey, apiSecret, deploymentKey, region } = params.reduce(
         (acc, arg) => {
             const [, key, val] = arg.match(/(\w*)=(\S*)/) || [];
 
@@ -27,14 +27,12 @@ const getParams = () => {
     if (!apiSecret) {
         throw "Please provide a valid `apiSecret`. More info https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys";
     }
-    if (!addressSid) {
-        throw "Please provide a valid `addressSid`";
-    }
-    if (!conversationsServiceSid) {
-        throw "Please provide a valid `conversationsServiceSid`";
+    if (!deploymentKey) {
+        throw "Please provide a valid `deploymentKey`";
     }
 
-    return { accountSid, authToken, addressSid, apiKey, apiSecret, conversationsServiceSid };
+
+    return { accountSid, authToken, apiKey, apiSecret, region, deploymentKey };
 };
 
 const getInitialEnvFile = () => {
@@ -45,19 +43,19 @@ const getInitialEnvFile = () => {
     }
 };
 try {
-    const { accountSid, addressSid, apiKey, apiSecret, authToken, conversationsServiceSid } = getParams();
+    const { accountSid, apiKey, apiSecret, authToken, region, deploymentKey } = getParams();
 
     let envFileContent = getInitialEnvFile()
         .replace(/(?<=ACCOUNT_SID=)(\w*)/gm, accountSid)
         .replace(/(?<=AUTH_TOKEN=)(\w*)/gm, authToken)
         .replace(/(?<=API_KEY=)(\w*)/gm, apiKey)
         .replace(/(?<=API_SECRET=)(\w*)/gm, apiSecret)
-        .replace(/(?<=ADDRESS_SID=)(\w*)/gm, addressSid)
-        .replace(/(?<=CONVERSATIONS_SERVICE_SID=)(\w*)/gm, conversationsServiceSid);
+        .replace(/(?<=REACT_APP_DEPLOYMENT_KEY=)(\w*)/gm, deploymentKey)
+        .replace(/(?<=REACT_APP_REGION=)(\w*)/gm, region)
 
     fs.writeFileSync(".env", envFileContent);
 
-    console.log("✅  Project bootstrapped");
+    console.log("✅ Project bootstrapped");
 } catch (e) {
-    console.error(`❌  Bootstrap script aborted: ${e}`);
+    console.error(`❌ Bootstrap script aborted: ${e}`);
 }

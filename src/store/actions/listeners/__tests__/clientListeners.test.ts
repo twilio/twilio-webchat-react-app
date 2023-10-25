@@ -47,7 +47,7 @@ describe("Client Listeners", () => {
         };
         jest.spyOn(sessionDataHandler, "getUpdatedToken").mockImplementation(async () => ({
             ...tokenResponsePayload,
-            region: process.env.REACT_APP_REGION || ""
+            region: ""
         }));
 
         initClientListeners(mockClient, mockDispatch);
