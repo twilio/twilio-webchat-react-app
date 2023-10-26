@@ -65,8 +65,8 @@ accountSid=YOUR_ACCOUNT_SID \
 authToken=YOUR_AUTH_TOKEN \
 apiKey=YOUR_API_KEY_SID \
 apiSecret=YOUR_API_SECRET \
-deploymentKey=<DEPLOYMENT_KEY> \
-region=<REGION>
+deploymentKey=DEPLOYMENT_KEY \
+region=REGION
 ```
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
