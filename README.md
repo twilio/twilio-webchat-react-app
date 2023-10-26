@@ -44,10 +44,10 @@ Your app will be served at http://localhost:3000/.
 ### 2. Work with out-of-the-box customisations
 
 Your application now supports query params, so that you can customise.
-1. `deploymentKey` is a UUID with a fixed length. An **AccountSid** has one-to-many relationship with **DeploymentKey**. Customers are to use this it to initiate Webchat UI. For more info on **Deployment Key** refer to [configuration](#configuration)
-2. `region` You need to pass region where the **Deployment Key** was created. If this is incorrect, then your application will not find relevant configuration for the **Deployment Key** and will fail to start. For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [Configuration section](#configuration).
-3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. By default we keep the widget 'closed'. To keep it open, set value to 'open'.
-4. `theme`: Decide if `light` or `dark` suits you and provide that value as here. Application will boot with the said theme.
+1. `deploymentKey` For more info on **Deployment Key** refer to [configuration](#configuration)
+2. `region` For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [Configuration section](#configuration).
+3. `appStatus` Used to toggle the widget state. For more info, refer to [Configuration section](#configuration).
+4. `theme`: Decide if `light` or `dark` suits you and provide that value as here. Application will boot with the said theme. For more info, refer to [Configuration section](#configuration).
 
 Below is an example where you've provide all of the query params:
 [http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light](http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light)
@@ -146,8 +146,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
 1. `deploymentKey` is a UUID with a fixed length. An **AccountSid** has one-to-many relationship with **DeploymentKey**. Customers are to use this it to initiate Webchat UI. For more info on how to create a **Deployment Key** refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
 2. `region` You need to pass region where the **Deployment Key** was created. If this is incorrect, then your application will not find relevant configuration for the **Deployment Key** and will fail to start. For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup).
-3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'.
-4. `theme` can be used to quickly customise the look and feel of the app. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
+3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
+4. `theme` can be used to quickly customise the look and feel of the app. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
 
 If you have more customisations to add, we recommend to start adding them here as this becomes easy to boot the app with given set of values and code stays clean.
 
