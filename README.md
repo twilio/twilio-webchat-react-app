@@ -6,15 +6,15 @@ _Twilio Webchat React App_ is an application that demonstrates a website chat wi
 
 1. [Getting started](#Getting-started)
     1. [Setup](#Setup)
-    2. [Work locally](#Work-locally)
+    2. [Working locally](#Working-locally)
 2. [Features](#Features)
 3. [Project structure](#Project-structure)
     1. [React App](#1-react-app)
-    2. [Local backend server](#2-local-backend-server)
 4. [Working in production](#working-in-production)
 5. [Browser support](#Browser-support)
 6. [Accessibility](#Accessibility)
 7. [FAQs](#faqs)
+8. [License](#license)
 
 ---
 
@@ -30,7 +30,32 @@ Run the following command
 yarn
 ```
 
-### 2. Populate Your .env File
+## Working Locally
+
+### 1. Start the Local React App Server
+
+```shell
+yarn start
+```
+
+Your app will be served at http://localhost:3000/. 
+
+
+### 2. Work with out-of-the-box customisations
+
+Your application now supports query params, so that you can customise.
+1. `deploymentKey` For more info on **Deployment Key** refer to [configuration](#configuration)
+2. `region` For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [Configuration section](#configuration).
+3. `appStatus` Used to toggle the widget state. For more info, refer to [Configuration section](#configuration).
+4. `theme`: Decide if `light` or `dark` suits you and provide that value as here. Application will boot with the said theme. For more info, refer to [Configuration section](#configuration).
+
+Below is an example where you've provide all of the query params:
+[http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light](http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light)
+
+We are working towards exposing more values that allows customisation at minimal steps. However, if you want to customise beyond, please feel free to make changes to your code and then, make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
+
+
+### 3. Test your changes.
 
 We provide a handy `bootstrap` script to set up the environment variables required, but you can alternatively copy the `.env.sample` file.
 
@@ -40,39 +65,17 @@ accountSid=YOUR_ACCOUNT_SID \
 authToken=YOUR_AUTH_TOKEN \
 apiKey=YOUR_API_KEY_SID \
 apiSecret=YOUR_API_SECRET \
-addressSid=YOUR_ADDRESS_SID \
-conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
-REACT_APP_DEPLOYMENT_KEY=YOUR_REACT_APP_DEPLOYMENT_KEY
-REACT_APP_REGION=YOUR_REACT_APP_REGION
+deploymentKey=DEPLOYMENT_KEY \
+region=REGION
 ```
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
 
 For more info on how to create an **API key** and an **API secret**, please check the [documentation](https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys).
 
-You can find your **Conversations Service Sid** on the [services page](https://console.twilio.com/us1/develop/conversations/manage/services?frameUrl=%2Fconsole%2Fconversations%2Fservices%3Fx-target-region%3Dus1). Make sure to pick the one linked to your Flex Account — usually it is named `Flex Chat Service` and it starts with `IS`
+The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file. You can find more details about them in [Configuration section](#configuration)
 
-For the Address Sid, click on the edit button of your address and the edit screen will contain Address Sid. Note this Sid starts with `IG`.
-
-The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file. These values can also be part of queryParams. If present in both, precedence will be given to queryParams.
-
-## Working Locally
-
-### 1. Start the Local Backend Server
-
-```shell
-yarn server
-```
-
-Your server will be served at http://localhost:3001/.
-
-### 2. Start the Local React App Server
-
-```shell
-yarn start
-```
-
-Your app will be served at http://localhost:3000/.
+Once all the values populated, run `yarn cypress open` to kickstart end-to-end test.
 
 # Features
 
@@ -131,8 +134,9 @@ Here's an example of how to use this config object in your `index.html` template
 ```javascript
 window.addEventListener("DOMContentLoaded", () => {
     Twilio.initWebchat({
-        deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
-        region: urlParams.get("region") || "%REACT_APP_REGION%",
+        deploymentKey: "CVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        region: "us1",
+        appStatus: "open",
         theme: {
             isLight: true
         }
@@ -140,14 +144,19 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 ```
 
-1. `theme` can be used to quickly customise the look and feel of the app.
-    1. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste.
-2. `deploymentKey` is a UUID with a fixed length. An AccountSid has one-to-many relationship with deploymentKey. Customers are to use this deploymentKey to initiate Webchat UI.
-3. `region` for the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod)
+1. `deploymentKey` is a UUID with a fixed length. As a security enhancement, we have encapsulated **AccountSid** with **DeploymentKey**. An **AccountSid** has one-to-many relationship with **DeploymentKey**. This means, **AccountSid** is not any public entity anymore for webchat. Customers are to use **DeploymentKey** to initiate Webchat UI. For more info on how to create a **Deployment Key** refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
+2. `region` You need to pass region where the **Deployment Key** was created. If this is incorrect, then your application will not find relevant configuration for the **Deployment Key** and will fail to start. For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup).
+3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
+4. `theme` can be used to quickly customise the look and feel of the app. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
+
+If you have more customisations to add, we recommend to start adding them here as this becomes easy to boot the app with given set of values and code stays clean.
+
 
 #### A note about the pre-engagement form data
 
-By default, this endpoint takes the `friendlyName` field of the form and uses it to set the customer User's name via the webchat orchestration endpoint.
+By default, pre-engagement form takes the `friendlyName` field of the form and uses it to set the customer User's name via the webchat orchestration endpoint.
+
+Kindly note that pre-engagement data is considered to be PII. For more information about PII and how we handle, you can read [here](https://www.twilio.com/docs/glossary/what-is-personally-identifiable-information-pii#pii-fields).
 
 # Working in Production
 
@@ -193,24 +202,8 @@ Next, declare the root element that the webchat widget will be rendered into:
 <div id="twilio-webchat-widget-root"></div>
 ```
 
-Finally, add the code to initialize the webchat widget as per following example.
-The React App will then target `/initWebchat` and `/refreshToken` endpoints. If you want to use different endpoint urls, make sure to upload the code in `src/sessionDataHandler.ts`.
+Finally, add the code to initialize the webchat widget as per as shown in [Configuration section](#configuration).
 
-For more information about the available options, please check the [Configuration section](#configuration).
-
-```html
-<script>
-    window.addEventListener("DOMContentLoaded", () => {
-        Twilio.initWebchat({
-            deploymentKey: urlParams.get("deploymentKey") || "%REACT_APP_DEPLOYMENT_KEY%",
-            region: urlParams.get("region") || "%REACT_APP_REGION%",
-            theme: {
-                isLight: true
-            }
-        });
-    });
-</script>
-```
 
 # Browser Support
 
