@@ -23,6 +23,9 @@ import {
     participantTypingStyles
 } from "./styles/MessageList.styles";
 
+
+const noop = async (t: number) => new Promise(res => setTimeout(res, t));
+
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];
 
@@ -104,9 +107,13 @@ export const MessageList = () => {
 
     useEffect(() => {
         const checkIfAllMessagesLoaded = async () => {
+            if (!messages) return;
+
+            await noop(200);
+
             const totalMessagesCount = await conversation?.getMessagesCount();
             if (totalMessagesCount) {
-                setHasLoadedAllMessages(totalMessagesCount === messages?.length);
+                setHasLoadedAllMessages(totalMessagesCount === messages.length);
             }
 
             // if messages were added to state, loading is complete
@@ -115,9 +122,8 @@ export const MessageList = () => {
                 oldMessagesLength.current = messages.length;
             }
         };
-
         checkIfAllMessagesLoaded();
-    }, [messages, conversation]);
+    }, [messages]);
 
     const handleScroll = async (event: UIEvent<HTMLDivElement>) => {
         const element = event.target as HTMLDivElement;
