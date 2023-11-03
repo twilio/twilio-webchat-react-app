@@ -1,15 +1,12 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { MessagingCanvasPhase } from "../MessagingCanvasPhase";
+import { MessagingCanvasPhase, sendInitialUserQuery } from "../MessagingCanvasPhase";
 import { notifications } from "../../notifications";
 import * as genericActions from "../../store/actions/genericActions";
 
-jest.mock("react-redux", () => ({
-    useSelector: jest.fn(),
-    useDispatch: jest.fn()
-}));
+jest.mock("react-redux")
 
 jest.mock("../Header", () => ({
     Header: () => <div title="Header" />
@@ -35,11 +32,32 @@ jest.mock("../ConversationEnded", () => ({
     ConversationEnded: () => <div title="ConversationEnded" />
 }));
 
+
+const messageMock = {
+  setBody: jest.fn(),
+  build: jest.fn(),
+  send: jest.fn()
+};
+const conversationMock = {
+  getMessagesCount: jest.fn(),
+  prepareMessage: jest.fn()
+}
+const TEST_QUERY = "test query";
 describe("Messaging Canvas Phase", () => {
     let dispatchSpy: jest.SpyInstance;
     beforeEach(() => {
         dispatchSpy = jest.fn();
         (useDispatch as jest.Mock).mockReturnValue(dispatchSpy);
+        (useSelector as jest.Mock).mockImplementation((callback: any) =>
+            callback({ 
+                chat: { conversationState: "closed" }, 
+            })
+        );
+        conversationMock.getMessagesCount.mockResolvedValue(0);
+        conversationMock.prepareMessage.mockReturnValue(messageMock);
+        messageMock.setBody.mockReturnValue(messageMock);
+        messageMock.build.mockReturnValue(messageMock);
+        messageMock.send.mockReturnValue(messageMock);
     });
 
     it("renders the messaging canvas phase", () => {
@@ -95,5 +113,58 @@ describe("Messaging Canvas Phase", () => {
 
         expect(queryByTitle("ConversationEnded")).toBeInTheDocument();
         expect(queryByTitle("MessageInput")).not.toBeInTheDocument();
+    });
+
+    it("User's query is auto populated when conversation is empty", async () => {
+        (useSelector as jest.Mock).mockImplementation((callback: any) =>
+            callback({ 
+                chat: { conversationState: "closed", conversation: conversationMock }, 
+                session: { preEngagementData: { query: TEST_QUERY } }
+            })
+        );
+        await waitFor(() => render(<MessagingCanvasPhase />));
+
+        expect(conversationMock.prepareMessage).toHaveBeenCalled();
+        expect(conversationMock.prepareMessage().setBody).toHaveBeenCalledWith(TEST_QUERY);
+        expect(conversationMock.prepareMessage().setBody().build).toHaveBeenCalled();
+        expect(conversationMock.prepareMessage().setBody().build().send).toHaveBeenCalled();
+    });
+
+    it("Should not trigger conversation if messages exists", async () => {
+        (useSelector as jest.Mock).mockImplementation((callback: any) =>
+            callback({ 
+                chat: { conversationState: "closed", conversation: conversationMock }, 
+                session: { preEngagementData: { query: TEST_QUERY } }
+            })
+        );
+        conversationMock.getMessagesCount.mockResolvedValue(1);
+        await waitFor(() => render(<MessagingCanvasPhase />));
+
+        expect(conversationMock.prepareMessage).toHaveBeenCalledTimes(0);
+    });
+
+    it("Should not trigger conversation if user's query is empty", async () => {
+        (useSelector as jest.Mock).mockImplementation((callback: any) =>
+            callback({ 
+                chat: { conversationState: "closed", conversation: conversationMock }, 
+            })
+        );
+        conversationMock.getMessagesCount.mockResolvedValue(1);
+        await waitFor(() => render(<MessagingCanvasPhase />));
+
+        expect(conversationMock.prepareMessage).toHaveBeenCalledTimes(0);
+    });
+
+    it("Should not trigger conversation if conversation is not initialised", async () => {
+        (useSelector as jest.Mock).mockImplementation((callback: any) =>
+            callback({ 
+                chat: { conversationState: "closed" }, 
+                session: { preEngagementData: { query: TEST_QUERY } }
+            })
+        );
+        conversationMock.getMessagesCount.mockResolvedValue(1);
+        await waitFor(() => render(<MessagingCanvasPhase />));
+
+        expect(conversationMock.prepareMessage).toHaveBeenCalledTimes(0);
     });
 });
