@@ -77,6 +77,8 @@ describe("Index", () => {
         it("gives error when deploymentKey is missing", () => {
             const logger = window.Twilio.getLogger("InitWebChat");
             const errorLoggerSpy = jest.spyOn(logger, "error");
+
+            // @ts-ignore
             initWebchat();
             expect(errorLoggerSpy).toBeCalledTimes(1);
             expect(errorLoggerSpy).toHaveBeenCalledWith("deploymentKey must exist to connect to Webchat servers");
@@ -85,6 +87,8 @@ describe("Index", () => {
         it("gives warning when unsupported params are passed", () => {
             const logger = window.Twilio.getLogger("InitWebChat");
             const warningSpy = jest.spyOn(logger, "warn");
+
+            // @ts-ignore
             initWebchat({ deploymentKey: "xyz", someKey: "abc" });
             expect(warningSpy).toBeCalledTimes(1);
             expect(warningSpy).toHaveBeenCalledWith("someKey is not supported.");
@@ -97,10 +101,15 @@ describe("Index", () => {
             expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: true });
         });
 
-        it("triggers expanded false if appStatus is closed", () => {
+        it("triggers expanded false if appStatus is not set to open", () => {
             const changeExpandedStatusSpy = jest.spyOn(genericActions, "changeExpandedStatus");
 
+            // @ts-ignore
             initWebchat({ deploymentKey: "CV000000", appStatus: "closed" });
+            expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
+
+            // @ts-ignore
+            initWebchat({ deploymentKey: "CV000000", appStatus: "some_garbage_value" });
             expect(changeExpandedStatusSpy).toHaveBeenCalledWith({ expanded: false });
         });
 

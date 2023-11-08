@@ -30,6 +30,7 @@ const initWebchat = async (userConfig: UserConfig) => {
 
     if (!userConfig || !userConfig.deploymentKey) {
         logger.error(`deploymentKey must exist to connect to Webchat servers`);
+        return;
     }
 
     for (const key in userConfig) {
@@ -38,8 +39,8 @@ const initWebchat = async (userConfig: UserConfig) => {
         }
     }
 
-    store.dispatch(changeExpandedStatus({ expanded: userConfig?.appStatus === "open" }));
-    delete userConfig?.appStatus;
+    store.dispatch(changeExpandedStatus({ expanded: userConfig.appStatus === "open" }));
+    delete userConfig.appStatus;
 
     const webchatConfig = merge({}, defaultConfig, userConfig);
 
