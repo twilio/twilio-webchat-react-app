@@ -36,7 +36,7 @@ export const PreEngagementFormPhase = () => {
             dispatch(
                 initSession({
                     token: data.token,
-                    conversationSid: data.conversation_sid
+                    conversationSid: data.conversationSid
                 })
             );
         } catch (err) {

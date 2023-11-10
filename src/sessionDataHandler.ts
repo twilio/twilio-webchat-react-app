@@ -1,5 +1,4 @@
 import { ProcessedTokenResponse, TokenResponse } from "./definitions";
-import { PreEngagementData } from "./store/definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 import { buildRegionalHost } from "./utils/regionUtil";
 
@@ -10,19 +9,21 @@ type SessionDataStorage = ProcessedTokenResponse & {
     loginTimestamp: number | null;
 };
 
-export type InitWebchatAPIPayload = { 
+type InitWebchatAPIPayload = {
     CustomerFriendlyName: string;
     PreEngagementData: string;
     DeploymentKey: string;
 };
 
-export type RefreshTokenAPIPayload = { 
+type RefreshTokenAPIPayload = {
     DeploymentKey: string;
     token: string;
 };
 
-export async function contactBackend<T>(endpointRoute: string, 
-    body: InitWebchatAPIPayload | RefreshTokenAPIPayload): Promise<T> {
+export async function contactBackend<T>(
+    endpointRoute: string,
+    body: InitWebchatAPIPayload | RefreshTokenAPIPayload
+): Promise<T> {
     /* eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define */
     const _endpoint = `https://flex-api${buildRegionalHost(sessionDataHandler.getRegion())}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
