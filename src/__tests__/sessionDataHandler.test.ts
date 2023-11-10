@@ -84,6 +84,7 @@ describe("session data handler", () => {
             const tokenPayload = {
                 expiration: `${currentTime + 10e5}`,
                 token: "new token",
+                // eslint-disable-next-line camelcase
                 conversation_sid: "sid",
                 identity: "identity"
             };
@@ -101,6 +102,7 @@ describe("session data handler", () => {
             const tokenPayload = {
                 expiration: `${Date.now() + 10e5}`,
                 token: "new token",
+                // eslint-disable-next-line camelcase
                 conversation_sid: "sid",
                 identity: "identity"
             };
@@ -243,12 +245,12 @@ describe("session data handler", () => {
         });
     });
 
-
     describe("processNewTokenResponse", () => {
-        it("should process data as expected"", () => {
+        it("should process data as expected", () => {
             const tokenResponse = {
                 expiration: "2021-01-01",
                 token: "token",
+                // eslint-disable-next-line camelcase
                 conversation_sid: "sid",
                 identity: "identity"
             };
