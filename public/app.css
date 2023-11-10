@@ -26,7 +26,7 @@ html > body {
   margin-left: 0rem;
   margin-top: 0rem;  
   background-repeat: no-repeat;
-  background-size: cover; 
+  background-size: contain;
   background-color: transparent;
 }
 [data-theme-pref="light-theme"] {
@@ -34,14 +34,14 @@ html > body {
 }
 [data-theme-pref="light-theme"]::after {
   background-color: transparent;
-  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-transparent-light.png");
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-light.png");
 }
 [data-theme-pref="dark-theme"] {
   background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-webchat-bg-dark.jpg");
 }
 [data-theme-pref="dark-theme"]::after {
   background-color: transparent;
-  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-transparent-dark.png");
+  background-image: url("https://media.twiliocdn.com/sdk/js/webchat-v3/assets/twilio-flex-logo-dark.png");
 }
 
 @font-face {
