@@ -12,19 +12,15 @@ import { removeNotification } from "../store/actions/genericActions";
 import { notifications } from "../notifications";
 import { AttachFileDropArea } from "./AttachFileDropArea";
 
-
 const sendInitialUserQuery = async (conv?: Conversation, query?: string): Promise<void> => {
     if (!query || !conv) return;
 
     const totalMessagesCount = await conv.getMessagesCount();
 
     if (!totalMessagesCount) {
-        conv.prepareMessage()
-            .setBody(query)
-            .build()
-            .send(); 
-    } 
-}
+        conv.prepareMessage().setBody(query).build().send();
+    }
+};
 
 export const MessagingCanvasPhase = () => {
     const dispatch = useDispatch();
