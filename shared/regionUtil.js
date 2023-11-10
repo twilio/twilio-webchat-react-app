@@ -3,11 +3,13 @@ function parseRegionForHTTP(region) {
         case "prod":
         case "us1":
         case "":
+        case undefined:
+        case null:
             return "";
         case "dev-us1":
-            return ".dev";
+          return ".dev";
         case "stage-us1":
-            return ".stage";
+          return ".stage";
         default:
             return `.${region}`;
     }
@@ -34,6 +36,8 @@ function parseRegionForTwilioClient(region) {
     switch (region) {
         case "prod":
         case "us1":
+        case undefined:
+        case null:
             return "";
         case "stage-us1":
             return "stage";
@@ -48,6 +52,8 @@ function parseRegionForConversations(region) {
     switch (region) {
         case "prod":
         case "":
+        case undefined:
+        case null:
             return "us1";
         case "dev":
             return "dev-us1";
