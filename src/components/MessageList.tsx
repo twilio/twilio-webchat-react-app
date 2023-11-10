@@ -23,8 +23,7 @@ import {
     participantTypingStyles
 } from "./styles/MessageList.styles";
 
-
-const noop = async (t: number) => new Promise(res => setTimeout(res, t));
+const noop = async (t: number) => new Promise((res) => setTimeout(res, t));
 
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];

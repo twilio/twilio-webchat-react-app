@@ -82,15 +82,17 @@ describe("session data handler", () => {
 
             const currentTime = Date.now();
             const tokenPayload = {
-                expiration: currentTime + 10e5,
+                expiration: `${currentTime + 10e5}`,
                 token: "new token",
-                conversationSid: "sid"
+                // eslint-disable-next-line camelcase
+                conversation_sid: "sid",
+                identity: "identity"
             };
             fetchMock.once(() => true, tokenPayload);
             await sessionDataHandler.fetchAndStoreNewSession({ formData: {} });
 
             const expected = {
-                ...tokenPayload,
+                ...sessionDataHandler.processNewTokenResponse(tokenPayload),
                 loginTimestamp: currentTime
             };
             expect(setLocalStorageItemSpy).toHaveBeenCalledWith("TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
@@ -98,9 +100,11 @@ describe("session data handler", () => {
 
         it("should return a new token", async () => {
             const tokenPayload = {
-                expiration: Date.now() + 10e5,
+                expiration: `${Date.now() + 10e5}`,
                 token: "new token",
-                conversationSid: "sid"
+                // eslint-disable-next-line camelcase
+                conversation_sid: "sid",
+                identity: "identity"
             };
             fetchMock.once(() => true, tokenPayload);
             const { token } = await sessionDataHandler.fetchAndStoreNewSession({ formData: {} });
@@ -238,6 +242,27 @@ describe("session data handler", () => {
             await expect(sessionDataHandler.fetchAndStoreNewSession({ formData: {} })).rejects.toThrowError(
                 new Error("No results from server")
             );
+        });
+    });
+
+    describe("processNewTokenResponse", () => {
+        it("should process data as expected", () => {
+            const tokenResponse = {
+                expiration: "2021-01-01",
+                token: "token",
+                // eslint-disable-next-line camelcase
+                conversation_sid: "sid",
+                identity: "identity"
+            };
+
+            const processedTokenResponse = sessionDataHandler.processNewTokenResponse(tokenResponse);
+
+            expect(processedTokenResponse).toEqual({
+                expiration: "2021-01-01",
+                token: "token",
+                conversationSid: "sid",
+                identity: "identity"
+            });
         });
     });
 });

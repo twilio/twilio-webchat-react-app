@@ -9,10 +9,10 @@ import { sessionDataHandler } from "../../sessionDataHandler";
 import { store } from "../../store/store";
 
 const token = "token";
-const conversation_sid = "sid";
+const conversationSid = "sid";
 jest.mock("../../sessionDataHandler", () => ({
     sessionDataHandler: {
-        fetchAndStoreNewSession: () => ({ token, conversation_sid }),
+        fetchAndStoreNewSession: () => ({ token, conversationSid }),
         getRegion: jest.fn()
     }
 }));
@@ -91,7 +91,7 @@ describe("Pre Engagement Form Phase", () => {
         fireEvent.submit(formBox);
 
         await waitFor(() => {
-            expect(initAction.initSession).toHaveBeenCalledWith({ token, conversationSid: conversation_sid });
+            expect(initAction.initSession).toHaveBeenCalledWith({ token, conversationSid });
         });
     });
 

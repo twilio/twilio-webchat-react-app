@@ -51,7 +51,7 @@ afterEach(() => {
 describe("Webchat Lite", () => {
     const sessionData = {
         token: "token",
-        conversation_sid: "sid"
+        conversationSid: "sid"
     };
     const region = "stage";
 
@@ -79,7 +79,7 @@ describe("Webchat Lite", () => {
 
         expect(initSessionSpy).toHaveBeenCalledWith({
             token: sessionData.token,
-            conversationSid: sessionData.conversation_sid
+            conversationSid: sessionData.conversationSid
         });
     });
 
