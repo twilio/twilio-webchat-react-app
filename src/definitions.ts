@@ -5,7 +5,7 @@ export type TokenResponse = {
     expiration: string;
 };
 
-export type ProcesssedTokenResponse = {
+export type ProcessedTokenResponse = {
     token: string;
     conversationSid: string;
     identity: string;

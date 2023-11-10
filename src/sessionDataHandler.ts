@@ -1,4 +1,4 @@
-import { ProcesssedTokenResponse as ProcessedTokenResponse, TokenResponse } from "./definitions";
+import { ProcessedTokenResponse, TokenResponse } from "./definitions";
 import { PreEngagementData } from "./store/definitions";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 import { buildRegionalHost } from "./utils/regionUtil";
