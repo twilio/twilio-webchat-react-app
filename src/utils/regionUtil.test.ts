@@ -17,6 +17,14 @@ describe("Build Regions", () => {
                 regionExpected: ""
             },
             {
+                regionPassed: null,
+                regionExpected: ""
+            },
+            {
+                regionPassed: undefined,
+                regionExpected: ""
+            },
+            {
                 regionPassed: "prod",
                 regionExpected: ""
             },
@@ -53,6 +61,14 @@ describe("Build Regions", () => {
             },
             {
                 regionPassed: "",
+                regionParsed: "us1"
+            },
+            {
+                regionPassed: null,
+                regionParsed: "us1"
+            },
+            {
+                regionPassed: undefined,
                 regionParsed: "us1"
             },
             {
