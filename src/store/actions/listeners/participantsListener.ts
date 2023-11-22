@@ -5,11 +5,15 @@ import { ACTION_ADD_PARTICIPANT, ACTION_REMOVE_PARTICIPANT, ACTION_UPDATE_PARTIC
 
 export const initParticipantsListener = (conversation: Conversation, dispatch: Dispatch) => {
     conversation.addListener("participantJoined", async (participant: Participant) => {
-        const user = await participant.getUser();
-        dispatch({
-            type: ACTION_ADD_PARTICIPANT,
-            payload: { participant, user }
-        });
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (participant?.type !== "dialogflowcx") {
+            const user = await participant.getUser();
+            dispatch({
+                type: ACTION_ADD_PARTICIPANT,
+                payload: { participant, user }
+            });
+        }
     });
 
     conversation.addListener("participantLeft", (participant: Participant) => {

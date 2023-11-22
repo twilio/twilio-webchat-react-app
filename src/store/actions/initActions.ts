@@ -28,8 +28,11 @@ export function initSession({ token, conversationSid }: { token: string; convers
         let messages;
 
         try {
-            conversationsClient = await Client.create(token);
+            conversationsClient = await Client.create(token, {
+                region: "stage-us1"
+            });
             try {
+                // await new Promise((resolve) => setTimeout(resolve, 2000 ));
                 conversation = await conversationsClient.getConversationBySid(conversationSid);
             } catch (e) {
                 dispatch(addNotification(notifications.failedToInitSessionNotification("Couldn't load conversation")));
@@ -38,7 +41,17 @@ export function initSession({ token, conversationSid }: { token: string; convers
             }
 
             participants = await conversation.getParticipants();
-            users = await Promise.all(participants.map(async (p) => p.getUser()));
+            const usersF = await Promise.all(
+                // eslint-disable-next-line consistent-return
+                participants.map(async (p) => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    if (p?.type !== "dialogflowcx") {
+                        return p.getUser();
+                    }
+                })
+            );
+            users = usersF.filter((value) => value !== null && value !== undefined);
             messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
         } catch (e) {
             log.error("Something went wrong when initializing session", e);

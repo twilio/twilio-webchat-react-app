@@ -23,7 +23,7 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     let identity;
 
     try {
-        const res = await axios.post(`https://flex-api.twilio.com/v2/WebChats`, params, {
+        const res = await axios.post(`https://flex-api.stage.twilio.com/v2/WebChats`, params, {
             auth: {
                 username: process.env.ACCOUNT_SID,
                 password: process.env.AUTH_TOKEN
@@ -56,6 +56,7 @@ const sendUserMessage = (conversationSid, identity, messageBody) => {
             logInterimAction("(async) User message sent");
         })
         .catch((e) => {
+            console.log(e);
             logInterimAction(`(async) Couldn't send user message: ${e?.message}`);
         });
 };
@@ -98,10 +99,13 @@ const initWebchatController = async (request, response) => {
     // OPTIONAL — if user query is defined
     if (request.body?.formData?.query) {
         // use it to send a message in behalf of the user with the query as body
-        sendUserMessage(conversationSid, identity, request.body.formData.query).then(() =>
-            // and then send another message from Concierge, letting the user know that an agent will help them soon
-            sendWelcomeMessage(conversationSid, customerFriendlyName)
-        );
+        sendUserMessage(conversationSid, identity, request.body.formData.query);
+        /*
+         *     .then(() =>
+         *     // and then send another message from Concierge, letting the user know that an agent will help them soon
+         *     // sendWelcomeMessage(conversationSid, customerFriendlyName)
+         * );
+         */
     }
 
     response.send({
