@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023 Twilio Inc. All Rights Reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory.
+ */
 import merge from "lodash.merge";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
