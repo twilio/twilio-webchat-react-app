@@ -70,8 +70,7 @@ describe("Generate Security Headers", () => {
             video: { decodingInfo: true }
         });
         expect(JSON.parse(headers[HEADER_SEC_WEBCHAT])).toMatchObject({
-            loginTimestamp: "TODAY",
-            deploymentKey: null
+            loginTimestamp: "TODAY"
         });
     });
 
@@ -124,8 +123,7 @@ describe("Generate Security Headers", () => {
             video: sampleDefaultCodecInfo
         });
         expect(JSON.parse(headers[HEADER_SEC_WEBCHAT])).toMatchObject({
-            loginTimestamp: DEFAULT_LOGIN_TIMESTAMP,
-            deploymentKey: null
+            loginTimestamp: DEFAULT_LOGIN_TIMESTAMP
         });
 
         Object.defineProperty(navigator, "mediaCapabilities", {

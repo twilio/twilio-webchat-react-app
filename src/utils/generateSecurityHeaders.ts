@@ -1,5 +1,4 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
-import { store } from "../store/store";
 
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
 const HEADER_SEC_USER_AGENT = "i-twilio-user-agent";
@@ -35,7 +34,6 @@ const getUserSpecificSettings = () => {
 
 const getWebchatInfo = () => {
     const sessionStorage: string = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
-    const reduxState = store.getState();
     const logger = window.Twilio.getLogger("getWebchatInfo");
 
     let parsedStorage = null;
@@ -48,7 +46,6 @@ const getWebchatInfo = () => {
 
     return {
         loginTimestamp: parsedStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
-        deploymentKey: reduxState?.config?.deploymentKey || null
     };
 };
 
