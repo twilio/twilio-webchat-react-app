@@ -9,7 +9,7 @@ import WebChatLogger from "../logger";
 jest.mock("../logger");
 
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
-const HEADER_SEC_USERAGENT = "x-twilio-user-agent";
+const HEADER_SEC_USERAGENT = "i-twilio-user-agent";
 const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
 const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
 
