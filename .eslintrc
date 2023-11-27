@@ -46,6 +46,11 @@
       "rules": {
         "camelcase": ["off"]
       }
+    }, {
+      "files": ["src/sessionDataHandler.ts"],
+      "rules": {
+        "camelcase": ["off"]
+      }
     }
   ]
 }
