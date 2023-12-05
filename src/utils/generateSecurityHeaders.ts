@@ -1,12 +1,10 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
-const HEADER_SEC_USER_AGENT = "i-twilio-user-agent";
 const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
 const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
 
 type SecurityHeadersType = {
-    [HEADER_SEC_USER_AGENT]: string;
     [HEADER_SEC_USERSETTINGS]: string;
     [HEADER_SEC_WEBCHAT]: string;
     [HEADER_SEC_DECODER]: string;
@@ -98,7 +96,6 @@ export const generateSecurityHeaders = async (): Promise<SecurityHeadersType> =>
         headers[HEADER_SEC_WEBCHAT] = JSON.stringify(getWebchatInfo());
         headers[HEADER_SEC_USERSETTINGS] = JSON.stringify(getUserSpecificSettings());
         headers[HEADER_SEC_DECODER] = JSON.stringify(decoders);
-        headers[HEADER_SEC_USER_AGENT] = navigator.userAgent;
 
         return headers;
     });
