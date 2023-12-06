@@ -80,7 +80,7 @@ describe("session data handler", () => {
 
             jest.useFakeTimers().setSystemTime(new Date("2023-01-01"));
 
-            const currentTime = Date.now();
+            const currentTime = Date.now().toString();
             const tokenPayload = {
                 expiration: `${currentTime + 10e5}`,
                 token: "new token",
@@ -95,7 +95,15 @@ describe("session data handler", () => {
                 ...sessionDataHandler.processNewTokenResponse(tokenPayload),
                 loginTimestamp: currentTime
             };
-            expect(setLocalStorageItemSpy).toHaveBeenCalledWith("TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
+            expect(setLocalStorageItemSpy).toHaveBeenCalledTimes(2);
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(1, "TWILIO_WEBCHAT_WIDGET", JSON.stringify({
+                token: "",
+                expiration: "",
+                identity: "",
+                conversationSid: "",
+                loginTimestamp: currentTime
+            }));
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(2, "TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
         });
 
         it("should return a new token", async () => {

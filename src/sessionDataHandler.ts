@@ -6,7 +6,7 @@ export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 const CUSTOMER_DEFAULT_NAME = "Customer";
 
 type SessionDataStorage = ProcessedTokenResponse & {
-    loginTimestamp: number | null;
+    loginTimestamp: string | null;
 };
 
 type InitWebchatAPIPayload = {
@@ -17,7 +17,7 @@ type InitWebchatAPIPayload = {
 
 type RefreshTokenAPIPayload = {
     DeploymentKey: string;
-    token: string;
+    Token: string;
 };
 
 export async function contactBackend<T>(
@@ -132,7 +132,7 @@ class SessionDataHandler {
         try {
             newTokenData = await contactBackend<TokenResponse>("/Webchat/Tokens/Refresh", {
                 DeploymentKey: this._deploymentKey,
-                token: storedTokenData.token
+                Token: storedTokenData.token
             });
         } catch (e) {
             logger.error(`Something went wrong when trying to get an updated token: ${e}`);
@@ -152,9 +152,18 @@ class SessionDataHandler {
     async fetchAndStoreNewSession({ formData }: { formData: Record<string, unknown> }) {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to create new session");
-        const loginTimestamp = Date.now();
+        const loginTimestamp = Date.now().toString();
 
         let newTokenData;
+        storeSessionData({
+            ...this.processNewTokenResponse({
+                token: "",
+                expiration: "",
+                identity: "",
+                conversation_sid: ""
+            }),
+            loginTimestamp
+        });
 
         try {
             newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", {

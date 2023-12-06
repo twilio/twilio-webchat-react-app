@@ -17,7 +17,7 @@ export function WebchatWidget() {
     useEffect(() => {
         const data = sessionDataHandler.tryResumeExistingSession();
         const logger = window.Twilio.getLogger("WebChatWidget");
-        if (data) {
+        if (data && data.token && data.conversationSid) {
             try {
                 logger.info("Initializing session.");
                 dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
