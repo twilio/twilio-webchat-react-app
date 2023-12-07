@@ -318,6 +318,8 @@ describe("Webchat Lite general scenario's", () => {
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {
+                cy.task("wrapReservation", { conversationSid: this.convoSid });
+                cy.task("completeReservation", { conversationSid: this.convoSid });
                 EndChatView.validateStartNewChatButtonVisible(10000);
             });
     });
