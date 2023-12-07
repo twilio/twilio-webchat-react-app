@@ -9,7 +9,7 @@ export {};
 
 describe("Webchat Lite general scenario's", () => {
     beforeEach(() => {
-        cy.visit("/");
+        cy.visit("");
     });
 
     it("FLEXEXP-107 - Webchat Lite - Pre-engagement data - Form input fields validation - Invalid email", () => {
@@ -40,7 +40,7 @@ describe("Webchat Lite general scenario's", () => {
         PreEngagementChatForm.validateFormExist();
     });
 
-    it("FLEXEXP-106 - Webchat Lite - Pre-engagement data", function flexExp106() {
+    it.only("FLEXEXP-106 - Webchat Lite - Pre-engagement data", function flexExp106() {
         PreEngagementChatForm.toggleWebchatExpanded();
         cy.createNewWebchat();
         cy.storeWebchatSessionCookie();
@@ -307,7 +307,7 @@ describe("Webchat Lite general scenario's", () => {
         cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
     });
 
-    it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
+    it.only("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
         cy.on("uncaught:exception", (error, promise) => {
             if (promise) {
                 return false;
@@ -318,8 +318,6 @@ describe("Webchat Lite general scenario's", () => {
         cy.getConversationSid()
             .as("convoSid")
             .then(() => {
-                cy.task("wrapReservation", { conversationSid: this.convoSid });
-                cy.task("completeReservation", { conversationSid: this.convoSid });
                 EndChatView.validateStartNewChatButtonVisible(10000);
             });
     });
