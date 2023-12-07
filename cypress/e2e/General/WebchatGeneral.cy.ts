@@ -40,7 +40,7 @@ describe("Webchat Lite general scenario's", () => {
         PreEngagementChatForm.validateFormExist();
     });
 
-    it.only("FLEXEXP-106 - Webchat Lite - Pre-engagement data", function flexExp106() {
+    it("FLEXEXP-106 - Webchat Lite - Pre-engagement data", function flexExp106() {
         PreEngagementChatForm.toggleWebchatExpanded();
         cy.createNewWebchat();
         cy.storeWebchatSessionCookie();
@@ -307,7 +307,7 @@ describe("Webchat Lite general scenario's", () => {
         cy.validateLastTextMessage(Constants.CUSTOMER_MESSAGE_ATTACHMENT_TEXT);
     });
 
-    it.only("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
+    it("FLEXEXP-109 - Webchat Lite - Active chat - Agent ends chat", function flexExp109() {
         cy.on("uncaught:exception", (error, promise) => {
             if (promise) {
                 return false;
