@@ -60,6 +60,11 @@ jobs:
                 deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY\
                 region=$TWILIO_REACT_APP_REGION
       - run:
+          name: "Running Application"
+          background: true
+          command: |
+            yarn start
+      - run:
           name: "Set Up Tunnel"
           background: true
           command: |
@@ -112,6 +117,7 @@ workflows:
                 "
           browser: chrome
           yarn: true
+          start: 'yarn start' # start app before running tests
           store_artifacts: true
       - cypressTestsOnSauce:
           requires:
