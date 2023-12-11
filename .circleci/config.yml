@@ -57,7 +57,7 @@ jobs:
                 authToken=$TWILIO_AUTH_TOKEN \
                 apiKey=$TWILIO_API_KEY \
                 apiSecret=$TWILIO_API_SECRET \
-                deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY\
+                deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY \
                 region=$TWILIO_REACT_APP_REGION
       - run:
           name: "Running Application"
@@ -112,7 +112,7 @@ workflows:
                     authToken=$TWILIO_AUTH_TOKEN \
                     apiKey=$TWILIO_API_KEY \
                     apiSecret=$TWILIO_API_SECRET \
-                    deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY\
+                    deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY \
                     region=$TWILIO_REACT_APP_REGION
                 "
           browser: chrome
