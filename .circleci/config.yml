@@ -113,8 +113,7 @@ workflows:
                     apiKey=$TWILIO_API_KEY \
                     apiSecret=$TWILIO_API_SECRET \
                     deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY \
-                    region=$TWILIO_REACT_APP_REGION
-                "
+                    region=$TWILIO_REACT_APP_REGION"
           browser: chrome
           yarn: true
           start: 'yarn start' # start app before running tests
