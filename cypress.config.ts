@@ -28,25 +28,25 @@ export default defineConfig({
         responseTimeout: 100000,
         setupNodeEvents(on, config) {
             // removing old tasks if any, before launching the browser, so worker is not occupied with previous ones
-            // on("before:browser:launch", async () => {
-            //     const client = getTwilioClient();
-            //     const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
-            //     const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
-            //
-            //     // eslint-disable-next-line no-console
-            //     console.log("proceeding to remove older tasks");
-            //     await Promise.all(
-            //         tasks.map(async (t) => {
-            //             // Only delete tasks older than 10 minutes to avoid breaking other pipelines
-            //             if (t.dateCreated.getTime() < Date.now() - 60 * 10 * 1000) {
-            //                 console.log("deleting task", t.sid);
-            //                 return t.remove();
-            //             }
-            //             return Promise.resolve();
-            //         })
-            //     );
-            //
-            // });
+            on("before:browser:launch", async () => {
+                const client = getTwilioClient();
+                const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
+                const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
+
+                // eslint-disable-next-line no-console
+                console.log("proceeding to remove older tasks");
+                await Promise.all(
+                    tasks.map(async (t) => {
+                        // Only delete tasks older than 10 minutes to avoid breaking other pipelines
+                        if (t.dateCreated.getTime() < Date.now() - 60 * 10 * 1000) {
+                            console.log("deleting task", t.sid);
+                            return t.remove();
+                        }
+                        return Promise.resolve();
+                    })
+                );
+
+            });
             on("task", {
                 acceptReservation,
                 sendMessage,
