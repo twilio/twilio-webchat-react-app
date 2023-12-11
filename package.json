@@ -35,7 +35,7 @@
     "@testing-library/jest-dom": "^5.15.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^8.0.1",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^29.5.11",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.throttle": "^4.1.6",
     "@types/mime-types": "^2.1.1",
