@@ -20,7 +20,7 @@ export const getWorker = async () => {
     const channels = await worker.workerChannels().list();
 
     let chatChannelSid;
-    if (channels.length > 0) {
+    if (channels && channels.length > 0) {
         channels.forEach((c) => {
             if (c.taskChannelUniqueName === "chat") {
                 chatChannelSid = c.sid;
