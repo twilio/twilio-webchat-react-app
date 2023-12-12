@@ -144,6 +144,15 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 ```
 
+```javascript
+window.addEventListener("load", () => {
+   const appConfig = {
+      deploymentKey: "CVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   }
+   Twilio.initWebchat(appConfig); 
+});
+```
+
 1. `deploymentKey` is a UUID with a fixed length. As a security enhancement, we have encapsulated **AccountSid** with **DeploymentKey**. An **AccountSid** has one-to-many relationship with **DeploymentKey**. This means, **AccountSid** is not any public entity anymore for webchat. Customers are to use **DeploymentKey** to initiate Webchat UI. For more info on how to create a **Deployment Key** refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
 2. `region` You need to pass region where the **Deployment Key** was created. If this is incorrect, then your application will not find relevant configuration for the **Deployment Key** and will fail to start. For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup).
 3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
