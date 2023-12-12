@@ -37,8 +37,8 @@ export default defineConfig({
                 console.log("proceeding to remove older tasks");
                 await Promise.all(
                     tasks.map(async (t) => {
-                        // Only delete tasks older than 10 minutes to avoid breaking other pipelines
-                        if (t.dateCreated.getTime() < Date.now() - 60 * 10 * 1000) {
+                        // Only delete tasks older than 30 minutes to avoid breaking other pipelines
+                        if (t.dateCreated.getTime() < Date.now() - 60 * 30 * 1000) {
                             console.log("deleting task", t.sid);
                             return t.remove();
                         }

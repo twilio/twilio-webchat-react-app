@@ -17,6 +17,26 @@ export const getWorker = async () => {
 
     [worker] = await client.taskrouter.workspaces(workspace.sid).workers.list({ limit: 1 });
 
+    const channels = await worker.workerChannels().list();
+
+    let chatChannelSid;
+    if (channels.length > 0) {
+        channels.forEach((c) => {
+            if (c.taskChannelUniqueName === "chat") {
+                chatChannelSid = c.sid;
+            }
+        });
+    }
+
+    // increase the capacity of the chat channel to 10
+    if (chatChannelSid) {
+        await client.taskrouter
+            .workspaces(workspace.sid)
+            .workers(worker.sid)
+            .workerChannels(chatChannelSid)
+            .update({ capacity: 10 });
+    }
+
     return worker;
 };
 
