@@ -14,6 +14,20 @@ executors:
       - image: 'cypress/browsers:node18.12.0-chrome103-ff107'
 
 jobs:
+  cleanUp:
+    docker:
+      - image: cimg/node:18.18.0
+    steps:
+      - checkout
+      - run:
+          command: yarn add twilio --no-save
+          name: Install Twilio client
+      - run:
+          command: |
+            yarn e2eCleanupExistingTasks \
+                accountSid=$TWILIO_ACCOUNT_SID \
+                authToken=$TWILIO_AUTH_TOKEN \
+          name: Cleanup existing tasks
   runUnitTests:
     working_directory: ~/repo
     docker:
@@ -115,3 +129,4 @@ workflows:
               only:
                 - flex-webchat-ui
                 - /.*FLEXIN-\d+.*/
+      - cleanUp
