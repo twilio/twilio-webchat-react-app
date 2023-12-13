@@ -27,17 +27,7 @@ const cleanupTasks = async () => {
     const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
 
     console.log("proceeding to remove older tasks");
-    await Promise.all(
-        tasks.map((t) => {
-            // Only delete tasks older than 30 minutes to avoid breaking other pipelines
-            if (t.dateCreated.getTime() < Date.now() - 60 * 30 * 1000) {
-                console.log("deleting task", t.sid);
-                return t.remove();
-            }
-            return Promise.resolve();
-        })
-    );
-
+    await Promise.all(tasks.map((t) => t.remove()));
     console.log("done");
 };
 
