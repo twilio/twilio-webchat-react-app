@@ -129,4 +129,7 @@ workflows:
               only:
                 - flex-webchat-ui
                 - /.*FLEXIN-\d+.*/
-      - cleanUp
+      - cleanUp:
+          requires:
+            - cypressTestsOnSauce
+            - cypress/run
