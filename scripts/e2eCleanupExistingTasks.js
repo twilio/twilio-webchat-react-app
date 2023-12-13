@@ -21,13 +21,16 @@ const cleanupTasks = async () => {
     const client = new Twilio(accountSid, authToken);
 
     console.log("getting workspace");
-    const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
+    const [{ sid: workspaceSid }] = await client.taskrouter.v1.workspaces.list();
 
     console.log("getting tasks");
-    const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
+    const tasks = await client.taskrouter.v1.workspaces(workspaceSid).tasks.list();
 
-    console.log("proceeding to remove older tasks");
-    await Promise.all(tasks.map((t) => t.remove()));
+    console.log("proceeding to remove older tasks: ", tasks.length);
+    await Promise.all(tasks.map((t) => {
+        console.log("deleting task: ", t.sid);
+        return t.remove()
+    }));
     console.log("done");
 };
 
