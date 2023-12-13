@@ -45,12 +45,11 @@ Your app will be served at http://localhost:3000/.
 
 Your application now supports query params, so that you can customise.
 1. `deploymentKey` For more info on **Deployment Key** refer to [configuration](#configuration)
-2. `region` For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [Configuration section](#configuration).
-3. `appStatus` Used to toggle the widget state. For more info, refer to [Configuration section](#configuration).
-4. `theme`: Decide if `light` or `dark` suits you and provide that value as here. Application will boot with the said theme. For more info, refer to [Configuration section](#configuration).
+2. `appStatus` Used to toggle the widget state. For more info, refer to [Configuration section](#configuration).
+3. `theme`: Decide if `light` or `dark` suits you and provide that value as here. Application will boot with the said theme. For more info, refer to [Configuration section](#configuration).
 
 Below is an example where you've provide all of the query params:
-[http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light](http://localhost:3000/?deploymentKey=CV00000&region=us1&appStatus=open&theme=light)
+[http://localhost:3000/?deploymentKey=CV00000&appStatus=open&theme=light](http://localhost:3000/?deploymentKey=CV00000&appStatus=open&theme=light)
 
 We are working towards exposing more values that allows customisation at minimal steps. However, if you want to customise beyond, please feel free to make changes to your code and then, make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
 
@@ -66,14 +65,13 @@ authToken=YOUR_AUTH_TOKEN \
 apiKey=YOUR_API_KEY_SID \
 apiSecret=YOUR_API_SECRET \
 deploymentKey=DEPLOYMENT_KEY \
-region=REGION
 ```
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
 
 For more info on how to create an **API key** and an **API secret**, please check the [documentation](https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys).
 
-The environment variables associated with **deploymentKey** and **region** can be found in the `.env.sample` file. You can find more details about them in [Configuration section](#configuration)
+The environment variables associated with **deploymentKey** can be found in the `.env.sample` file. You can find more details about them in [Configuration section](#configuration)
 
 Once all the values populated, run `yarn cypress open` to kickstart end-to-end test.
 
@@ -117,25 +115,22 @@ Twilio Webchat React App is an open source repository that includes:
 
 ## 1. React App
 
-The **React app** is a newer version of the legacy [webchat widget](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup). With this new app, you can clone and customize it to meet your needs.
-This App is built in React using Typescript, Twilio Paste and Twilio Conversations SDK.
+The **React app** is a newer version of the legacy [webchat widget](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup). We have enhanced security and revamped accessibility with this release. More infromation on this release can be found on [this documentation here](https://www.twilio.com/docs/flex/developer/conversations/webchat). This App is built in React using Typescript, Twilio Paste and Twilio Conversations SDK.
 You can find the source files in the `src` folder.
 
-After being initialized, the widget renders a button in the bottom right part of the page that, once clicked, will show a customisable form for your customers to compile.
-Once submitted, the App will hit the `initWebchat` endpoint of your server with the form data and get back a token with a conversationSid.
-At that point, your customer will be able to send messages to your agents.
+After being initialized, the widget renders a button in the bottom right part of the page that, once clicked, will show a customisable form for your customers to compile. Once submitted, the App will hit the twilio backend  server with the form data and get back a token with a conversationSid. At that point, your customer will be able to send messages to your agents.
 
 ### Configuration
 
-This React app is open-sourced, so you can freely customise every aspect of it to suit your needs. However, to speed up some aspects of the customisations, we are exposing a configuration object on the init function.
+This React app is open-sourced, so you can freely customise every aspect of it to suit your needs. However, to speed up some aspects of the customisations, we are exposing a configuration object on the init function. In order to use the below mentioned values, you first need to configure your Webchat Instance. For more information on how to setup refer [here](https://www.twilio.com/docs/flex/developer/conversations/webchat/setup)
+
 
 Here's an example of how to use this config object in your `index.html` template.
 
 ```javascript
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
     Twilio.initWebchat({
         deploymentKey: "CVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        region: "us1",
         appStatus: "open",
         theme: {
             isLight: true
@@ -144,12 +139,9 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 ```
 
-1. `deploymentKey` is a UUID with a fixed length. As a security enhancement, we have encapsulated **AccountSid** with **DeploymentKey**. An **AccountSid** has one-to-many relationship with **DeploymentKey**. This means, **AccountSid** is not any public entity anymore for webchat. Customers are to use **DeploymentKey** to initiate Webchat UI. For more info on how to create a **Deployment Key** refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
-2. `region` You need to pass region where the **Deployment Key** was created. If this is incorrect, then your application will not find relevant configuration for the **Deployment Key** and will fail to start. For the host (i.e stage-us1, dev-us1, us1), defaults to us1(prod). For more info on how to find region, refer to [this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup).
-3. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
-4. `theme` can be used to quickly customise the look and feel of the app. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/messaging/webchat/setup)
-
-If you have more customisations to add, we recommend to start adding them here as this becomes easy to boot the app with given set of values and code stays clean.
+1. `deploymentKey` is a UUID with a fixed length. As a security enhancement, we have encapsulated **AccountSid** with **DeploymentKey**. An **AccountSid** has one-to-many relationship with **DeploymentKey**. This means, **AccountSid** is not any public entity anymore for webchat. Customers are to use **DeploymentKey** to initiate Webchat UI. For more info on how to create a **Deployment Key** refer to [this section](https://www.twilio.com/docs/flex/developer/conversations/webchat/security#deployment-key-shields-your-account-information)
+2. `appStatus` is used to keep the widget opened or closed. We find this helpful where you want to customise to keep the widget open. To keep it open, set value to 'open'. Don't pass this value to keep the widget 'closed'. For more information refer to [this section](https://www.twilio.com/docs/flex/developer/conversations/webchat/setup#customize-webchat)
+3. `theme` can be used to quickly customise the look and feel of the app. `theme.isLight` is a boolean to quickly toggle between the light and dark theme of Paste. For more information refer to [this section]([this section](https://www.twilio.com/docs/flex/developer/conversations/webchat/setup#customize-webchat)
 
 
 #### A note about the pre-engagement form data
@@ -163,24 +155,32 @@ Kindly note that pre-engagement data is considered to be PII. For more informati
 In order to use this widget in production you will need to follow these two steps:
 
 1. Either you can directly work with our CDN urls or upload compiled and minimised React App code.
-2. Update your website template.
+2. Setup your Webchat and Update your website template. 
 
 ## 1. Work With Our CDN Urls Or Upload Compiled And Minimised React App Code
 
-We have CDN urls in place that you can directly integrate in your application to make the widget work. You can point to a specific version of the webchat or  else point to latest. 
+We have CDN urls in place that you can directly integrate in your application to make the widget work. You can point to a specific [version](#release-versioning) of webchat release or else point to latest.
+
+
+CDN url to point to a specific version:
+```shell
+https://media.twiliocdn.com/sdk/js/webchat-v3/releases/<VERSION_NUMBER>/webchat.min.js
+```
+
+For example:
+CDN url to point to 1.0.0 version:
 
 ```shell
-CDN url to point to a specific version:
+https://media.twiliocdn.com/sdk/js/webchat-v3/releases/1.0.0/webchat.min.js
+```
 
-https://media.twiliocdn.com/sdk/js/webchat-v3/releases/<VERSION_NUMBER>/webchat.min.js
+or CDN url to point to the latest version
 
-or
-
-CDN url to point to the latest version
-
+```shell
 https://media.twiliocdn.com/sdk/js/webchat-v3/releases/latest/webchat.min.js
 ```
-If you wish to not work with the above CDNs, then you need to create a bundle file for the whole Webchat React App via.
+
+If you wish to not work with the above CDNs, then you need to create a bundle file for the Webchat React App via.
 
 ```shell
 yarn build
@@ -193,7 +193,7 @@ And then, make sure to upload and host this file on your server, or on a host se
 Based on your choice in the previous step, make sure to have it loaded in your website page, as per example below:
 
 ```html
-<script src="https://[...]webchat.js"></script>
+<script src="https://[...]webchat.min.js"></script>
 ```
 
 Next, declare the root element that the webchat widget will be rendered into:
@@ -204,6 +204,11 @@ Next, declare the root element that the webchat widget will be rendered into:
 
 Finally, add the code to initialize the webchat widget as per as shown in [Configuration section](#configuration).
 
+# Release Versioning
+
+## Semantic Versioning
+
+We use semantic versioning for releases. Check out https://semver.org/
 
 # Browser Support
 
