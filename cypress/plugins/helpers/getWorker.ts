@@ -5,7 +5,7 @@ import { getTwilioClient } from "./twilioClient";
 
 let worker: WorkerInstance;
 let workerActivities: ActivityInstance[];
-
+const CHAT_CHANNEL_CAPACITY = 10;
 const taskByConversationSidCache = new Map();
 export const getWorker = async () => {
     if (worker) {
@@ -16,6 +16,21 @@ export const getWorker = async () => {
     const [workspace] = await client.taskrouter.workspaces.list({ limit: 1 });
 
     [worker] = await client.taskrouter.workspaces(workspace.sid).workers.list({ limit: 1 });
+
+    const channels = await worker.workerChannels().list();
+
+    if (channels && channels.length > 0) {
+        for (const c of channels) {
+            if (c.taskChannelUniqueName === "chat" && c.configuredCapacity !== CHAT_CHANNEL_CAPACITY) {
+                // increase the capacity of the chat channel to 10
+                await client.taskrouter
+                    .workspaces(workspace.sid)
+                    .workers(worker.sid)
+                    .workerChannels(c.sid)
+                    .update({ capacity: CHAT_CHANNEL_CAPACITY });
+            }
+        }
+    }
 
     return worker;
 };

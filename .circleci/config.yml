@@ -52,8 +52,46 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "skipping e2e"
-          command: echo "skipping e2e until further notice"
+          name: "Install dependencies"
+          command: |
+            yarn install --frozen-lockfile
+      - run:
+          name: "Initialize accounts"
+          command: |
+            yarn bootstrap \
+                accountSid=$TWILIO_ACCOUNT_SID \
+                authToken=$TWILIO_AUTH_TOKEN \
+                apiKey=$TWILIO_API_KEY \
+                apiSecret=$TWILIO_API_SECRET \
+                deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY \
+                region=$TWILIO_REACT_APP_REGION
+      - run:
+          name: "Running Application"
+          background: true
+          command: |
+            yarn start
+      - run:
+          name: "Set Up Tunnel"
+          background: true
+          command: |
+            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
+            tar -xzf saucelabs.tar.gz
+            cd sc-*
+            bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} --region ${SAUCE_REGION} --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
+      - run:
+          name: "Install Sauce Labs saucectl"
+          command: |
+            curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
+            chmod 700 get_saucectl.sh && \
+            sudo ./get_saucectl.sh -b /usr/local/bin
+      - run:
+          name: "Configure Sauce saucectl"
+          command: |
+            saucectl configure -u ${SAUCE_USERNAME} -a ${SAUCE_ACCESS_KEY}
+      - run:
+          name: "Run Cypress on Sauce"
+          command: |
+            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e TEST_EMAIL=${TEST_EMAIL}
   sonarqubeCloudScan:
     working_directory: ~/repo
     docker:
@@ -66,10 +104,22 @@ jobs:
 workflows:
   build:
     jobs:
-      - cleanUp
-      - runUnitTests:
-          requires:
-            - cleanUp
+      - runUnitTests
+      - cypress/run:
+          executor: with-chrome
+          post-install:
+            - run: "yarn bootstrap \
+                    accountSid=$TWILIO_ACCOUNT_SID \
+                    authToken=$TWILIO_AUTH_TOKEN \
+                    apiKey=$TWILIO_API_KEY \
+                    apiSecret=$TWILIO_API_SECRET \
+                    deploymentKey=$TWILIO_REACT_APP_DEPLOYMENT_KEY \
+                    region=$TWILIO_REACT_APP_REGION"
+          browser: chrome
+          yarn: true
+          start: 'yarn start' # start app before running tests
+          store_artifacts: true
+      - cypressTestsOnSauce
       - sonarqubeCloudScan:
           requires:
             - runUnitTests
@@ -79,4 +129,7 @@ workflows:
               only:
                 - flex-webchat-ui
                 - /.*FLEXIN-\d+.*/
-
+      - cleanUp:
+          requires:
+            - cypressTestsOnSauce
+            - cypress/run

@@ -9,7 +9,7 @@ export {};
 
 describe("Webchat Lite general scenario's", () => {
     beforeEach(() => {
-        cy.visit("/");
+        cy.visit("");
     });
 
     it("FLEXEXP-107 - Webchat Lite - Pre-engagement data - Form input fields validation - Invalid email", () => {

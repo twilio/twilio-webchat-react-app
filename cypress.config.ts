@@ -19,26 +19,14 @@ import { GmailAPIHelper } from "./cypress/plugins/helpers/gmail-api-helper";
 
 export default defineConfig({
     e2e: {
-        baseUrl: "http://localhost:3000",
+        baseUrl: `http://localhost:3000?deploymentKey=${process.env.REACT_APP_DEPLOYMENT_KEY}`,
         retries: 0,
         supportFile: "cypress/support/e2e.ts",
         downloadsFolder: "cypress/downloads",
         trashAssetsBeforeRuns: true,
+        chromeWebSecurity: false,
         responseTimeout: 100000,
         setupNodeEvents(on, config) {
-            // removing old tasks if any, before launching the browser, so worker is not occupied with previous ones
-            on("before:browser:launch", async () => {
-                const client = getTwilioClient();
-                const [{ sid: workspaceSid }] = await client.taskrouter.workspaces.list();
-                const tasks = await client.taskrouter.workspaces(workspaceSid).tasks.list();
-
-                // eslint-disable-next-line no-console
-                console.log("proceeding to remove older tasks");
-                await Promise.all(
-                    tasks.map(async (t) => t.remove())
-                );
-
-            });
             on("task", {
                 acceptReservation,
                 sendMessage,
