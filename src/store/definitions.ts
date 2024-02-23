@@ -1,8 +1,9 @@
 import { Client, Conversation, Participant, Message, User } from "@twilio/conversations";
 import { GenericThemeShape } from "@twilio-paste/theme";
-import { AlertVariants } from "@twilio-paste/core/alert";
 
 import { FileAttachmentConfig, TranscriptConfig } from "../definitions";
+
+type AlertVariants = "error" | "neutral" | "warning"
 
 export enum EngagementPhase {
     PreEngagementForm = "PreEngagementForm",
