@@ -8,6 +8,7 @@ import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
+import { ALLOWED_PATHS } from "./constants";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -36,22 +37,44 @@ const defaultConfig: ConfigState = {
     }
 };
 
-const initWebchat = async (config: ConfigState) => {
-    const mergedConfig = merge({}, defaultConfig, config);
-    sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
-    store.dispatch(initConfig(mergedConfig));
-    initLogger();
+let STARTED = false
+
+const hideRootElement = (rootElement: HTMLElement) => {
+    rootElement.hidden = true
+    STARTED = false
+}
+
+const handleChatVisibility = (config: ConfigState) => {
     const rootElement = document.getElementById("twilio-webchat-widget-root");
+    if (rootElement && ALLOWED_PATHS.includes(window.location.pathname)) {
+		rootElement.hidden = false
+        const mergedConfig = merge({}, defaultConfig, config);
+        sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
+        store.dispatch(initConfig(mergedConfig));
+        initLogger();
 
-    render(
-        <Provider store={store}>
-            <WebchatWidget />
-        </Provider>,
-        rootElement
-    );
+        render(
+            <Provider store={store}>
+                <WebchatWidget />
+            </Provider>,
+            rootElement
+        );
 
-    if (window.Cypress) {
-        window.store = store;
+		if (window.Cypress) {
+			window.store = store;
+		}
+
+        STARTED = true
+    } else if(rootElement && window.location.pathname === '/authentication/login'){
+		hideRootElement(rootElement)
+	} else if (rootElement) {
+		hideRootElement(rootElement)
+	}
+}
+
+const initWebchat = async (config: ConfigState) => {
+    if (!STARTED) {
+        window.addEventListener("popstate", () => handleChatVisibility(config));
     }
 };
 
