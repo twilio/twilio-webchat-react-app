@@ -109,7 +109,7 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.participantSid;
 
     return (
         <Box
