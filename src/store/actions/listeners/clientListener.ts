@@ -9,6 +9,7 @@ import { ACTION_UPDATE_SESSION_DATA } from "../actionTypes";
 export const initClientListeners = (conversationClient: Client, dispatch: Dispatch) => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
     const connectionStateChangedEvent = "connectionStateChanged";
+    const conversationUpdated = "conversationUpdated";
     const logger = window.Twilio.getLogger("conversationClientListener");
 
     // remove any other refresh handler added before and add it again
@@ -35,6 +36,12 @@ export const initClientListeners = (conversationClient: Client, dispatch: Dispat
             dispatch(removeNotification(notifications.noConnectionNotification().id));
         } else if (connectionStatus === "connecting") {
             dispatch(addNotification(notifications.noConnectionNotification()));
+        }
+    });
+
+    conversationClient.addListener(conversationUpdated, (data) => {
+        if(data.conversation.state?.current as unknown as string === "closed") {
+            localStorage.removeItem("TWILIO_CONVERSATION_USERS");
         }
     });
 };

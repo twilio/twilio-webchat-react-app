@@ -8,8 +8,15 @@ import { TokenResponse } from "../../../../definitions";
 import { sessionDataHandler } from "../../../../sessionDataHandler";
 import { Client } from "../../../../__mocks__/@twilio/conversations";
 import WebChatLogger from "../../../../logger";
+import { Conversation } from "@twilio/conversations";
 
 jest.mock("../../../../logger");
+const mockRemoveItem = jest.fn();
+Object.defineProperty(window, "localStorage", {
+  value: {
+    removeItem: (...args: string[]) => mockRemoveItem(...args),
+  },
+});
 
 describe("Client Listeners", () => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
@@ -75,5 +82,16 @@ describe("Client Listeners", () => {
         initClientListeners(mockClient, mockDispatch);
         mockClient.emit(connectionStateChangedEvent, "connected");
         expect(removeNotificationSpy).toHaveBeenCalledWith(notifications.noConnectionNotification().id);
+    });
+
+    it("clears the participant list from the localStorage", () => {
+        const conversationUpdated = "conversationUpdated";
+        initClientListeners(mockClient, mockDispatch);
+        mockClient.emit(conversationUpdated, {
+            conversation: { state: { current: "closed" } } as Conversation,
+            updateReasons: []
+        });
+        expect(mockRemoveItem).toHaveBeenCalledWith("TWILIO_CONVERSATION_USERS");
+        mockRemoveItem.mockClear();
     });
 });

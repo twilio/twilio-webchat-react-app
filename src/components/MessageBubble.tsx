@@ -109,7 +109,13 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.participantSid;
+    const fetchFriendlyName = (participantSid: string) => {
+        const allUsers = JSON.parse(localStorage.getItem("TWILIO_CONVERSATION_USERS") ?? "{}");
+        return allUsers[participantSid] || participantSid;
+    };
+
+    const author =
+        users?.find((u) => u.identity === message.author)?.friendlyName || fetchFriendlyName(message.participantSid);
 
     return (
         <Box
