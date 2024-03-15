@@ -12,6 +12,7 @@ export const ConversationEnded = () => {
     const dispatch = useDispatch();
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
+        localStorage.removeItem("TWILIO_CONVERSATION_USERS");
         dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
