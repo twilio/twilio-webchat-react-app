@@ -9,7 +9,7 @@ export class LocalStorageUtil {
      *
      * LocalStorageUtil.set('test','val')
      */
-    public static set(key: string, value: any): void {
+    public static set(key: string, value: unknown): void {
         const stringifiedData = JSON.stringify(value);
         window.localStorage.setItem(key, stringifiedData);
     }
@@ -22,7 +22,7 @@ export class LocalStorageUtil {
      *
      * let val = LocalStorageUtil.get('test')
      */
-    public static get(key: string): any {
+    public static get(key: string) {
         const data = window.localStorage.getItem(key);
         return data ? JSON.parse(data) : null;
     }
