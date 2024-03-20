@@ -41,7 +41,7 @@ suites:
       config:
           specPattern:
               - "cypress/e2e/**/*.*"
-    # COMMENTING MICROSOFT EDGE - WINDOWS 10 AS THE SAUCELAB IS NOT ABLE TO OPEN UP THE BROWSER
+    # TODO: Add MICROSOFT EDGE - WINDOWS 10 Browsers to the SauceLabs back again
     # Check ticket: https://issues.corp.twilio.com/browse/FLEXIN-813
     # - name: cypress - windows 10 - microsoftedge latest
     #   browser: microsoftedge

@@ -13,7 +13,7 @@ export const initParticipantsListener = (conversation: Conversation, dispatch: D
         const conversationUsers = LocalStorageUtil.get("TWILIO_CONVERSATION_USERS");
         const user = await participant.getUser();
         const userFriendlyName = user.friendlyName;
-        const allUsers: ParticipantList = conversationUsers ? conversationUsers : {};
+        const allUsers: ParticipantList = conversationUsers ?? {};
         allUsers[participant.sid] = userFriendlyName;
         LocalStorageUtil.set("TWILIO_CONVERSATION_USERS", allUsers);
         dispatch({

@@ -24,7 +24,11 @@ export class LocalStorageUtil {
      */
     public static get(key: string) {
         const data = window.localStorage.getItem(key);
-        return data ? JSON.parse(data) : null;
+        try {
+            return data ? JSON.parse(data) : null;
+        } catch(error) {
+            return data;
+        }
     }
 
     /**
