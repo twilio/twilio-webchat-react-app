@@ -9,16 +9,22 @@ import { Notification } from "./store/definitions";
  * };
  */
 
-const shortenFileName = (string: string, maxChar = 50) => {
-    const [, filename, fileExtension] = string.match(/^(.+)(\.[\S]*)$/) || [];
+const shortenFileName = (name: string, maxChar = 20) => {
+    const [, filename, fileExtension] = name.match(/^(.+)(\.[\S]*)$/) || [];
+    if (filename.length <= maxChar) return name;
 
-    return `${filename.substr(0, maxChar)}[...]${fileExtension || ""}`;
+    return `${filename.substring(0, 14)}[...]${filename.substring(filename.length - 6, filename.length - 1)}${
+        fileExtension || ""
+    }`;
 };
 
 const fileAttachmentAlreadyAttachedNotification = ({ fileName }: { fileName: string }): Notification => ({
     id: `FileAttachmentAlreadyAttachedNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(fileName)} is already attached.`,
+    filename: shortenFileName(fileName),
+    originalFileName: fileName,
+    showTooltip: fileName.length > 20,
+    message: ` is already attached.`,
     type: "error",
     timeout: 10000
 });
@@ -32,9 +38,10 @@ const fileAttachmentInvalidSizeNotification = ({
 }): Notification => ({
     id: `FileAttachmentInvalidSizeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(
-        fileName
-    )} can’t be attached because the file is too large. Maximum file size is ${maxFileSize}`,
+    filename: shortenFileName(fileName),
+    originalFileName: fileName,
+    showTooltip: fileName.length > 20,
+    message: ` can’t be attached because the file is too large. Maximum file size is ${maxFileSize}`,
     type: "error",
     timeout: 10000
 });
@@ -42,9 +49,10 @@ const fileAttachmentInvalidSizeNotification = ({
 const fileAttachmentInvalidTypeNotification = ({ fileName }: { fileName: string }): Notification => ({
     id: `FileAttachmentInvalidTypeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(
-        fileName
-    )} can’t be attached because that file type isn’t supported. Please try a different file.`,
+    filename: shortenFileName(fileName),
+    originalFileName: fileName,
+    showTooltip: fileName.length > 20,
+    message: ` can’t be attached because that file type isn’t supported. Please try a different file.`,
     type: "error",
     timeout: 10000
 });
@@ -58,9 +66,10 @@ const fileDownloadInvalidSizeNotification = ({
 }): Notification => ({
     id: `FileDownloadInvalidSizeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(
-        fileName
-    )} can’t be downloaded because the file is too large. Maximum file size is ${maxFileSize}`,
+    filename: shortenFileName(fileName),
+    originalFileName: fileName,
+    showTooltip: fileName.length > 20,
+    message: ` can’t be downloaded because the file is too large. Maximum file size is ${maxFileSize}`,
     type: "error",
     timeout: 10000
 });
@@ -68,7 +77,10 @@ const fileDownloadInvalidSizeNotification = ({
 const fileDownloadInvalidTypeNotification = ({ fileName }: { fileName: string }): Notification => ({
     id: `FileDownloadInvalidTypeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(fileName)} can’t be downloaded because the file type isn’t supported.`,
+    filename: shortenFileName(fileName),
+    originalFileName: fileName,
+    showTooltip: fileName.length > 20,
+    message: ` can’t be downloaded because the file type isn’t supported.`,
     type: "error",
     timeout: 10000
 });
@@ -76,6 +88,7 @@ const fileDownloadInvalidTypeNotification = ({ fileName }: { fileName: string })
 const noConnectionNotification = (): Notification => ({
     id: "NoConnectionNotification",
     dismissible: true,
+    showTooltip: false,
     message: "Connection lost. Attempting to reconnect.",
     type: "warning"
 });
@@ -83,6 +96,7 @@ const noConnectionNotification = (): Notification => ({
 const failedToInitSessionNotification = (error: string): Notification => ({
     id: `FailedToInitSessionNotification`,
     dismissible: true,
+    showTooltip: false,
     message: `Something went wrong. ${error}. Please try again later.`,
     type: "error"
 });

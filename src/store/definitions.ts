@@ -54,6 +54,9 @@ export type Notification = {
     dismissible: boolean;
     id: string;
     onDismiss?: () => void;
+    filename?: string;
+    originalFileName?: string;
+    showTooltip: boolean;
     message: string;
     timeout?: number;
     type: AlertVariants;
