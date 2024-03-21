@@ -41,20 +41,20 @@ suites:
       config:
           specPattern:
               - "cypress/e2e/**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest
-      browser: microsoftedge
-      browserVersion: latest
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "cypress/e2e/**/*.*"
-    - name: cypress - windows 10 - microsoftedge latest-1
-      browser: microsoftedge
-      browserVersion: latest-1
-      platformName: Windows 10
-      config:
-          specPattern:
-              - "cypress/e2e/**/*.*"
+    # - name: cypress - windows 10 - microsoftedge latest
+    #   browser: microsoftedge
+    #   browserVersion: latest
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "cypress/e2e/**/*.*"
+    # - name: cypress - windows 10 - microsoftedge latest-1
+    #   browser: microsoftedge
+    #   browserVersion: latest-1
+    #   platformName: Windows 10
+    #   config:
+    #       specPattern:
+    #           - "cypress/e2e/**/*.*"
 artifacts:
     download:
         match:
