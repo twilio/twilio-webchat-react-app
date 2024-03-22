@@ -24,7 +24,8 @@ export default defineConfig({
         supportFile: "cypress/support/e2e.ts",
         downloadsFolder: "cypress/downloads",
         trashAssetsBeforeRuns: true,
-        chromeWebSecurity: false,
+        chromeWebSecurity: true,
+        specPattern: ["cypress/e2e/General/*.cy.{js,jsx,ts,tsx}", "cypress/integration/api-tests/*.cy.{js,jsx,ts,tsx}"],
         responseTimeout: 100000,
         setupNodeEvents(on, config) {
             on("task", {

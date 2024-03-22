@@ -95,7 +95,7 @@ describe("session data handler", () => {
                 ...sessionDataHandler.processNewTokenResponse(tokenPayload),
                 loginTimestamp: currentTime
             };
-            expect(setLocalStorageItemSpy).toHaveBeenCalledTimes(2);
+            expect(setLocalStorageItemSpy).toHaveBeenCalledTimes(3);
             expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(1, "TWILIO_WEBCHAT_WIDGET", JSON.stringify({
                 token: "",
                 expiration: "",
@@ -103,7 +103,8 @@ describe("session data handler", () => {
                 conversationSid: "",
                 loginTimestamp: currentTime
             }));
-            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(2, "TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(2, "customerIdentity", "identity");
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(3, "TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
         });
 
         it("should return a new token", async () => {
