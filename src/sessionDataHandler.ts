@@ -13,6 +13,7 @@ type InitWebchatAPIPayload = {
     CustomerFriendlyName: string;
     PreEngagementData: string;
     DeploymentKey: string;
+    Identity?: string;
 };
 
 type RefreshTokenAPIPayload = {
@@ -166,11 +167,24 @@ class SessionDataHandler {
         });
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", {
-                DeploymentKey: this.getDeploymentKey(),
-                CustomerFriendlyName: (formData?.friendlyName as string) || CUSTOMER_DEFAULT_NAME,
-                PreEngagementData: JSON.stringify(formData)
-            });
+            const customerIdentity = localStorage.getItem("customerIdentity");
+            const payload = customerIdentity
+                ? {
+                      DeploymentKey: this.getDeploymentKey(),
+                      CustomerFriendlyName: (formData?.friendlyName as string) || CUSTOMER_DEFAULT_NAME,
+                      PreEngagementData: JSON.stringify(formData),
+                      Identity: customerIdentity
+                  }
+                : {
+                      DeploymentKey: this.getDeploymentKey(),
+                      CustomerFriendlyName: (formData?.friendlyName as string) || CUSTOMER_DEFAULT_NAME,
+                      PreEngagementData: JSON.stringify(formData)
+                  };
+            newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", payload);
+
+            if(!customerIdentity) {
+                localStorage.setItem("customerIdentity", newTokenData.identity);
+            }
         } catch (e) {
             logger.error("No results from server");
             throw Error("No results from server");
