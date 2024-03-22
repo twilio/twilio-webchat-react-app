@@ -1,4 +1,5 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
+import { LocalStorageUtil } from "./LocalStorage";
 
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
 const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
@@ -31,19 +32,9 @@ const getUserSpecificSettings = () => {
 };
 
 const getWebchatInfo = () => {
-    const sessionStorage: string = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
-    const logger = window.Twilio.getLogger("getWebchatInfo");
-
-    let parsedStorage = null;
-
-    try {
-        parsedStorage = JSON.parse(sessionStorage);
-    } catch (e) {
-        logger.error("Couldn't parse locally stored data");
-    }
-
+    const sessionStorage = LocalStorageUtil.get(LOCALSTORAGE_SESSION_ITEM_ID) ?? "";
     return {
-        loginTimestamp: parsedStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
+        loginTimestamp: sessionStorage?.loginTimestamp || DEFAULT_LOGIN_TIMESTAMP,
     };
 };
 

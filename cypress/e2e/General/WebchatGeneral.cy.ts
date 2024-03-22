@@ -323,4 +323,61 @@ describe("Webchat Lite general scenario's", () => {
                 EndChatView.validateStartNewChatButtonVisible(10000);
             });
     });
+
+    it("should reuse Customer Identity", () => {
+        const requestHeaders = {
+            "x-twilio-sec-decoders": {
+                audio: { powerEfficient: true, smooth: true, supported: true, keySystemAccess: null },
+                video: { powerEfficient: false, smooth: false, supported: false, keySystemAccess: null }
+            },
+            "x-twilio-sec-usersettings": { language: "en-GB", cookieEnabled: true, userTimezone: -330 },
+            "x-twilio-sec-webchatinfo": { loginTimestamp: "1711075540530" },
+            Origin: "http://localhost:3000",
+            "Content-Type": "application/x-www-form-urlencoded"
+        };
+
+        cy.request({
+            method: "POST",
+            url: "https://flex-api.twilio.com/v2/Webchat/Init",
+            headers: requestHeaders,
+            body: {
+                DeploymentKey: Cypress.env("REACT_APP_DEPLOYMENT_KEY"),
+                CustomerFriendlyName: "Customer",
+                PreEngagementData: JSON.stringify({
+                    friendlyName: "Test Client",
+                    email: "mdeshpande@twilio.com",
+                    query: "Hello"
+                })
+            }
+        })
+            .its("body")
+            .then((body) => {
+                let customerIdentity = body.identity;
+                let conversationSid = body.conversation_sid;
+                cy.request({
+                    method: "POST",
+                    url: "https://flex-api.twilio.com/v2/Webchat/Init",
+                    headers: requestHeaders,
+                    body: {
+                        DeploymentKey: Cypress.env("REACT_APP_DEPLOYMENT_KEY"),
+                        CustomerFriendlyName: "Customer",
+                        PreEngagementData: JSON.stringify({
+                            friendlyName: "Test Client",
+                            email: "mdeshpande@twilio.com",
+                            query: "Hello"
+                        }),
+                        Identity: customerIdentity
+                    }
+                }).should((response) => {
+                    expect(response.status).to.eq(201);
+                    expect(response.body.identity).to.eq(customerIdentity);
+                }).request({
+                    // explicit cleanup of the conversation
+                    method: "DELETE",
+                    url: `https://${Cypress.env("ACCOUNT_SID")}:${Cypress.env("AUTH_TOKEN")}@conversations.twilio.com/v1/Conversations/${conversationSid}`,
+                }).should((response) => {
+                    expect(response.status).to.eq(204);
+                });
+            });
+    });
 });
