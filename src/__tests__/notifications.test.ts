@@ -11,4 +11,14 @@ describe("notifications", () => {
         const name = notifications.shortenFileName(shortName);
         expect(name).toBe(shortName);
     });
+
+    it("should show the filename as it is, if the filename length is of 20 characters", () => {
+        const filename = "Profile-20230724T085.txt";
+        expect(notifications.shortenFileName(filename)).toBe(filename);
+    });
+
+    it("should not show the file extension if there's no regex match", () => {
+        const filename = "Profile20230724T085";
+        expect(notifications.shortenFileName(filename)).toBe(filename);
+    });
 });

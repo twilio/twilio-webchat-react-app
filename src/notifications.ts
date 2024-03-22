@@ -11,11 +11,16 @@ import { Notification } from "./store/definitions";
 
 const shortenFileName = (name: string, maxChar = 20) => {
     const [, filename, fileExtension] = name.match(/^(.+)(\.[\S]*)$/) || [];
+    if (!filename) {
+        return name;
+    }
+
     if (filename.length <= maxChar) return name;
 
-    return `${filename.substring(0, 14)}[...]${filename.substring(filename.length - 6, filename.length-1)}${
-        fileExtension || ""
-    }`;
+    return `${filename.substring(0, 14)}[...]${filename.substring(
+        filename.length - 6,
+        filename.length - 1
+    )}${fileExtension}`;
 };
 
 const fileAttachmentAlreadyAttachedNotification = ({ fileName }: { fileName: string }): Notification => ({
@@ -35,7 +40,9 @@ const fileAttachmentInvalidSizeNotification = ({
 }): Notification => ({
     id: `FileAttachmentInvalidSizeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(fileName)} can’t be attached because the file is too large. Maximum file size is ${maxFileSize}`,
+    message: `${shortenFileName(
+        fileName
+    )} can’t be attached because the file is too large. Maximum file size is ${maxFileSize}`,
     type: "error",
     timeout: 10000
 });
@@ -43,7 +50,9 @@ const fileAttachmentInvalidSizeNotification = ({
 const fileAttachmentInvalidTypeNotification = ({ fileName }: { fileName: string }): Notification => ({
     id: `FileAttachmentInvalidTypeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(fileName)} can’t be attached because that file type isn’t supported. Please try a different file.`,
+    message: `${shortenFileName(
+        fileName
+    )} can’t be attached because that file type isn’t supported. Please try a different file.`,
     type: "error",
     timeout: 10000
 });
@@ -57,7 +66,9 @@ const fileDownloadInvalidSizeNotification = ({
 }): Notification => ({
     id: `FileDownloadInvalidSizeNotification_${Math.random()}`,
     dismissible: true,
-    message: `${shortenFileName(fileName)} can’t be downloaded because the file is too large. Maximum file size is ${maxFileSize}`,
+    message: `${shortenFileName(
+        fileName
+    )} can’t be downloaded because the file is too large. Maximum file size is ${maxFileSize}`,
     type: "error",
     timeout: 10000
 });
