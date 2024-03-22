@@ -19,7 +19,7 @@ describe("Webchat API tests", () => {
             url: "https://flex-api.twilio.com/v2/Webchat/Init",
             headers: requestHeaders,
             body: {
-                DeploymentKey: "CVfc3b7a7fd67ae94ebfb444898a27d44d",
+                DeploymentKey: Cypress.env("REACT_APP_DEPLOYMENT_KEY"),
                 CustomerFriendlyName: "Customer",
                 PreEngagementData: JSON.stringify({
                     friendlyName: "Test Client",
@@ -34,7 +34,7 @@ describe("Webchat API tests", () => {
                 url: "https://flex-api.twilio.com/v2/Webchat/Init",
                 headers: requestHeaders,
                 body: {
-                    DeploymentKey: "CVfc3b7a7fd67ae94ebfb444898a27d44d",
+                    DeploymentKey: Cypress.env("REACT_APP_DEPLOYMENT_KEY"),
                     CustomerFriendlyName: "Customer",
                     PreEngagementData: JSON.stringify({
                         friendlyName: "Test Client",
