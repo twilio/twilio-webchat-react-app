@@ -23,5 +23,10 @@ jobs:
           uses: borales/actions-yarn@v4
           with:
             cmd: build    
+          env:
+            ALLOWED_ORIGINS: ${{ vars.ALLOWED_ORIGINS }}
+            REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
+            DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
+            EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
   # deploy:
   #   needs: build
