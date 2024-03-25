@@ -4,7 +4,7 @@ on:
     branches:
       - develop
 jobs:
-  build:
+  build_and_deploy:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
@@ -28,5 +28,19 @@ jobs:
             REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
             DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
-  # deploy:
-  #   needs: build
+
+        - name: Deploy
+          uses: reggionick/s3-deploy@v4
+          with:
+            folder: build
+            bucket: ${{ vars.S3_BUCKET }}
+            bucket-region: ${{ vars.S3_BUCKET_REGION }}
+            dist-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+            invalidation: /
+            delete-removed: true
+            no-cache: true
+            private: true
+            files-to-include: '{.*/**,**}'
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
