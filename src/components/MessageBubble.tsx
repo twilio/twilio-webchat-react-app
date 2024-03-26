@@ -21,6 +21,7 @@ import {
     readStatusStyles,
     bubbleAndAvatarContainerStyles
 } from "./styles/MessageBubble.styles";
+import { LocalStorageUtil } from "../utils/LocalStorage";
 
 const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
 
@@ -109,7 +110,13 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    const fetchFriendlyName = (participantSid: string) => {
+        const allUsers = LocalStorageUtil.get("TWILIO_CONVERSATION_USERS") ?? {};
+        return allUsers[participantSid] || participantSid;
+    };
+
+    const author =
+        users?.find((u) => u.identity === message.author)?.friendlyName ?? fetchFriendlyName(message.participantSid);
 
     return (
         <Box

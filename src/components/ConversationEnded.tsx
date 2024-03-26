@@ -7,11 +7,13 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
+import { LocalStorageUtil } from "../utils/LocalStorage";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
+        LocalStorageUtil.remove("TWILIO_CONVERSATION_USERS");
         dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
