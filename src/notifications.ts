@@ -8,6 +8,8 @@ import { Notification } from "./store/definitions";
  *     type: "neutral"
  * };
  */
+const MAX_DISPLAYED_CHAR_FOR_FIRST_PART = 14;
+const MAX_DISPLAYED_CHAR_FOR_SECOND_PART = 5;
 
 const shortenFileName = (name: string, maxChar = 20) => {
     const [, filename, fileExtension] = name.match(/^(.+)(\.[\S]*)$/) || [];
@@ -17,9 +19,8 @@ const shortenFileName = (name: string, maxChar = 20) => {
 
     if (filename.length <= maxChar) return name;
 
-    return `${filename.substring(0, 14)}[...]${filename.substring(
-        filename.length - 6,
-        filename.length - 1
+    return `${filename.substring(0, MAX_DISPLAYED_CHAR_FOR_FIRST_PART)}[...]${filename.substring(
+        filename.length - MAX_DISPLAYED_CHAR_FOR_SECOND_PART
     )}${fileExtension}`;
 };
 
