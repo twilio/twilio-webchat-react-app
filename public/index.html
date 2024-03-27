@@ -38,15 +38,29 @@
 	</noscript>
 	<div id="twilio-webchat-widget-root"></div>
 
+	<div>
+		<button id="open-chat-button" onclick="openChat()">Open Chat</button>
+		<button id="close-chat-button" onclick="closeChat()">Close Chat</button>
+	</div>
 	<script>
-		window.addEventListener("DOMContentLoaded", () => {
-			Twilio.initWebchat({
+		window.addEventListener("DOMContentLoaded", async () => {
+			window.twilioDispatcher = await Twilio.initWebchat({
 				serverUrl: "%REACT_APP_SERVER_URL%",
 				theme: {
 					isLight: true
 				}
 			})
 		})
+
+		function openChat() {
+    		// Code to open the chat goes here
+			twilioDispatcher.openChatWindow();
+		}
+
+		function closeChat() {
+			// Code to close the chat goes here
+			twilioDispatcher.closeChatWindow();
+		}
 	</script>
 </body>
 
