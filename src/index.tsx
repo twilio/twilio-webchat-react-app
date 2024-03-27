@@ -8,6 +8,7 @@ import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
+import { ChatDispatcher } from "./utils/ChatDispatcher";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -53,12 +54,14 @@ const initWebchat = async (config: ConfigState) => {
     if (window.Cypress) {
         window.store = store;
     }
+    return new ChatDispatcher();
+
 };
 
 declare global {
     interface Window {
         Twilio: {
-            initWebchat: (config: ConfigState) => void;
+            initWebchat: (config: ConfigState) => ChatDispatcher;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;
