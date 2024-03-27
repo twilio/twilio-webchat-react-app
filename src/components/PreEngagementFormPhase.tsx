@@ -1,4 +1,4 @@
-import { Input } from "@twilio-paste/core/input";
+// import { Input } from "@twilio-paste/core/input";
 import { Label } from "@twilio-paste/core/label";
 import { Box } from "@twilio-paste/core/box";
 import { TextArea } from "@twilio-paste/core/textarea";
@@ -56,7 +56,7 @@ export const PreEngagementFormPhase = () => {
                 <Text {...introStyles} as="p">
                     We&#39;re here to help. Please give us some info to get started.
                 </Text>
-                <Box {...fieldStyles}>
+                {/* <Box {...fieldStyles}>
                     <Label htmlFor="name">Name</Label>
                     <Input
                         type="text"
@@ -79,7 +79,7 @@ export const PreEngagementFormPhase = () => {
                         onChange={(e) => dispatch(updatePreEngagementData({ email: e.target.value }))}
                         required
                     />
-                </Box>
+                </Box> */}
 
                 <Box {...fieldStyles}>
                     <Label htmlFor="query">How can we help you?</Label>
