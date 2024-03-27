@@ -8,11 +8,20 @@ import { Notification } from "./store/definitions";
  *     type: "neutral"
  * };
  */
+const MAX_DISPLAYED_CHAR_FOR_FIRST_PART = 14;
+const MAX_DISPLAYED_CHAR_FOR_SECOND_PART = 5;
 
-const shortenFileName = (string: string, maxChar = 50) => {
-    const [, filename, fileExtension] = string.match(/^(.+)(\.[\S]*)$/) || [];
+const shortenFileName = (name: string, maxChar = 20) => {
+    const [, filename, fileExtension] = name.match(/^(.+)(\.[\S]*)$/) || [];
+    if (!filename) {
+        return name;
+    }
 
-    return `${filename.substr(0, maxChar)}[...]${fileExtension || ""}`;
+    if (filename.length <= maxChar) return name;
+
+    return `${filename.substring(0, MAX_DISPLAYED_CHAR_FOR_FIRST_PART)}[...]${filename.substring(
+        filename.length - MAX_DISPLAYED_CHAR_FOR_SECOND_PART
+    )}${fileExtension}`;
 };
 
 const fileAttachmentAlreadyAttachedNotification = ({ fileName }: { fileName: string }): Notification => ({
@@ -94,5 +103,6 @@ export const notifications = {
     fileDownloadInvalidSizeNotification,
     fileDownloadInvalidTypeNotification,
     noConnectionNotification,
-    failedToInitSessionNotification
+    failedToInitSessionNotification,
+    shortenFileName
 };
