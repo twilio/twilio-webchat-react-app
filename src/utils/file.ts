@@ -6,6 +6,22 @@ import { notifications } from "../notifications";
 import { roundFileSizeInMB } from "./roundFileSizeInMB";
 import { FileAttachmentConfig } from "../definitions";
 
+const MAX_DISPLAYED_CHAR_FOR_FIRST_PART = 14;
+const MAX_DISPLAYED_CHAR_FOR_SECOND_PART = 5;
+
+export const shortenFileName = (name: string, maxChar = 20) => {
+    const [, filename, fileExtension] = name.match(/^(.+)(\.[\S]*)$/) || [];
+    if (!filename) {
+        return name;
+    }
+
+    if (filename.length <= maxChar) return name;
+
+    return `${filename.substring(0, MAX_DISPLAYED_CHAR_FOR_FIRST_PART)}[...]${filename.substring(
+        filename.length - MAX_DISPLAYED_CHAR_FOR_SECOND_PART
+    )}${fileExtension}`;
+};
+
 /*
  * Validates all provided files and shows an error notification for every invalid file.
  * Returns all valid files.
