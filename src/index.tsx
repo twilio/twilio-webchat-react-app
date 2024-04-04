@@ -55,7 +55,6 @@ const initWebchat = async (config: ConfigState) => {
         window.store = store;
     }
     return new ChatDispatcher();
-
 };
 
 declare global {
