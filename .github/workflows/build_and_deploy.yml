@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+      - staging
+      - develop
 jobs:
   build_and_deploy:
       runs-on: ubuntu-latest
@@ -30,12 +32,13 @@ jobs:
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
 
         - name: Deploy
-          uses: reggionick/s3-deploy@v4
+          uses: nerdzila/s3-deploy@v5
           with:
             folder: build
             bucket: ${{ vars.S3_BUCKET }}
             bucket-region: ${{ vars.S3_BUCKET_REGION }}
             dist-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+            file-prefix: ${{ GITHUB_REF##*/ }}
             invalidation: /
             delete-removed: true
             no-cache: true
