@@ -15,7 +15,9 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
         "PreEngagementData",
         JSON.stringify({
             ...request.body?.formData,
-            friendlyName: customerFriendlyName
+            friendlyName: customerFriendlyName,
+            brand: request.body?.formData?.brand || "LUUNA",
+            posProfile: request.body?.formData?.posProfile || "Luuna MX"
         })
     );
 
