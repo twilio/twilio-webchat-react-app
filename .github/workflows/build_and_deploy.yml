@@ -37,7 +37,7 @@ jobs:
           id: extract_branch
 
         - name: Deploy
-          uses: nerdzila/s3-deploy@v6
+          uses: nerdzila/s3-deploy@v7
           with:
             folder: build
             bucket: ${{ vars.S3_BUCKET }}
