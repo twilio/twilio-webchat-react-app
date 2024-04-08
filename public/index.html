@@ -46,6 +46,8 @@
 		window.addEventListener("DOMContentLoaded", async () => {
 			window.twilioDispatcher = await Twilio.initWebchat({
 				serverUrl: "%REACT_APP_SERVER_URL%",
+				brand: "LUUNA",
+				posProfile: "Luuna MX",
 				theme: {
 					isLight: true
 				}

@@ -7,6 +7,20 @@ const { logFinalAction, logInitialAction, logInterimAction } = require("../helpe
 const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     logInterimAction("Calling Webchat Orchestrator");
 
+    const brand = request.body?.formData?.brand;
+    const posProfile = request.body?.formData?.posProfile;
+
+    if (!brand) {
+        logInterimAction("Missing brand in request body");
+        throw new Error("Missing brand in request body");
+    }
+
+    if (!posProfile) {
+        logInterimAction("Missing posProfile in request body");
+        throw new Error("Missing posProfile in request body");
+    }
+    
+
     const params = new URLSearchParams();
     params.append("AddressSid", process.env.ADDRESS_SID);
     params.append("ChatFriendlyName", "Webchat widget");
@@ -16,8 +30,8 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
         JSON.stringify({
             ...request.body?.formData,
             friendlyName: customerFriendlyName,
-            brand: request.body?.formData?.brand || "LUUNA",
-            posProfile: request.body?.formData?.posProfile || "Luuna MX"
+            brand,
+            posProfile
         })
     );
 
