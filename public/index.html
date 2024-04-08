@@ -41,6 +41,7 @@
 	<div>
 		<button id="open-chat-button" onclick="openChat()">Open Chat</button>
 		<button id="close-chat-button" onclick="closeChat()">Close Chat</button>
+		<button id="send-message-button" onclick="sendMessage()">Send Test Message</button>
 	</div>
 	<script>
 		window.addEventListener("DOMContentLoaded", async () => {
@@ -51,6 +52,17 @@
 				theme: {
 					isLight: true
 				}
+			})
+
+			twilioDispatcher.onShow(() => {
+				console.log('show');
+			})
+			twilioDispatcher.onHide(() => {
+				console.log('hide');
+			})
+
+			twilioDispatcher.onUnreadCountChange((unreadCount) => {
+				console.log('unreadCount', unreadCount);
 			})
 		})
 
@@ -63,6 +75,12 @@
 			// Code to close the chat goes here
 			twilioDispatcher.closeChatWindow();
 		}
+
+		function sendMessage() {
+			// Code to close the chat goes here
+			twilioDispatcher.showNewMessage("Message prompt given by web app");
+		}
+
 	</script>
 </body>
 
