@@ -12,6 +12,8 @@ import { ChatDispatcher } from "./utils/ChatDispatcher";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
+    brand: "LUUNA",
+    posProfile: "Luuna MX",
     theme: {
         isLight: true
     },

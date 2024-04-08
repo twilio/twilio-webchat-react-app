@@ -38,6 +38,8 @@ export type SessionState = {
 };
 
 export type ConfigState = {
+    brand?: string;
+    posProfile?: string;
     serverUrl?: string;
     theme?: {
         isLight?: boolean;
