@@ -31,6 +31,11 @@ jobs:
             DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
 
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
         - name: Deploy
           uses: nerdzila/s3-deploy@v6
           with:
@@ -38,7 +43,7 @@ jobs:
             bucket: ${{ vars.S3_BUCKET }}
             bucket-region: ${{ vars.S3_BUCKET_REGION }}
             dist-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
-            file-prefix: ${{ env.BRANCH_NAME }}
+            file-prefix: /${{ steps.extract_branch.outputs.branch }}/
             invalidation: /
             delete-removed: true
             no-cache: true
