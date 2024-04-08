@@ -32,7 +32,7 @@ jobs:
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
 
         - name: Deploy
-          uses: nerdzila/s3-deploy@v5
+          uses: nerdzila/s3-deploy@v6
           with:
             folder: build
             bucket: ${{ vars.S3_BUCKET }}
@@ -42,7 +42,7 @@ jobs:
             invalidation: /
             delete-removed: true
             no-cache: true
-            private: true
+            private: false
             files-to-include: '{.*/**,**}'
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
