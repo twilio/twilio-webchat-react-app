@@ -43,7 +43,7 @@ jobs:
             bucket: ${{ vars.S3_BUCKET }}
             bucket-region: ${{ vars.S3_BUCKET_REGION }}
             dist-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
-            file-prefix: /${{ steps.extract_branch.outputs.branch }}/
+            file-prefix: ${{ steps.extract_branch.outputs.branch }}
             invalidation: /
             delete-removed: true
             no-cache: true
