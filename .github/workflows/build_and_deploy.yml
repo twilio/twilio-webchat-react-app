@@ -50,7 +50,7 @@ jobs:
             DEST_DIR: ${{ steps.extract_branch.outputs.branch }}
         
         - name: Invalidate Cloudfront
-          uses: jakejarvis/cloudfront-invalidate-action@v2
+          uses: chetan/invalidate-cloudfront-action@v2
           with:
             cloudfront-distribution-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
             paths: ${{ steps.extract_branch.outputs.branch }}/*
