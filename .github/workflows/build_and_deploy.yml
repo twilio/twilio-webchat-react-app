@@ -4,8 +4,11 @@ on:
     branches:
       - main
       - staging
-      - fix/deploy-by-env
       - develop
+  pull_request:
+    branches:
+      - develop
+
 jobs:
   build_and_deploy:
       runs-on: ubuntu-latest
@@ -57,4 +60,10 @@ jobs:
             AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
             DISTRIBUTION: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
             PATHS: /${{ steps.extract_branch.outputs.branch }}*
-            DEBUG: 'true'
+        
+        - name: Comment PR
+          uses: thollander/actions-comment-pull-request@v2
+          if: github.event_name == 'pull_request'
+          with:
+            message: |
+              [Link to preview](https://d20pg3k5glb1vh.cloudfront.net/${{ steps.extract_branch.outputs.branch }}/index.html)
