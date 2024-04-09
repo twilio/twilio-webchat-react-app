@@ -38,7 +38,7 @@ jobs:
           id: extract_branch
 
         - name: Deploy
-          uses: jakejarvis/s3-sync-action@master
+          uses: jakejarvis/s3-sync-action@v0.5.1
           with:
             args:  --follow-symlinks --delete
           env:
@@ -47,3 +47,5 @@ jobs:
             AWS_S3_BUCKET: ${{ vars.S3_BUCKET }}
             AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
             SOURCE_DIR: 'build'
+            DEST_DIR: ${{ steps.extract_branch.outputs.branch }}
+
