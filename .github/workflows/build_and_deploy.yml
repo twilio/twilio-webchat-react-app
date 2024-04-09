@@ -5,6 +5,10 @@ on:
       - main
       - staging
       - develop
+  pull_request:
+    branches:
+      - develop
+
 jobs:
   build_and_deploy:
       runs-on: ubuntu-latest
@@ -37,19 +41,29 @@ jobs:
           id: extract_branch
 
         - name: Deploy
-          uses: nerdzila/s3-deploy@v7
+          uses: jakejarvis/s3-sync-action@v0.5.1
           with:
-            folder: build
-            bucket: ${{ vars.S3_BUCKET }}
-            bucket-region: ${{ vars.S3_BUCKET_REGION }}
-            dist-id: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
-            file-prefix: ${{ steps.extract_branch.outputs.branch }}
-            invalidation: /
-            delete-removed: true
-            no-cache: true
-            private: false
-            files-to-include: '{.*/**,**}'
+            args:  --follow-symlinks --delete
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+            AWS_S3_BUCKET: ${{ vars.S3_BUCKET }}
+            AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
+            SOURCE_DIR: 'build'
+            DEST_DIR: ${{ steps.extract_branch.outputs.branch }}
+        
+        - name: Invalidate Cloudfront
+          uses: chetan/invalidate-cloudfront-action@v2
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
+            DISTRIBUTION: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+            PATHS: /${{ steps.extract_branch.outputs.branch }}*
+        
+        - name: Comment PR
+          uses: thollander/actions-comment-pull-request@v2
+          if: github.event_name == 'pull_request'
+          with:
+            message: |
+              [Link to preview](https://d20pg3k5glb1vh.cloudfront.net/${{ steps.extract_branch.outputs.branch }}/index.html)
