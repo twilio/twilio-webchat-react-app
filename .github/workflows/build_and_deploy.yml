@@ -56,5 +56,5 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
             DISTRIBUTION: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
-            PATHS: ${{ steps.extract_branch.outputs.branch }}/*
+            PATHS: ${{ steps.extract_branch.outputs.branch }}*
             DEBUG: 'true'
