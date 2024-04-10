@@ -246,6 +246,8 @@ This is done automatically each time a new commit is pushed to the `main` branch
 
 ## 2. Build and deploy the serverless function endpoints
 
+**Important: this requires node 18 to work**
+
 The next step is to build and deploy the serverless functions and assets.
 
 Since Typescript was used in development, the `.ts` files are compiled to `.js` files and copied to a `dist/` folder which are then used for deployment.
