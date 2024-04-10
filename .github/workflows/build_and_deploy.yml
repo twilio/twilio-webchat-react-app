@@ -5,6 +5,7 @@ on:
       - main
       - staging
       - develop
+      - feat/setup-serverless
   pull_request:
     branches:
       - develop
