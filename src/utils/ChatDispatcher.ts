@@ -116,6 +116,13 @@ export class ChatDispatcher {
         });
     }
 
+    /**
+     * Resets the session, clearing all data and returning to the Pre Engagement phase
+     *
+     * @remarks
+     * This effectively closes the current conversation (if exists) and prepares the widget
+     * to start a new one.
+     */
     public resetSession() {
         sessionDataHandler.clear();
         store.dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
