@@ -1,5 +1,10 @@
 import { sessionDataHandler } from "../sessionDataHandler";
-import { changeEngagementPhase, changeExpandedStatus, updateMessageInput, updatePreEngagementData } from "../store/actions/genericActions";
+import {
+    changeEngagementPhase,
+    changeExpandedStatus,
+    updateMessageInput,
+    updatePreEngagementData
+} from "../store/actions/genericActions";
 import { EngagementPhase } from "../store/definitions";
 import { store } from "../store/store";
 
