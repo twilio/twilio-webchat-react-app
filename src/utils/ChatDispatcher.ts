@@ -1,4 +1,6 @@
-import { changeExpandedStatus, updateMessageInput, updatePreEngagementData } from "../store/actions/genericActions";
+import { sessionDataHandler } from "../sessionDataHandler";
+import { changeEngagementPhase, changeExpandedStatus, updateMessageInput, updatePreEngagementData } from "../store/actions/genericActions";
+import { EngagementPhase } from "../store/definitions";
 import { store } from "../store/store";
 
 export class ChatDispatcher {
@@ -79,5 +81,11 @@ export class ChatDispatcher {
             previousValue = unreadCount;
             callback(unreadCount);
         });
+    }
+
+    public resetSession() {
+        sessionDataHandler.clear();
+        store.dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
+        store.dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     }
 }
