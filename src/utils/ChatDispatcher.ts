@@ -1,4 +1,11 @@
-import { changeExpandedStatus, updateMessageInput, updatePreEngagementData } from "../store/actions/genericActions";
+import { sessionDataHandler } from "../sessionDataHandler";
+import {
+    changeEngagementPhase,
+    changeExpandedStatus,
+    updateMessageInput,
+    updatePreEngagementData
+} from "../store/actions/genericActions";
+import { EngagementPhase } from "../store/definitions";
 import { store } from "../store/store";
 
 export class ChatDispatcher {
@@ -112,5 +119,18 @@ export class ChatDispatcher {
             previousValue = unreadCount;
             callback(unreadCount);
         });
+    }
+
+    /**
+     * Resets the session, clearing all data and returning to the Pre Engagement phase
+     *
+     * @remarks
+     * This effectively closes the current conversation (if exists) and prepares the widget
+     * to start a new one.
+     */
+    public resetSession() {
+        sessionDataHandler.clear();
+        store.dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
+        store.dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     }
 }

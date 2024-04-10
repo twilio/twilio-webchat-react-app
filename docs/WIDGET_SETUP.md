@@ -130,3 +130,11 @@ Parameters:
 * `callback`: - The callback to be called when the amount of unread messages changes. It receives the new count as an argument.
 
 
+#### :gear: resetSession
+
+Resets the session, clearing all data and returning to the Pre Engagement phase
+
+| Method | Type |
+| ---------- | ---------- |
+| `resetSession` | `() => void` |
+ 
