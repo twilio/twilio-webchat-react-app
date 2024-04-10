@@ -30,9 +30,9 @@ Run the following command
 yarn
 ```
 
-### 2. Populate Your .env File
+### 2. Populate Your .env Files
 
-We provide a handy `bootstrap` script to set up the environment variables required, but you can alternatively copy the `.env.sample` file.
+There are two .env to populate; one at the root of the repository and one in the ./serverless directory. We provide a handy bootstrap script to set up the environment variables required for you.
 
 ```shell
 yarn bootstrap \
@@ -192,7 +192,9 @@ window.addEventListener("DOMContentLoaded", () => {
             emailContent: (customerName, transcript) => {
                 return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
             }
-        }
+        },
+        brand: "LUUNA",
+        posProfile: "Luuna MX",
     });
 });
 ```
@@ -208,11 +210,13 @@ window.addEventListener("DOMContentLoaded", () => {
 4. `transcript` allows you to enable and configure what chat transcripts your customers can received.
     1. `transcript.emailSubject` configures what email customers receive in the email subject when they request an emailed transcript.
     2. `transcript.emailContent` configures what email customers receive in the email body when they request an emailed transcript.
+5. `brand` is the Zecore Brand for the page that's using the chat.
+6. `posProfile` is the Zecore POS Profile for the page that's using the chat.
 
-## 2. Local Backend Server
+## 2. Serverless functions
 
 As mentioned before, Twilio Webchat App requires a backend to hit in order to work correctly.
-This server — found in the `server` folder — exposes two main controllers.
+This backend functionality — found in the serverless folder — exposes two main endpoints:
 
 ### 1. InitWebchat
 
@@ -232,37 +236,35 @@ In addition to that, all the fields (including `friendlyName`) will be saved as 
 
 This second controller is in charge of refreshing a token that is about to expire. If the token is invalid or already expired, it will fail.
 
-# Working in Production
+# Deployment Steps
 
-In order to use this widget in production you will need to follow these three steps:
 
-1. Create remote server endpoints.
-2. Upload compiled and minimised React App code.
-3. Update your website template.
+## 1. Build and deploy the React App
 
-## 1. Create Remote Server Endpoints
+This is done automatically each time a new commit is pushed to the `main` branch. 
 
-It is necessary to create two endpoints on a remote server or as serverless functions, for [initWebchat](#1-initwebchat) and [refreshToken](#2-refreshtoken) logic.
 
-### Security Best Practises
+## 2. Build and deploy the serverless function endpoints
 
-We highly recommend that you implement as many of the following security controls as possible, in order to have a more secure backend.
+**Important: this requires node 18 to work**
 
-1. **Create an allow-list on the server side.** It is necessary to verify on the server side that all the requests are sent from an allowed domain (by checking the origin header).
-2. **Configure the Access-Control-Allow-Origin header** using the allow-list described above. This will prevent browsers from sending requests from malicious websites.
-3. **Create logs to detect and find anomalous behaviors.**
-4. **Block requests by IP, by geolocation/country and by URL**. Thanks to the logs created, it is possible to detect suspicious behaviours, depending on those behaviours it is possible to block requests for specific IP addresses, domains and even geolocations.
-5. **Include a fingerprint in the token.** Generate a fingerprint to try to identify the client and include it in the token. When the token is sent, the fingerprint is generated again and compared with the token's fingerprint.
+The next step is to build and deploy the serverless functions and assets.
 
-## 2. Upload Compiled and Minimised React App Code
+Since Typescript was used in development, the `.ts` files are compiled to `.js` files and copied to a `dist/` folder which are then used for deployment.
 
-To create a bundle file for the whole Webchat React App.
+To build the serverless functions, run the following from the root directory:
 
-```shell
-yarn build
+```bash
+yarn build-server
 ```
 
-Make sure to upload and host this file on your server, or on a host service, that is accessible from your website's domain.
+Next, deploy the functions with the following:
+
+```bash
+yarn deploy-server
+```
+
+After successful deployment, the domain of the server will be shown in the console.
 
 ## 3. Update Your Website Template
 

@@ -1,0 +1,8 @@
+{
+    "commands": {},
+    "environments": {},
+    "projects": {},
+    "runtime": "node18",
+    "serviceName": "webchat-react-app-serverless",
+    "tail": true
+}
