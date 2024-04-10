@@ -1,5 +1,6 @@
 # Adding the chat to an existing application
 
+This guide will walk you through the process of adding the chat widget to an existing web application.
 
 ## 1. Fetch the chat script
 
@@ -27,6 +28,7 @@ Next, declare the root element that the webchat widget will be rendered into:
 
 Finally, add the code to initialize the webchat widget as per following example. 
 
+```html
 <script>
     window.addEventListener("DOMContentLoaded", async () => {
 		const chatDispatcher = await Twilio.initWebchat({
@@ -36,6 +38,7 @@ Finally, add the code to initialize the webchat widget as per following example.
         });
     });
 </script>
+```
 
 1. The `Twilio` object is available after the chat script is loaded.
 2. You don't need to specifically wait for the `DOMContentLoaded` event, you can use whatever event your framework provides or
