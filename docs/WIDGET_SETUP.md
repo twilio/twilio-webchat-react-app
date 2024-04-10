@@ -30,13 +30,13 @@ Finally, add the code to initialize the webchat widget as per following example.
 
 ```html
 <script>
-    window.addEventListener("DOMContentLoaded", async () => {
-		const chatDispatcher = await Twilio.initWebchat({
-			serverUrl: "%TWILIO_CHAT_SERVER_URL%",
-			brand: "LUUNA",
-			posProfile: "Luuna MX",
-        });
-    });
+   window.addEventListener("DOMContentLoaded", async () => {
+      const chatDispatcher = await Twilio.initWebchat({
+         serverUrl: "%TWILIO_CHAT_SERVER_URL%",
+         brand: "LUUNA",
+         posProfile: "Luuna MX",
+      });
+   });
 </script>
 ```
 
@@ -49,6 +49,9 @@ Finally, add the code to initialize the webchat widget as per following example.
 5. The chatDispatcher object is used to interact with the chat widget and will be explained in the next section.
 
 ## :factory: ChatDispatcher class
+
+
+This class is used for the interaction with the chat widget. It provides methods to open and close the chat window, show a new message, and listen to events.
 
 ### Methods
 
