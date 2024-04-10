@@ -19,11 +19,11 @@ export class ChatDispatcher {
     }
 
     /**
-     * Opens the chat window and prefills the message input with the provided message.
-     * 
+     * Opens the chat window and prefills the message input with the provided message
+     *
      * @remarks
      * This would not send a message to the agent, it merely pre-fills the message input.
-     * 
+     *
      * @param message - The message to prefill the message input with
      */
     public showNewMessage(message: string) {
@@ -38,8 +38,8 @@ export class ChatDispatcher {
     }
 
     /**
-     * The callback is called when the chat window is shown.
-     * 
+     * The callback is called when the chat window is shown
+     *
      * @param callback - The callback to be called when the chat window is shown. It does not receive any arguments.
      */
     public onShow(callback: () => void) {
@@ -60,8 +60,8 @@ export class ChatDispatcher {
     }
 
     /**
-     * The callback is called when the chat window is hidden.
-     * 
+     * The callback is called when the chat window is hidden
+     *
      * @param callback - The callback to be called when the chat window is hidden. It does not receive any arguments.
      */
     public onHide(callback: () => void) {
@@ -81,13 +81,13 @@ export class ChatDispatcher {
     }
 
     /**
-     * Whenever the amount of unread messages changes, the callback is called with the new count.
-     * 
-     * @remarks 
+     * Whenever the amount of unread messages changes, the callback is called with the new count
+     *
+     * @remarks
      * The amount of messages will change when the user reads a message, or when the agent responds
      * to the user but the chat window is minimized
-     * 
-     * @param callback - The callback to be called when the amount of unread messages changes. It receives the new count as an argument. 
+     *
+     * @param callback - The callback to be called when the amount of unread messages changes. It receives the new count as an argument.
      */
     public onUnreadCountChange(callback: (newCount: number) => void) {
         let previousValue: number | undefined;
