@@ -24,15 +24,20 @@ _Twilio Webchat React App_ is an application that demonstrates a website chat wi
 
 ### 1. Install Dependencies
 
-Run the following command
+You must install dependencies for both the react app and the serverless functions:
 
 ```shell
 yarn
+cd serverless
+yarn
+cd ..
 ```
 
 ### 2. Populate Your .env Files
 
-There are two .env to populate; one at the root of the repository and one in the ./serverless directory. We provide a handy bootstrap script to set up the environment variables required for you.
+There are two .env to populate; one at the root of the repository and one in the ./serverless directory. 
+
+First add this to your `.env`
 
 ```shell
 yarn bootstrap \
@@ -42,6 +47,12 @@ apiKey=YOUR_API_KEY_SID \
 apiSecret=YOUR_API_SECRET \
 addressSid=YOUR_ADDRESS_SID \
 conversationsServiceSid=YOUR_CONVERSATIONS_SERVICE_SID
+```
+
+Then copy it to the serverless folder:
+
+```bash
+cp .env serverless/.env
 ```
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
