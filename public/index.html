@@ -2,15 +2,19 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="theme-color" content="#000000">
-	<!--
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-	<!--
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.19.4/dist/css/uikit.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.19.4/dist/js/uikit.min.js"></script>
+
+    <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -19,79 +23,105 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-	<title>Twilio Webchat React App</title>
-	<style>
-		html, body {
-			height: 100%;
-		}
+    <title>Twilio Webchat React App</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
 
-		body {
-			margin: 0;
-			background: #e4eaf0;
-		}
-	</style>
+        body {
+            margin: 0;
+            background: #e4eaf0;
+        }
+
+        #twilio-webchat-widget-root > div > div > div {
+            z-index: 9999;
+        }
+    </style>
 </head>
 
 <body>
-	<noscript>
-		You need to enable JavaScript to run this app.
-	</noscript>
-	<div id="twilio-webchat-widget-root"></div>
+    <noscript>
+        You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="twilio-webchat-widget-root"></div>
 
-	<div>
-		<button id="open-chat-button" onclick="openChat()">Open Chat</button>
-		<button id="close-chat-button" onclick="closeChat()">Close Chat</button>
-		<button id="send-message-button" onclick="sendMessage()">Send Test Message</button>
-	</div>
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-card uk-card-default uk-width-1-1">
+            <div class="uk-card-header uk-padding-small">
+                <h3 clas="uk-padding-small">
+                    Test subsites
+                </h3>
+            </div>
+            <div class="uk-card-body uk-padding-small">
+                <ul>
+                    <li><a href="luuna.html" target="_blank">Test Luuna</a></li>
+                    <li><a href="luuna-brasil.html" target="_blank">Test Luuna Brasil</a></li>
+                    <li><a href="mappa.html" target="_blank">Test Mappa</a></li>
+                    <li><a href="nooz.html" target="_blank">Test Nooz</a></li>
+                    <li><a href="no-brand.html" target="_blank">Test No Brand</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="uk-card uk-card-default uk-card-body uk-width-1-1">
+            <div class="uk-button-group">
+                <button class="uk-button" id="open-chat-button" onclick="openChat()">Open Chat</button>
+                <button class="uk-button" id="close-chat-button" onclick="closeChat()">Close Chat</button>
+            </div>
+            <div class="uk-button-group">
+                <button class="uk-button" id="send-message-button" onclick="sendMessage()">Send Test Message</button>
+            </div>
+            
+            <div class="uk-button-group">
+                <button class="uk-button uk-button-secondary" id="reset-chat" onclick="resetChat()">New Chat Sesion</button>
+            </div>
+        </div>
 
-	<div>
-		<ul>
-			<li><a href="luuna.html" target="_blank">Test Luuna</a></li>
-			<li><a href="luuna-brasil.html" target="_blank">Test Luuna Brasil</a></li>
-			<li><a href="mappa.html" target="_blank">Test Mappa</a></li>
-			<li><a href="nooz.html" target="_blank">Test Nooz</a></li>
-			<li><a href="no-brand.html" target="_blank">Test No Brand</a></li>
-		</ul>
-	</div>
-	<script>
-		window.addEventListener("DOMContentLoaded", async () => {
-			window.twilioDispatcher = await Twilio.initWebchat({
-				serverUrl: "%REACT_APP_SERVER_URL%",
-				brand: "LUUNA",
-				posProfile: "Luuna MX",
-				theme: {
-					isLight: true
-				}
-			})
+    </div>
+    <script>
+        window.addEventListener("DOMContentLoaded", async () => {
+            window.twilioDispatcher = await Twilio.initWebchat({
+                serverUrl: "%REACT_APP_SERVER_URL%",
+                brand: "LUUNA",
+                posProfile: "Luuna MX",
+                theme: {
+                    isLight: true
+                }
+            })
 
-			twilioDispatcher.onShow(() => {
-				console.log('show');
-			})
-			twilioDispatcher.onHide(() => {
-				console.log('hide');
-			})
+            twilioDispatcher.onShow(() => {
+                console.log('show');
+            })
+            twilioDispatcher.onHide(() => {
+                console.log('hide');
+            })
 
-			twilioDispatcher.onUnreadCountChange((unreadCount) => {
-				console.log('unreadCount', unreadCount);
-			})
-		})
+            twilioDispatcher.onUnreadCountChange((unreadCount) => {
+                console.log('unreadCount', unreadCount);
+            })
+        })
 
-		function openChat() {
-    		// Code to open the chat goes here
-			twilioDispatcher.openChatWindow();
-		}
+        function openChat() {
+            // Code to open the chat goes here
+            twilioDispatcher.openChatWindow();
+        }
 
-		function closeChat() {
-			// Code to close the chat goes here
-			twilioDispatcher.closeChatWindow();
-		}
+        function closeChat() {
+            // Code to close the chat goes here
+            twilioDispatcher.closeChatWindow();
+        }
 
-		function sendMessage() {
-			// Code to close the chat goes here
-			twilioDispatcher.showNewMessage("Message prompt given by web app");
-		}
+        function sendMessage() {
+            // Code to close the chat goes here
+            twilioDispatcher.showNewMessage("Message prompt given by web app");
+        }
 
-	</script>
+        function resetChat() {
+            // Code to close the chat goes here
+            twilioDispatcher.resetSession();
+        }
+
+    </script>
 </body>
 
 </html>
