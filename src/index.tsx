@@ -9,6 +9,8 @@ import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 import { ChatDispatcher } from "./utils/ChatDispatcher";
+import { Brand } from "./definitions";
+import { getThemeByBrand } from "./utils/getThemeByBrand";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -39,7 +41,9 @@ const defaultConfig: ConfigState = {
 };
 
 const initWebchat = async (config: ConfigState) => {
-    const mergedConfig = merge({}, defaultConfig, config);
+    const theme = getThemeByBrand(config.brand as Brand);
+    const mergedConfig = merge({}, defaultConfig, config, { theme });
+
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     initLogger();

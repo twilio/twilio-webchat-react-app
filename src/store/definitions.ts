@@ -37,15 +37,17 @@ export type SessionState = {
     preEngagementData?: PreEngagementData;
 };
 
+export type ThemeOverride = {
+    isLight?: boolean;
+    overrides?: Partial<GenericThemeShape>;
+};
+
 export type ConfigState = {
     brand?: string;
     posProfile?: string;
     serverUrl?: string;
     hideChatBubble?: boolean;
-    theme?: {
-        isLight?: boolean;
-        overrides?: Partial<GenericThemeShape>;
-    };
+    theme?: ThemeOverride;
     fileAttachment?: FileAttachmentConfig;
     transcript?: TranscriptConfig;
 };
