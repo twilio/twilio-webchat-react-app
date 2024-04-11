@@ -17,3 +17,5 @@ export type TranscriptConfig = {
     emailSubject?: (agentNames: (string | undefined)[]) => string;
     emailContent?: (customerName: string | undefined, transcript: string) => string;
 };
+
+export type Brand = "LUUNA" | "NOOZ" | "MAPPA" | "LUUNA_BRAZIL";
