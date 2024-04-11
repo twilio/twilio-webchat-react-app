@@ -10,6 +10,9 @@ import { containerStyles } from "./styles/EntryPoint.styles";
 export const EntryPoint = () => {
     const dispatch = useDispatch();
     const expanded = useSelector((state: AppState) => state.session.expanded);
+    const hideChatBubble = useSelector((state: AppState) => state.config.hideChatBubble);
+
+    if (hideChatBubble) return null;
 
     return (
         <Box
