@@ -38,6 +38,7 @@ jobs:
             REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
             DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
+            PUBLIC_URL: static/
 
         - name: Extract branch name
           shell: bash
