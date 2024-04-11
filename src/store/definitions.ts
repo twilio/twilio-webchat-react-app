@@ -41,6 +41,7 @@ export type ConfigState = {
     brand?: string;
     posProfile?: string;
     serverUrl?: string;
+    hideChatBubble?: boolean;
     theme?: {
         isLight?: boolean;
         overrides?: Partial<GenericThemeShape>;

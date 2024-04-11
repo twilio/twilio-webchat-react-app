@@ -12,6 +12,7 @@ import { ChatDispatcher } from "./utils/ChatDispatcher";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
+    hideChatBubble: false,
     theme: {
         isLight: true
     },
