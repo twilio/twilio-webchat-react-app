@@ -29,6 +29,11 @@ jobs:
           with:
             cmd: install
 
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
         - name: Build production bundle
           uses: borales/actions-yarn@v4
           with:
@@ -38,12 +43,7 @@ jobs:
             REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
             DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
             EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
-            PUBLIC_URL: static/
-
-        - name: Extract branch name
-          shell: bash
-          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-          id: extract_branch
+            PUBLIC_URL: /${{ steps.extract_branch.outputs.branch }}
 
         - name: Deploy
           uses: jakejarvis/s3-sync-action@v0.5.1
