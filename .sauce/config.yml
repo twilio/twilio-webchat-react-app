@@ -41,22 +41,20 @@ suites:
       config:
           specPattern:
               - "cypress/e2e/**/*.*"
-    # TODO: Add MICROSOFT EDGE - WINDOWS 10 Browsers to the SauceLabs back again
-    # Check ticket: https://issues.corp.twilio.com/browse/FLEXIN-813
-    # - name: cypress - windows 10 - microsoftedge latest
-    #   browser: microsoftedge
-    #   browserVersion: latest
-    #   platformName: Windows 10
-    #   config:
-    #       specPattern:
-    #           - "cypress/e2e/**/*.*"
-    # - name: cypress - windows 10 - microsoftedge latest-1
-    #   browser: microsoftedge
-    #   browserVersion: latest-1
-    #   platformName: Windows 10
-    #   config:
-    #       specPattern:
-    #           - "cypress/e2e/**/*.*"
+    - name: cypress - windows 10 - microsoftedge latest
+      browser: microsoftedge
+      browserVersion: latest
+      platformName: Windows 10
+      config:
+          specPattern:
+              - "cypress/e2e/**/*.*"
+    - name: cypress - windows 10 - microsoftedge latest-1
+      browser: microsoftedge
+      browserVersion: latest-1
+      platformName: Windows 10
+      config:
+          specPattern:
+              - "cypress/e2e/**/*.*"
 artifacts:
     download:
         match:
