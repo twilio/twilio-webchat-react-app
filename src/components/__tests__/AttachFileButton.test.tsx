@@ -4,7 +4,7 @@ import React from "react";
 
 import * as genericActions from "../../store/actions/genericActions";
 import { AttachFileButton } from "../AttachFileButton";
-import { validateFiles } from "../../utils/validateFiles";
+import { validateFiles } from "../../utils/file";
 
 const fileAttachmentConfig = {
     enabled: true,
@@ -22,7 +22,7 @@ jest.mock("react-redux", () => ({
         })
 }));
 
-jest.mock("../../utils/validateFiles", () => ({
+jest.mock("../../utils/file", () => ({
     validateFiles: jest.fn()
 }));
 

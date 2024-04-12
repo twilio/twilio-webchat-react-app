@@ -5,7 +5,7 @@ import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
 
 import { AppState } from "../store/definitions";
 import { hiddenInputStyles } from "./styles/AttachFileButton.styles";
-import { validateFiles } from "../utils/validateFiles";
+import { validateFiles } from "../utils/file";
 import { attachFiles } from "../store/actions/genericActions";
 
 export const AttachFileButton = ({ textAreaRef }: { textAreaRef?: React.RefObject<HTMLTextAreaElement> }) => {

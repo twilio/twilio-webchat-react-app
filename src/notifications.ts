@@ -1,4 +1,5 @@
 import { Notification } from "./store/definitions";
+import { shortenFileName } from "./utils/file";
 
 /*
  * const exampleNotification: Notification = {
@@ -8,12 +9,6 @@ import { Notification } from "./store/definitions";
  *     type: "neutral"
  * };
  */
-
-const shortenFileName = (string: string, maxChar = 50) => {
-    const [, filename, fileExtension] = string.match(/^(.+)(\.[\S]*)$/) || [];
-
-    return `${filename.substr(0, maxChar)}[...]${fileExtension || ""}`;
-};
 
 const fileAttachmentAlreadyAttachedNotification = ({ fileName }: { fileName: string }): Notification => ({
     id: `FileAttachmentAlreadyAttachedNotification_${Math.random()}`,

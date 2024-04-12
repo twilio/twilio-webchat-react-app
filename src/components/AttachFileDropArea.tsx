@@ -10,7 +10,7 @@ import {
     containerStyles,
     dropAreaStyles
 } from "./styles/AttachFileDropArea.styles";
-import { validateFiles } from "../utils/validateFiles";
+import { validateFiles } from "../utils/file";
 import { attachFiles } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
 
