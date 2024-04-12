@@ -96,14 +96,22 @@ describe("session data handler", () => {
                 loginTimestamp: currentTime
             };
             expect(setLocalStorageItemSpy).toHaveBeenCalledTimes(2);
-            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(1, "TWILIO_WEBCHAT_WIDGET", JSON.stringify({
-                token: "",
-                expiration: "",
-                identity: "",
-                conversationSid: "",
-                loginTimestamp: currentTime
-            }));
-            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(2, "TWILIO_WEBCHAT_WIDGET", JSON.stringify(expected));
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(
+                1,
+                "TWILIO_WEBCHAT_WIDGET",
+                JSON.stringify({
+                    token: "",
+                    expiration: "",
+                    identity: "",
+                    conversationSid: "",
+                    loginTimestamp: currentTime
+                })
+            );
+            expect(setLocalStorageItemSpy).toHaveBeenNthCalledWith(
+                2,
+                "TWILIO_WEBCHAT_WIDGET",
+                JSON.stringify(expected)
+            );
         });
 
         it("should return a new token", async () => {
@@ -160,7 +168,7 @@ describe("session data handler", () => {
 
         it("should fail trying to resume an existing session if the localStorage has badly formatted data", () => {
             jest.spyOn(Object.getPrototypeOf(window.localStorage), "getItem").mockReturnValueOnce({
-                expiration: Date.now() + 10e5,
+                expiration: Date.now() - 10e5,
                 token: "token",
                 conversationSid: "sid"
             });
@@ -238,9 +246,17 @@ describe("session data handler", () => {
     });
 
     it("should clear the token from the local storage", () => {
-        const spyRemove = jest.spyOn(Object.getPrototypeOf(window.localStorage), "removeItem");
+        const spySetItem = jest.spyOn(Object.getPrototypeOf(window.localStorage), "setItem");
+        jest.spyOn(Object.getPrototypeOf(window.localStorage), "getItem").mockReturnValueOnce(
+            JSON.stringify({
+                expiration: Date.now() + 10e5,
+                token: "token",
+                conversationSid: "sid",
+                identity: "identity"
+            })
+        );
         sessionDataHandler.clear();
-        expect(spyRemove).toHaveBeenCalled();
+        expect(spySetItem).toHaveBeenCalledWith("TWILIO_WEBCHAT_WIDGET", JSON.stringify({ identity: "identity" }));
     });
 
     describe("contactBackend", () => {

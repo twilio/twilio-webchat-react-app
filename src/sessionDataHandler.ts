@@ -1,4 +1,5 @@
 import { ProcessedTokenResponse, TokenResponse } from "./definitions";
+import { LocalStorageUtil } from "./utils/LocalStorage";
 import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
 import { buildRegionalHost } from "./utils/regionUtil";
 
@@ -13,6 +14,7 @@ type InitWebchatAPIPayload = {
     CustomerFriendlyName: string;
     PreEngagementData: string;
     DeploymentKey: string;
+    Identity?: string;
 };
 
 type RefreshTokenAPIPayload = {
@@ -53,26 +55,17 @@ export async function contactBackend<T>(
 }
 
 function storeSessionData(data: SessionDataStorage) {
-    localStorage.setItem(LOCALSTORAGE_SESSION_ITEM_ID, JSON.stringify(data));
+    LocalStorageUtil.set(LOCALSTORAGE_SESSION_ITEM_ID, data);
 }
 
 function getStoredSessionData() {
-    const item = localStorage.getItem(LOCALSTORAGE_SESSION_ITEM_ID);
-    const logger = window.Twilio.getLogger("SessionDataHandler");
-    let storedData: SessionDataStorage;
+    const item = LocalStorageUtil.get(LOCALSTORAGE_SESSION_ITEM_ID);
 
     if (!item) {
         return null;
     }
 
-    try {
-        storedData = JSON.parse(item);
-    } catch (e) {
-        logger.error("Couldn't parse locally stored data");
-        return null;
-    }
-
-    return storedData;
+    return item;
 }
 
 class SessionDataHandler {
@@ -153,24 +146,31 @@ class SessionDataHandler {
         const logger = window.Twilio.getLogger("SessionDataHandler");
         logger.info("trying to create new session");
         const loginTimestamp = Date.now().toString();
+        const customerIdentity = getStoredSessionData()?.identity;
 
         let newTokenData;
         storeSessionData({
             ...this.processNewTokenResponse({
                 token: "",
                 expiration: "",
-                identity: "",
+                identity: customerIdentity ?? "",
                 conversation_sid: ""
             }),
             loginTimestamp
         });
 
         try {
-            newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", {
+            const payload: InitWebchatAPIPayload = {
                 DeploymentKey: this.getDeploymentKey(),
                 CustomerFriendlyName: (formData?.friendlyName as string) || CUSTOMER_DEFAULT_NAME,
                 PreEngagementData: JSON.stringify(formData)
-            });
+            };
+            
+            if(customerIdentity) {
+                payload.Identity = customerIdentity;
+            }
+            newTokenData = await contactBackend<TokenResponse>("/Webchat/Init", payload);
+
         } catch (e) {
             logger.error("No results from server");
             throw Error("No results from server");
@@ -196,7 +196,8 @@ class SessionDataHandler {
     }
 
     clear() {
-        localStorage.removeItem(LOCALSTORAGE_SESSION_ITEM_ID);
+        const identity = getStoredSessionData()?.identity;
+        LocalStorageUtil.set(LOCALSTORAGE_SESSION_ITEM_ID, { identity });
     }
 }
 
