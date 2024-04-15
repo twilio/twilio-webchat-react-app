@@ -1,6 +1,6 @@
 import { Box } from "@twilio-paste/core/box";
 import { ChatIcon } from "@twilio-paste/icons/esm/ChatIcon";
-import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
+import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeExpandedStatus } from "../store/actions/genericActions";
@@ -22,7 +22,7 @@ export const EntryPoint = () => {
             {...containerStyles}
         >
             {expanded ? (
-                <ChevronDownIcon decorative={false} title="Minimize chat" size="sizeIcon80" />
+                <CloseIcon decorative={false} title="Minimize chat" size="sizeIcon60" />
             ) : (
                 <ChatIcon decorative={false} title="Open chat" size="sizeIcon60" />
             )}
