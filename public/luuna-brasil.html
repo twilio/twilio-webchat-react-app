@@ -1,43 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="theme-color" content="#000000" />
+        <title>Twilio Webchat React App</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+            }
 
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="theme-color" content="#000000">
-	<title>Twilio Webchat React App</title>
-	<style>
-		html, body {
-			height: 100%;
-		}
+            body {
+                margin: 0;
+                background: #e4eaf0;
+            }
+        </style>
+        <script defer src="static/js/main.js"></script>
+    </head>
 
-		body {
-			margin: 0;
-			background: #e4eaf0;
-		}
-	</style>
-    <script defer src="static/js/main.js"></script>
-</head>
+    <body>
+        <noscript> You need to enable JavaScript to run this app. </noscript>
+        <div id="twilio-webchat-widget-root"></div>
 
-<body>
-	<noscript>
-		You need to enable JavaScript to run this app.
-	</noscript>
-	<div id="twilio-webchat-widget-root"></div>
-
-	<script>
-		window.addEventListener("DOMContentLoaded", async () => {
-			const chatDispatcher = await Twilio.initWebchat({
-				serverUrl: "https://webchat-react-app-serverless-7446-dev.twil.io",
-				brand: "Luuna Brasil",
-				posProfile: "Luuna Brasil",
-				theme: {
-					isLight: true
-				}
-			});
-			chatDispatcher.resetSession();
-		});
-	</script>
-</body>
-
+        <script>
+            window.addEventListener("DOMContentLoaded", async () => {
+                const chatDispatcher = await Twilio.initWebchat({
+                    serverUrl: "https://webchat-react-app-serverless-7446-dev.twil.io",
+                    brand: "Luuna Brasil",
+                    posProfile: "Luuna Brasil",
+                    theme: {
+                        isLight: true
+                    }
+                });
+                chatDispatcher.resetSession();
+            });
+        </script>
+    </body>
 </html>

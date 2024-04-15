@@ -10,7 +10,7 @@ export function getThemeByBrand(brand?: Brand): ThemeOverride {
             return NOOZ_THEME;
         case "MAPPA":
             return MAPPA_THEME;
-        case "LUUNA_BRAZIL":
+        case "Luuna Brasil":
             return LUUNA_BRAZIL_THEME;
         default:
             return LUUNA_THEME;

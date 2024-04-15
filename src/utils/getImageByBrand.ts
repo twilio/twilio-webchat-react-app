@@ -8,7 +8,7 @@ export function getImageByBrand(brand?: Brand): string {
             return "https://d20pg3k5glb1vh.cloudfront.net/assets/nooz_chat_logo.png";
         case "MAPPA":
             return "https://d20pg3k5glb1vh.cloudfront.net/assets/mappa_chat_logo.png";
-        case "LUUNA_BRAZIL":
+        case "Luuna Brasil":
             return "https://d20pg3k5glb1vh.cloudfront.net/assets/luuna_chat_logo.png";
         default:
             return "https://d20pg3k5glb1vh.cloudfront.net/assets/zebrands_chat_logo.png";
