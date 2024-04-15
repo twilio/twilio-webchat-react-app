@@ -2,7 +2,7 @@ import { Client, Conversation, Participant, Message, User } from "@twilio/conver
 import { GenericThemeShape } from "@twilio-paste/theme";
 import { AlertVariants } from "@twilio-paste/core/alert";
 
-import { FileAttachmentConfig, TranscriptConfig } from "../definitions";
+import { Brand, FileAttachmentConfig, TranscriptConfig } from "../definitions";
 
 export enum EngagementPhase {
     PreEngagementForm = "PreEngagementForm",
@@ -43,7 +43,7 @@ export type ThemeOverride = {
 };
 
 export type ConfigState = {
-    brand?: string;
+    brand?: Brand;
     posProfile?: string;
     serverUrl?: string;
     hideChatBubble?: boolean;

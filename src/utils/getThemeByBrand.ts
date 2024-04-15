@@ -2,7 +2,7 @@ import { LUUNA_BRAZIL_THEME, LUUNA_THEME, MAPPA_THEME, NOOZ_THEME } from "../con
 import { Brand } from "../definitions";
 import { ThemeOverride } from "../store/definitions";
 
-export function getThemeByBrand(brand: Brand): ThemeOverride {
+export function getThemeByBrand(brand?: Brand): ThemeOverride {
     switch (brand) {
         case "LUUNA":
             return LUUNA_THEME;

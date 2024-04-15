@@ -1,10 +1,9 @@
-import { Label } from "@twilio-paste/core/label";
 import { Box } from "@twilio-paste/core/box";
 import { TextArea } from "@twilio-paste/core/textarea";
 import { FormEvent } from "react";
-import { Button } from "@twilio-paste/core/button";
+import { Button, Text } from "@twilio-paste/core";
 import { useDispatch, useSelector } from "react-redux";
-import { Text } from "@twilio-paste/core/text";
+import { useTheme } from "@twilio-paste/theme";
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { addNotification, changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
@@ -19,6 +18,8 @@ export const PreEngagementFormPhase = () => {
     const { name, email, query } = useSelector((state: AppState) => state.session.preEngagementData) || {};
     const { brand, posProfile } = useSelector((state: AppState) => state.config) || {};
     const dispatch = useDispatch();
+
+    const theme = useTheme();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -51,30 +52,47 @@ export const PreEngagementFormPhase = () => {
         <>
             <Header />
             <NotificationBar />
-            <Box as="form" data-test="pre-engagement-chat-form" onSubmit={handleSubmit} {...formStyles}>
-                <Text {...titleStyles} as="h3">
-                    Hi there!
-                </Text>
-                <Text {...introStyles} as="p">
-                    We&#39;re here to help. Please give us some info to get started.
-                </Text>
-                <Box {...fieldStyles}>
-                    <Label htmlFor="query">How can we help you?</Label>
-                    <TextArea
-                        placeholder="Ask a question"
-                        name="query"
-                        data-test="pre-engagement-chat-form-query-textarea"
-                        value={query}
-                        onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
-                        onKeyPress={handleKeyPress}
-                        required
-                    />
-                </Box>
+            <div>
+                <Box
+                    style={{
+                        background: theme.backgroundColors.colorBackgroundBrand
+                    }}
+                    as="form"
+                    paddingX="space100"
+                    data-test="pre-engagement-chat-form"
+                    onSubmit={handleSubmit}
+                    {...formStyles}
+                >
+                    <Text {...titleStyles} as="h3">
+                        {`Hola  `}
+                        <span role="img" aria-label="donut">
+                            {` 👋`}
+                        </span>
+                    </Text>
 
-                <Button variant="primary" type="submit" data-test="pre-engagement-start-chat-button">
-                    Start chat
-                </Button>
-            </Box>
+                    <Text {...introStyles} as="h4">
+                        ¿Cómo podemos ayudarte?
+                    </Text>
+
+                    <Box {...fieldStyles}>
+                        <TextArea
+                            placeholder="Envíanos un mensaje"
+                            name="query"
+                            rows={2}
+                            data-test="pre-engagement-chat-form-query-textarea"
+                            value={query}
+                            onChange={(e) => dispatch(updatePreEngagementData({ query: e.target.value }))}
+                            onKeyPress={handleKeyPress}
+                            required
+                        />
+                    </Box>
+                    <Box paddingX="space100" display="flex" justifyContent="flex-end">
+                        <Button variant="primary" type="submit" data-test="pre-engagement-start-chat-button">
+                            Enviar
+                        </Button>
+                    </Box>
+                </Box>
+            </div>
         </>
     );
 };

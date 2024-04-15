@@ -125,7 +125,7 @@ export const MessageInput = () => {
                         <TextArea
                             ref={textAreaRef}
                             data-test="message-input-textarea"
-                            placeholder="Type your message"
+                            placeholder="Escribe un mensaje..."
                             value={text}
                             element="MESSAGE_INPUT"
                             onChange={onChange}

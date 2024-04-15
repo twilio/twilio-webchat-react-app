@@ -27,7 +27,7 @@ export const getInnerContainerStyles = (belongToCurrentUser: boolean): BoxStyleP
     paddingBottom: "space30",
     paddingLeft: "space40",
     paddingRight: "space40",
-    backgroundColor: belongToCurrentUser ? "colorBackgroundPrimaryStronger" : "colorBackground",
+    backgroundColor: belongToCurrentUser ? "colorBackgroundUser" : "colorBackground",
     color: belongToCurrentUser ? "colorTextWeakest" : "colorText",
     borderRadius: "borderRadius30",
     marginLeft: belongToCurrentUser ? "auto" : "space0",
