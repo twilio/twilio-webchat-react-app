@@ -35,21 +35,6 @@ export const getInnerContainerStyles = (belongToCurrentUser: boolean): BoxStyleP
     maxWidth: "90%"
 });
 
-export const authorStyles: TextStyleProps = {
-    color: "inherit",
-    fontWeight: "fontWeightBold",
-    fontSize: "fontSize20",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis", // doesn't get applied for some reason – need to investigate
-    overflow: "hidden"
-};
-
-export const timeStampStyles: TextStyleProps = {
-    fontSize: "fontSize20",
-    marginLeft: "space40",
-    color: "inherit"
-};
-
 export const bodyStyles: TextStyleProps = {
     color: "inherit",
     whiteSpace: "pre-wrap",

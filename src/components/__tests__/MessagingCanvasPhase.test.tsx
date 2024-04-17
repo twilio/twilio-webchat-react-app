@@ -3,9 +3,11 @@ import "@testing-library/jest-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { MessagingCanvasPhase } from "../MessagingCanvasPhase";
-import { notifications } from "../../notifications";
 import * as genericActions from "../../store/actions/genericActions";
+import { moduleNotifications } from "../../notifications";
+import { defaultI18nEsMX } from "../../i18n/i18n";
 
+const notifications = moduleNotifications(defaultI18nEsMX);
 jest.mock("react-redux", () => ({
     useSelector: jest.fn(),
     useDispatch: jest.fn()

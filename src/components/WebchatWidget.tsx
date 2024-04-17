@@ -7,18 +7,20 @@ import { AppState, EngagementPhase } from "../store/definitions";
 import { sessionDataHandler } from "../sessionDataHandler";
 import { initSession } from "../store/actions/initActions";
 import { changeEngagementPhase } from "../store/actions/genericActions";
+import { useNotifications } from "../hooks/useNotifications";
 
 const AnyCustomizationProvider: FC<CustomizationProviderProps & { style: CSSProperties }> = CustomizationProvider;
 
 export function WebchatWidget() {
     const theme = useSelector((state: AppState) => state.config.theme);
+    const notifications = useNotifications();
     const dispatch = useDispatch();
 
     useEffect(() => {
         const data = sessionDataHandler.tryResumeExistingSession();
         if (data) {
             try {
-                dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
+                dispatch(initSession({ token: data.token, conversationSid: data.conversationSid, notifications }));
             } catch (e) {
                 // if initSession fails, go to changeEngagement phase - most likely there's something wrong with the store token or conversation sis
                 dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
@@ -27,7 +29,7 @@ export function WebchatWidget() {
             // if no token is stored, got engagement form
             dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
         }
-    }, [dispatch]);
+    }, [dispatch, notifications]);
 
     return (
         <AnyCustomizationProvider

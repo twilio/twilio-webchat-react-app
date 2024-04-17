@@ -9,6 +9,7 @@ import {
     getSeparatorTextStyles
 } from "./styles/MessageListSeparator.styles";
 import { SeparatorType } from "./definitions";
+import { useTranslation } from "../hooks/useTranslation";
 
 export const MessageListSeparator = ({
     message,
@@ -17,16 +18,17 @@ export const MessageListSeparator = ({
     message: Message;
     separatorType: SeparatorType;
 }) => {
+    const { i18n } = useTranslation();
     const getSeparatorText = () => {
         let separatorText;
         if (separatorType === "new") {
-            separatorText = "New";
+            separatorText = i18n.messagingSeparatorNew;
         } else {
             const daysOld = getDaysOld(message.dateCreated);
             if (daysOld === 0) {
-                separatorText = "Today";
+                separatorText = i18n.messagingSeparatorToday;
             } else if (daysOld === 1) {
-                separatorText = "Yesterday";
+                separatorText = i18n.messagingSeparatorYesterday;
             } else {
                 separatorText = message.dateCreated.toLocaleDateString();
             }

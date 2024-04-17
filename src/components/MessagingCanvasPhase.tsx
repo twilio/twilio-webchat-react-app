@@ -8,11 +8,12 @@ import { AppState } from "../store/definitions";
 import { ConversationEnded } from "./ConversationEnded";
 import { NotificationBar } from "./NotificationBar";
 import { removeNotification } from "../store/actions/genericActions";
-import { notifications } from "../notifications";
 import { AttachFileDropArea } from "./AttachFileDropArea";
+import { useNotifications } from "../hooks/useNotifications";
 
 export const MessagingCanvasPhase = () => {
     const dispatch = useDispatch();
+    const notifications = useNotifications();
     const conversationState = useSelector((state: AppState) => state.chat.conversationState);
 
     useEffect(() => {

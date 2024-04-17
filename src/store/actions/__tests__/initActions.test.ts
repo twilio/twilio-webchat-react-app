@@ -16,7 +16,10 @@ import {
 import { initMessagesListener } from "../listeners/messagesListener";
 import { initParticipantsListener } from "../listeners/participantsListener";
 import { SessionReducer } from "../../session.reducer";
-import { notifications } from "../../../notifications";
+import { moduleNotifications } from "../../../notifications";
+import { defaultI18nEsMX } from "../../../i18n/i18n";
+
+const notifications = moduleNotifications(defaultI18nEsMX);
 
 jest.mock("@twilio/conversations");
 jest.mock("../listeners/clientListener", () => ({
@@ -67,7 +70,7 @@ describe("Actions", () => {
             jest.spyOn(Client, "create").mockResolvedValueOnce(conversationsClient);
             const mockDispatch = jest.fn();
 
-            await initSession({ token, conversationSid })(mockDispatch);
+            await initSession({ token, conversationSid, notifications })(mockDispatch);
 
             expect(mockDispatch).toHaveBeenCalled();
             const dispatchArgs = mockDispatch.mock.calls[0][0];
@@ -90,7 +93,7 @@ describe("Actions", () => {
         it("initializes listeners", async () => {
             jest.spyOn(Client, "create").mockResolvedValueOnce(conversationsClient);
 
-            await mockStore.dispatch(initSession({ token, conversationSid }));
+            await mockStore.dispatch(initSession({ token, conversationSid, notifications }));
 
             expect(initClientListeners).toHaveBeenCalledWith(conversationsClient, expect.any(Function));
             expect(initConversationListener).toHaveBeenCalledWith(conversation, expect.any(Function));
@@ -102,7 +105,7 @@ describe("Actions", () => {
             jest.spyOn(Client, "create").mockResolvedValueOnce({} as Client);
             const innerDispatchSpy = jest.fn();
             jest.spyOn(mockStore, "dispatch").mockImplementation((callback: any) => callback(innerDispatchSpy));
-            await mockStore.dispatch(initSession({ token, conversationSid }));
+            await mockStore.dispatch(initSession({ token, conversationSid, notifications }));
 
             expect(innerDispatchSpy).toHaveBeenCalledWith({
                 payload: {
