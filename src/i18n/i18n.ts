@@ -34,7 +34,7 @@ const defaultI18nPtBr: I18n = {
     engagementFormTitleIcon: ` `,
     engagementFormSubTitle: "Como podemos te ajudar?",
     engagementFormButtonSend: "Enviar",
-    engagementFormLabelInputMessage: "Envie-nos uma mensagem",
+    engagementFormLabelInputMessage: "Envie uma mensagem",
     messagingInput: "Escreva uma mensagem...",
     messagingChatStarted: "Chat iniciado",
     messagingIsTyping: "Está escrevendo...",
