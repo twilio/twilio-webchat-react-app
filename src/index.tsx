@@ -10,6 +10,7 @@ import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 import { ChatDispatcher } from "./utils/ChatDispatcher";
 import { getThemeByBrand } from "./utils/getThemeByBrand";
+import { I18nProvider } from "./i18n/i18n.provider";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
@@ -50,7 +51,9 @@ const initWebchat = async (config: ConfigState) => {
 
     render(
         <Provider store={store}>
-            <WebchatWidget />
+            <I18nProvider>
+                <WebchatWidget />
+            </I18nProvider>
         </Provider>,
         rootElement
     );

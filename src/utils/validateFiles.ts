@@ -2,9 +2,9 @@ import { extension as mimeToExtension } from "mime-types";
 import { Dispatch } from "redux";
 
 import { addNotification } from "../store/actions/genericActions";
-import { notifications } from "../notifications";
 import { roundFileSizeInMB } from "./roundFileSizeInMB";
 import { FileAttachmentConfig } from "../definitions";
+import { Notifications } from "../notifications";
 
 /*
  * Validates all provided files and shows an error notification for every invalid file.
@@ -13,6 +13,7 @@ import { FileAttachmentConfig } from "../definitions";
 export const validateFiles = (
     files: File[],
     dispatch: Dispatch,
+    notifications: Notifications,
     attachedFiles?: File[],
     fileAttachmentConfig?: FileAttachmentConfig
 ): File[] => {

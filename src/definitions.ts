@@ -18,4 +18,6 @@ export type TranscriptConfig = {
     emailContent?: (customerName: string | undefined, transcript: string) => string;
 };
 
+export type Locale = "es-MX" | "pt-BR";
+
 export type Brand = "LUUNA" | "NOOZ" | "MAPPA" | "Luuna Brasil";

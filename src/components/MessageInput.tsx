@@ -20,9 +20,11 @@ import {
     filePreviewContainerStyles,
     textAreaContainerStyles
 } from "./styles/MessageInput.styles";
+import { useTranslation } from "../hooks/useTranslation";
 
 export const MessageInput = () => {
     const dispatch = useDispatch();
+    const { i18n } = useTranslation();
     const text = useSelector((state: AppState) => state.chat.inputMessage || "");
     const [isSending, setIsSending] = useState(false);
     const { conversation, attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
@@ -125,7 +127,7 @@ export const MessageInput = () => {
                         <TextArea
                             ref={textAreaRef}
                             data-test="message-input-textarea"
-                            placeholder="Escribe un mensaje..."
+                            placeholder={i18n.messagingInput}
                             value={text}
                             element="MESSAGE_INPUT"
                             onChange={onChange}

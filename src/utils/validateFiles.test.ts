@@ -2,9 +2,11 @@ import "@testing-library/jest-dom";
 
 import { validateFiles } from "./validateFiles";
 import { matchPartialNotificationObject } from "../test-utils";
-import { notifications } from "../notifications";
+import { moduleNotifications } from "../notifications";
 import * as genericActions from "../store/actions/genericActions";
+import { defaultI18nEsMX } from "../i18n/i18n";
 
+const notifications = moduleNotifications(defaultI18nEsMX);
 const fileAttachmentConfig = {
     enabled: true,
     maxFileSize: 16777216,
@@ -21,6 +23,7 @@ describe("validateFiles", () => {
         const validFiles = validateFiles(
             [alreadyAttachedFile],
             mockDispatch,
+            notifications,
             [alreadyAttachedFile],
             fileAttachmentConfig
         );
@@ -39,6 +42,7 @@ describe("validateFiles", () => {
         const validFiles = validateFiles(
             [{ ...dumbFile, size: 999999999 }],
             mockDispatch,
+            notifications,
             [alreadyAttachedFile],
             fileAttachmentConfig
         );
@@ -57,6 +61,7 @@ describe("validateFiles", () => {
         const validFiles = validateFiles(
             [{ ...dumbFile, type: "unknown/type" }],
             mockDispatch,
+            notifications,
             [alreadyAttachedFile],
             fileAttachmentConfig
         );

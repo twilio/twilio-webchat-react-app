@@ -7,10 +7,10 @@ import { initParticipantsListener } from "./listeners/participantsListener";
 import { initConversationListener } from "./listeners/conversationListener";
 import { ConfigState, EngagementPhase } from "../definitions";
 import { initClientListeners } from "./listeners/clientListener";
-import { notifications } from "../../notifications";
 import { ACTION_START_SESSION, ACTION_LOAD_CONFIG } from "./actionTypes";
 import { addNotification, changeEngagementPhase } from "./genericActions";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
+import { Notifications } from "../../notifications";
 
 export function initConfig(config: ConfigState) {
     return {
@@ -19,7 +19,15 @@ export function initConfig(config: ConfigState) {
     };
 }
 
-export function initSession({ token, conversationSid }: { token: string; conversationSid: string }) {
+export function initSession({
+    token,
+    conversationSid,
+    notifications
+}: {
+    token: string;
+    conversationSid: string;
+    notifications: Notifications;
+}) {
     return async (dispatch: Dispatch) => {
         let conversationsClient: Client;
         let conversation;
@@ -60,7 +68,7 @@ export function initSession({ token, conversationSid }: { token: string; convers
             }
         });
 
-        initClientListeners(conversationsClient, dispatch);
+        initClientListeners(conversationsClient, dispatch, notifications);
         initConversationListener(conversation, dispatch);
         initMessagesListener(conversation, dispatch);
         initParticipantsListener(conversation, dispatch);

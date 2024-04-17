@@ -1,12 +1,15 @@
 import { waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { notifications } from "../../../../notifications";
+import { moduleNotifications } from "../../../../notifications";
 import * as genericActions from "../../genericActions";
 import { initClientListeners } from "../clientListener";
 import { Token } from "../../../../definitions";
 import { sessionDataHandler } from "../../../../sessionDataHandler";
 import { Client } from "../../../../__mocks__/@twilio/conversations/client";
+import { defaultI18nEsMX } from "../../../../i18n/i18n";
+
+const notifications = moduleNotifications(defaultI18nEsMX);
 
 describe("Client Listeners", () => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
@@ -30,7 +33,7 @@ describe("Client Listeners", () => {
         };
         jest.spyOn(sessionDataHandler, "getUpdatedToken").mockImplementation(async () => tokenResponsePayload);
 
-        initClientListeners(mockClient, mockDispatch);
+        initClientListeners(mockClient, mockDispatch, notifications);
         mockClient.emit(tokenAboutToExpireEvent, 1000);
         const updateTokenSpy = jest.spyOn(mockClient, "updateToken");
 
@@ -44,7 +47,7 @@ describe("Client Listeners", () => {
     it("shows notification when disconnected on connectionStateChanged event", async () => {
         const addNotificationSpy = jest.spyOn(genericActions, "addNotification");
 
-        initClientListeners(mockClient, mockDispatch);
+        initClientListeners(mockClient, mockDispatch, notifications);
         mockClient.emit(connectionStateChangedEvent, "connecting");
         expect(addNotificationSpy).toHaveBeenCalledWith(notifications.noConnectionNotification());
     });
@@ -52,7 +55,7 @@ describe("Client Listeners", () => {
     it("dismisses notification when reconnected on connectionStateChanged event", () => {
         const removeNotificationSpy = jest.spyOn(genericActions, "removeNotification");
 
-        initClientListeners(mockClient, mockDispatch);
+        initClientListeners(mockClient, mockDispatch, notifications);
         mockClient.emit(connectionStateChangedEvent, "connected");
         expect(removeNotificationSpy).toHaveBeenCalledWith(notifications.noConnectionNotification().id);
     });
