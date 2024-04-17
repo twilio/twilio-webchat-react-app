@@ -18,7 +18,7 @@ export const MessagingCanvasPhase = () => {
 
     useEffect(() => {
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
-    }, [dispatch]);
+    }, [dispatch, notifications]);
 
     const Wrapper = conversationState === "active" ? AttachFileDropArea : Fragment;
 
