@@ -8,9 +8,13 @@ import { sessionDataHandler } from "./sessionDataHandler";
 import { initConfig } from "./store/actions/initActions";
 import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
+import { ChatDispatcher } from "./utils/ChatDispatcher";
+import { getThemeByBrand } from "./utils/getThemeByBrand";
+import { I18nProvider } from "./i18n/i18n.provider";
 
 const defaultConfig: ConfigState = {
     serverUrl: "http://localhost:3001",
+    hideChatBubble: false,
     theme: {
         isLight: true
     },
@@ -37,7 +41,9 @@ const defaultConfig: ConfigState = {
 };
 
 const initWebchat = async (config: ConfigState) => {
-    const mergedConfig = merge({}, defaultConfig, config);
+    const theme = getThemeByBrand(config.brand);
+    const mergedConfig = merge({}, defaultConfig, config, { theme });
+
     sessionDataHandler.setEndpoint(mergedConfig.serverUrl);
     store.dispatch(initConfig(mergedConfig));
     initLogger();
@@ -45,7 +51,9 @@ const initWebchat = async (config: ConfigState) => {
 
     render(
         <Provider store={store}>
-            <WebchatWidget />
+            <I18nProvider>
+                <WebchatWidget />
+            </I18nProvider>
         </Provider>,
         rootElement
     );
@@ -53,12 +61,13 @@ const initWebchat = async (config: ConfigState) => {
     if (window.Cypress) {
         window.store = store;
     }
+    return new ChatDispatcher();
 };
 
 declare global {
     interface Window {
         Twilio: {
-            initWebchat: (config: ConfigState) => void;
+            initWebchat: (config: ConfigState) => ChatDispatcher;
         };
         Cypress: Cypress.Cypress;
         store: typeof store;

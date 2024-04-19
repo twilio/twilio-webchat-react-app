@@ -16,6 +16,7 @@ const popIn = keyframes`
 export const containerStyles: BoxStyleProps = {
     position: "relative",
     display: "flex",
+    height: "99vh",
     flexDirection: "column",
     flexGrow: 1,
     overflow: "hidden"

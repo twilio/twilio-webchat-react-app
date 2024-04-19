@@ -11,7 +11,7 @@ import { SendIcon } from "@twilio-paste/icons/esm/SendIcon";
 import { AppState } from "../store/definitions";
 import { AttachFileButton } from "./AttachFileButton";
 import { FilePreview } from "./FilePreview";
-import { detachFiles } from "../store/actions/genericActions";
+import { detachFiles, updateMessageInput } from "../store/actions/genericActions";
 import { CHAR_LIMIT } from "../constants";
 import {
     formStyles,
@@ -20,10 +20,12 @@ import {
     filePreviewContainerStyles,
     textAreaContainerStyles
 } from "./styles/MessageInput.styles";
+import { useTranslation } from "../hooks/useTranslation";
 
 export const MessageInput = () => {
     const dispatch = useDispatch();
-    const [text, setText] = useState("");
+    const { i18n } = useTranslation();
+    const text = useSelector((state: AppState) => state.chat.inputMessage || "");
     const [isSending, setIsSending] = useState(false);
     const { conversation, attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
         conversation: state.chat.conversation,
@@ -67,7 +69,7 @@ export const MessageInput = () => {
             preparedMessage.addMedia(formData);
         });
         await preparedMessage.build().send();
-        setText("");
+        dispatch(updateMessageInput(""));
         dispatch(detachFiles(attachedFiles));
         setIsSending(false);
         textAreaRef.current?.focus();
@@ -83,7 +85,7 @@ export const MessageInput = () => {
     };
 
     const onChange = (val: ChangeEvent<HTMLTextAreaElement>) => {
-        setText(val.target.value);
+        dispatch(updateMessageInput(val.target.value));
 
         throttleChange();
     };
@@ -125,7 +127,7 @@ export const MessageInput = () => {
                         <TextArea
                             ref={textAreaRef}
                             data-test="message-input-textarea"
-                            placeholder="Type your message"
+                            placeholder={i18n.messagingInput}
                             value={text}
                             element="MESSAGE_INPUT"
                             onChange={onChange}

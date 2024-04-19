@@ -13,6 +13,8 @@ import {
 import { validateFiles } from "../utils/validateFiles";
 import { attachFiles } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
+import { useNotifications } from "../hooks/useNotifications";
+import { useTranslation } from "../hooks/useTranslation";
 
 export const AttachFileDropArea = ({ children }: { children: React.ReactNode }) => {
     const { attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
@@ -21,6 +23,8 @@ export const AttachFileDropArea = ({ children }: { children: React.ReactNode }) 
     }));
 
     const dispatch = useDispatch();
+    const { i18n } = useTranslation();
+    const notifications = useNotifications();
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -34,7 +38,13 @@ export const AttachFileDropArea = ({ children }: { children: React.ReactNode }) 
             const { files } = event.dataTransfer;
 
             if (files && files.length) {
-                const validFiles = validateFiles(Array.from(files), dispatch, attachedFiles, fileAttachmentConfig);
+                const validFiles = validateFiles(
+                    Array.from(files),
+                    dispatch,
+                    notifications,
+                    attachedFiles,
+                    fileAttachmentConfig
+                );
                 dispatch(attachFiles(validFiles));
             }
         }
@@ -77,7 +87,7 @@ export const AttachFileDropArea = ({ children }: { children: React.ReactNode }) 
                         <AttachIcon decorative={true} size="sizeIcon60" />
                     </Box>
                     <Text as="p" {...attachTitleStyles}>
-                        Drop a file or image here
+                        {i18n.messagingDropFileOrImage}
                     </Text>
                 </Box>
             )}

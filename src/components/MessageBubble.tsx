@@ -1,6 +1,5 @@
 import { Media, Message } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core/box";
-import { ScreenReaderOnly } from "@twilio-paste/core/screen-reader-only";
 import { useSelector } from "react-redux";
 import { Text } from "@twilio-paste/core/text";
 import { Flex } from "@twilio-paste/core/flex";
@@ -14,15 +13,12 @@ import { parseMessageBody } from "../utils/parseMessageBody";
 import {
     getAvatarContainerStyles,
     getInnerContainerStyles,
-    authorStyles,
-    timeStampStyles,
     bodyStyles,
     outerContainerStyles,
     readStatusStyles,
     bubbleAndAvatarContainerStyles
 } from "./styles/MessageBubble.styles";
-
-const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
+import { useTranslation } from "../hooks/useTranslation";
 
 export const MessageBubble = ({
     message,
@@ -38,8 +34,9 @@ export const MessageBubble = ({
     updateFocus: (newFocus: number) => void;
 }) => {
     const [read, setRead] = useState(false);
+    const { i18n } = useTranslation();
     const [isMouseDown, setIsMouseDown] = useState(false);
-    const { conversationsClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
+    const { conversationsClient, participants, fileAttachmentConfig } = useSelector((state: AppState) => ({
         conversationsClient: state.chat.conversationsClient,
         participants: state.chat.participants,
         users: state.chat.users,
@@ -83,7 +80,7 @@ export const MessageBubble = ({
             });
         }
 
-        return <i>Media messages are not supported</i>;
+        return <i>{i18n.messagingAreNotSupport}</i>;
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -109,8 +106,6 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
-
     return (
         <Box
             {...outerContainerStyles}
@@ -130,21 +125,6 @@ export const MessageBubble = ({
                     </Box>
                 )}
                 <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
-                    <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={author}>
-                            {author}
-                        </Text>
-                        <ScreenReaderOnly as="p">
-                            {belongsToCurrentUser
-                                ? "You sent at"
-                                : `${users?.find((u) => u.identity === message.author)?.friendlyName} sent at`}
-                        </ScreenReaderOnly>
-                        <Text {...timeStampStyles} as="p">
-                            {`${doubleDigit(message.dateCreated.getHours())}:${doubleDigit(
-                                message.dateCreated.getMinutes()
-                            )}`}
-                        </Text>
-                    </Flex>
                     <Text as="p" {...bodyStyles}>
                         {message.body ? parseMessageBody(message.body, belongsToCurrentUser) : null}
                     </Text>
@@ -154,7 +134,7 @@ export const MessageBubble = ({
             {read && (
                 <Flex hAlignContent="right" vAlignContent="center" marginTop="space20">
                     <Text as="p" {...readStatusStyles}>
-                        Read
+                        {i18n.messagingRead}
                     </Text>
                     <SuccessIcon decorative={true} size="sizeIcon10" color="colorTextWeak" />
                 </Flex>

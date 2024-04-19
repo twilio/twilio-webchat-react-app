@@ -10,6 +10,7 @@ import {
     ACTION_CHANGE_EXPANDED_STATUS,
     ACTION_DETACH_FILES,
     ACTION_REMOVE_NOTIFICATION,
+    ACTION_UPDATE_MESSAGE_INPUT,
     ACTION_UPDATE_PRE_ENGAGEMENT_DATA
 } from "./actionTypes";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
@@ -83,6 +84,15 @@ export function updatePreEngagementData(data: Partial<PreEngagementData>) {
         type: ACTION_UPDATE_PRE_ENGAGEMENT_DATA,
         payload: {
             preEngagementData: data
+        }
+    };
+}
+
+export function updateMessageInput(inputMessage: string) {
+    return {
+        type: ACTION_UPDATE_MESSAGE_INPUT,
+        payload: {
+            inputMessage
         }
     };
 }

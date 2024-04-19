@@ -2,7 +2,7 @@ import { Client, Conversation, Participant, Message, User } from "@twilio/conver
 import { GenericThemeShape } from "@twilio-paste/theme";
 import { AlertVariants } from "@twilio-paste/core/alert";
 
-import { FileAttachmentConfig, TranscriptConfig } from "../definitions";
+import { Brand, FileAttachmentConfig, Locale, TranscriptConfig } from "../definitions";
 
 export enum EngagementPhase {
     PreEngagementForm = "PreEngagementForm",
@@ -18,6 +18,7 @@ export type ChatState = {
     messages?: Message[];
     attachedFiles?: File[];
     conversationState?: string;
+    inputMessage?: string;
 };
 
 export type PreEngagementData = { name: string; email: string; query: string };
@@ -36,12 +37,18 @@ export type SessionState = {
     preEngagementData?: PreEngagementData;
 };
 
+export type ThemeOverride = {
+    isLight?: boolean;
+    overrides?: Partial<GenericThemeShape>;
+};
+
 export type ConfigState = {
+    brand?: Brand;
+    locale?: Locale;
+    posProfile?: string;
     serverUrl?: string;
-    theme?: {
-        isLight?: boolean;
-        overrides?: Partial<GenericThemeShape>;
-    };
+    hideChatBubble?: boolean;
+    theme?: ThemeOverride;
     fileAttachment?: FileAttachmentConfig;
     transcript?: TranscriptConfig;
 };

@@ -22,6 +22,7 @@ import {
     outerContainerStyles,
     participantTypingStyles
 } from "./styles/MessageList.styles";
+import { useTranslation } from "../hooks/useTranslation";
 
 const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
     const nextMessage = messages[i + 1];
@@ -51,6 +52,7 @@ export const MessageList = () => {
         conversationsClient: state.chat.conversationsClient
     }));
     const dispatch = useDispatch();
+    const { i18n } = useTranslation();
     const messageListRef = useRef<HTMLDivElement>(null);
     const isLoadingMessages = useRef(false);
     const oldMessagesLength = useRef((messages || []).length);
@@ -165,7 +167,7 @@ export const MessageList = () => {
             <>
                 <Box {...conversationEventContainerStyles}>
                     <Text as="h3" {...conversationEventTitleStyles} data-test="chat-started">
-                        Chat started
+                        {i18n.messagingChatStarted}
                     </Text>
                     <Text as="p" {...conversationEventDateStyles}>
                         {conversation?.dateCreated.toLocaleString()}
@@ -244,7 +246,7 @@ export const MessageList = () => {
                         ?.filter((p) => p.isTyping && p.identity !== conversationsClient?.user.identity)
                         .map((p) => (
                             <Text {...participantTypingStyles} as="p" key={p.identity}>
-                                {users?.find((u) => u.identity === p.identity)?.friendlyName} is typing...
+                                {users?.find((u) => u.identity === p.identity)?.friendlyName} {i18n.messagingIsTyping}
                             </Text>
                         ))}
                 </Box>

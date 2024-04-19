@@ -6,7 +6,8 @@ import { AppState, EngagementPhase } from "../store/definitions";
 import { PreEngagementFormPhase } from "./PreEngagementFormPhase";
 import { LoadingPhase } from "./LoadingPhase";
 import { EntryPoint } from "./EntryPoint";
-import { innerContainerStyles, outerContainerStyles } from "./styles/RootContainer.styles";
+import { outerContainerStyles } from "./styles/RootContainer.styles";
+import { WrapperRoot } from "./WrapperRoot";
 
 const getPhaseComponent = (phase: EngagementPhase) => {
     switch (phase) {
@@ -30,9 +31,9 @@ export function RootContainer() {
         <Box>
             <Box {...outerContainerStyles}>
                 {expanded && (
-                    <Box data-test="root-container" {...innerContainerStyles}>
-                        {getPhaseComponent(currentPhase)}
-                    </Box>
+                    <WrapperRoot>
+                        <>{getPhaseComponent(currentPhase)}</>
+                    </WrapperRoot>
                 )}
                 <EntryPoint />
             </Box>

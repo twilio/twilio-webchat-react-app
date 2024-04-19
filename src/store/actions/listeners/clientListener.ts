@@ -3,11 +3,11 @@ import { Dispatch } from "redux";
 import log from "loglevel";
 
 import { sessionDataHandler } from "../../../sessionDataHandler";
-import { notifications } from "../../../notifications";
 import { addNotification, removeNotification } from "../genericActions";
 import { ACTION_UPDATE_SESSION_DATA } from "../actionTypes";
+import { Notifications } from "../../../notifications";
 
-export const initClientListeners = (conversationClient: Client, dispatch: Dispatch) => {
+export const initClientListeners = (conversationClient: Client, dispatch: Dispatch, notifications: Notifications) => {
     const tokenAboutToExpireEvent = "tokenAboutToExpire";
     const connectionStateChangedEvent = "connectionStateChanged";
 

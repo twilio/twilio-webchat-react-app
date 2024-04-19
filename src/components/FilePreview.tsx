@@ -12,7 +12,6 @@ import { Truncate } from "@twilio-paste/core/truncate";
 
 import { addNotification, detachFiles } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
-import { notifications } from "../notifications";
 import { roundFileSizeInMB } from "../utils/roundFileSizeInMB";
 import {
     actionIconContainerStyles,
@@ -23,6 +22,7 @@ import {
     getContainerStyles,
     outerContainerStyles
 } from "./styles/FilePreview.styles";
+import { useNotifications } from "../hooks/useNotifications";
 
 interface FilePreviewProps {
     file: File;
@@ -33,6 +33,8 @@ interface FilePreviewProps {
 }
 
 export const FilePreview = (props: FilePreviewProps) => {
+    const notifications = useNotifications();
+
     const { file, isBubble, disabled, media, focusable } = props;
     const [isHovered, setIsHovered] = useState(false);
 

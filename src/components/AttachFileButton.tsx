@@ -7,8 +7,10 @@ import { AppState } from "../store/definitions";
 import { hiddenInputStyles } from "./styles/AttachFileButton.styles";
 import { validateFiles } from "../utils/validateFiles";
 import { attachFiles } from "../store/actions/genericActions";
+import { useNotifications } from "../hooks/useNotifications";
 
 export const AttachFileButton = ({ textAreaRef }: { textAreaRef?: React.RefObject<HTMLTextAreaElement> }) => {
+    const notifications = useNotifications();
     const fileInputRef: React.RefObject<HTMLInputElement> = useRef(null);
     const { attachedFiles, fileAttachmentConfig } = useSelector((state: AppState) => ({
         attachedFiles: state.chat.attachedFiles || [],
@@ -20,7 +22,13 @@ export const AttachFileButton = ({ textAreaRef }: { textAreaRef?: React.RefObjec
     const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files && Array.from(event.target.files);
         if (selectedFiles) {
-            const validFiles = validateFiles(selectedFiles, dispatch, attachedFiles, fileAttachmentConfig);
+            const validFiles = validateFiles(
+                selectedFiles,
+                dispatch,
+                notifications,
+                attachedFiles,
+                fileAttachmentConfig
+            );
             dispatch(attachFiles(validFiles));
         }
         if (fileInputRef.current) {

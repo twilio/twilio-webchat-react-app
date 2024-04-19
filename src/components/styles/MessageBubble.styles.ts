@@ -27,28 +27,13 @@ export const getInnerContainerStyles = (belongToCurrentUser: boolean): BoxStyleP
     paddingBottom: "space30",
     paddingLeft: "space40",
     paddingRight: "space40",
-    backgroundColor: belongToCurrentUser ? "colorBackgroundPrimaryStronger" : "colorBackground",
+    backgroundColor: belongToCurrentUser ? "colorBackgroundUser" : "colorBackground",
     color: belongToCurrentUser ? "colorTextWeakest" : "colorText",
     borderRadius: "borderRadius30",
     marginLeft: belongToCurrentUser ? "auto" : "space0",
     marginRight: belongToCurrentUser ? "space0" : "auto",
     maxWidth: "90%"
 });
-
-export const authorStyles: TextStyleProps = {
-    color: "inherit",
-    fontWeight: "fontWeightBold",
-    fontSize: "fontSize20",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis", // doesn't get applied for some reason – need to investigate
-    overflow: "hidden"
-};
-
-export const timeStampStyles: TextStyleProps = {
-    fontSize: "fontSize20",
-    marginLeft: "space40",
-    color: "inherit"
-};
 
 export const bodyStyles: TextStyleProps = {
     color: "inherit",

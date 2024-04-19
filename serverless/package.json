@@ -1,0 +1,31 @@
+{
+    "name": "twilio-webchat-widget-serverless",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "test": "tsc --noEmit",
+        "start": "twilio-run --functions-folder dist/functions --assets-folder dist/assets --port 3001",
+        "deploy": "twilio-run deploy --functions-folder dist/functions --assets-folder dist/assets",
+        "build": "tsc && npm run build:copy-assets",
+        "build:copy-assets": "copyfiles src/assets/*.* src/assets/**/*.* --up 2 --exclude **/*.ts dist/assets/",
+        "prestart": "npm run build",
+        "predeploy": "npm run build"
+    },
+    "dependencies": {
+        "@sendgrid/mail": "^7.7.0",
+        "@twilio-labs/serverless-runtime-types": "^1.1",
+        "@twilio/runtime-handler": "1.3.0",
+        "axios": "^1.2.5",
+        "jsonwebtoken": "^9.0.0",
+        "twilio": "^3.56"
+    },
+    "devDependencies": {
+        "@types/jsonwebtoken": "^9.0.1",
+        "copyfiles": "^2.2.0",
+        "twilio-run": "^3.5.2",
+        "typescript": "^4"
+    },
+    "engines": {
+        "node": "18"
+    }
+}

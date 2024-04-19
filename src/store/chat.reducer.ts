@@ -13,7 +13,8 @@ import {
     ACTION_START_SESSION,
     ACTION_UPDATE_CONVERSATION_STATE,
     ACTION_UPDATE_MESSAGE,
-    ACTION_UPDATE_PARTICIPANT
+    ACTION_UPDATE_PARTICIPANT,
+    ACTION_UPDATE_MESSAGE_INPUT
 } from "./actions/actionTypes";
 
 const initialState: ChatState = {};
@@ -122,6 +123,13 @@ export const ChatReducer: Reducer = (state: ChatState = initialState, action: An
             return {
                 ...state,
                 conversationState: action.payload.conversationState
+            };
+        }
+
+        case ACTION_UPDATE_MESSAGE_INPUT: {
+            return {
+                ...state,
+                inputMessage: action.payload.inputMessage
             };
         }
 

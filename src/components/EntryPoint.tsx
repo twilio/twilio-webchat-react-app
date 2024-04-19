@@ -1,15 +1,21 @@
 import { Box } from "@twilio-paste/core/box";
 import { ChatIcon } from "@twilio-paste/icons/esm/ChatIcon";
-import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
+import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeExpandedStatus } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
 import { containerStyles } from "./styles/EntryPoint.styles";
+import { useDevice } from "../hooks/useDevice";
 
 export const EntryPoint = () => {
+    const { isMobile } = useDevice();
     const dispatch = useDispatch();
     const expanded = useSelector((state: AppState) => state.session.expanded);
+    const hideChatBubble = useSelector((state: AppState) => state.config.hideChatBubble);
+
+    if (hideChatBubble) return null;
+    if (isMobile && expanded) return null;
 
     return (
         <Box
@@ -19,7 +25,7 @@ export const EntryPoint = () => {
             {...containerStyles}
         >
             {expanded ? (
-                <ChevronDownIcon decorative={false} title="Minimize chat" size="sizeIcon80" />
+                <CloseIcon decorative={false} title="Minimize chat" size="sizeIcon60" />
             ) : (
                 <ChatIcon decorative={false} title="Open chat" size="sizeIcon60" />
             )}

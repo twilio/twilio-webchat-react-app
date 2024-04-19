@@ -1,0 +1,74 @@
+name: build-and-deploy
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build_and_deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+            ref: ${{ github.event.ref }}
+  
+        - name: Set Node.js 16.x
+          uses: actions/setup-node@v3
+          with:
+            node-version: 16.x
+  
+        - name: Run install
+          uses: borales/actions-yarn@v4
+          with:
+            cmd: install
+
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
+        - name: Build production bundle
+          uses: borales/actions-yarn@v4
+          with:
+            cmd: build    
+          env:
+            ALLOWED_ORIGINS: ${{ vars.ALLOWED_ORIGINS }}
+            REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
+            DOWNLOAD_TRANSCRIPT_ENABLED: ${{ vars.DOWNLOAD_TRANSCRIPT_ENABLED }}
+            EMAIL_TRANSCRIPT_ENABLED: ${{ vars.EMAIL_TRANSCRIPT_ENABLED }}
+            PUBLIC_URL: /${{ steps.extract_branch.outputs.branch }}
+
+        - name: Deploy
+          uses: jakejarvis/s3-sync-action@v0.5.1
+          with:
+            args:  --follow-symlinks --delete
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_S3_BUCKET: ${{ vars.S3_BUCKET }}
+            AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
+            SOURCE_DIR: 'build'
+            DEST_DIR: ${{ steps.extract_branch.outputs.branch }}
+        
+        - name: Invalidate Cloudfront
+          uses: chetan/invalidate-cloudfront-action@v2
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION: ${{ vars.S3_BUCKET_REGION }}
+            DISTRIBUTION: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+            PATHS: /${{ steps.extract_branch.outputs.branch }}*
+        
+        - name: Comment PR
+          uses: thollander/actions-comment-pull-request@v2
+          if: github.event_name == 'pull_request'
+          with:
+            message: |
+              [Link to preview](https://d20pg3k5glb1vh.cloudfront.net/${{ steps.extract_branch.outputs.branch }}/index.html)
