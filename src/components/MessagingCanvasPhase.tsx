@@ -18,7 +18,8 @@ export const MessagingCanvasPhase = () => {
 
     useEffect(() => {
         dispatch(removeNotification(notifications.failedToInitSessionNotification("ds").id));
-    }, [dispatch, notifications]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const Wrapper = conversationState === "active" ? AttachFileDropArea : Fragment;
 

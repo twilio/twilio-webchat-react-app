@@ -3,17 +3,19 @@ import { Box } from "@twilio-paste/core/box";
 import { Button } from "@twilio-paste/core";
 import { useDispatch, useSelector } from "react-redux";
 
-import { containerStyles } from "./styles/Header.styles";
+import { getContainerStyles } from "./styles/Header.styles";
 import { changeExpandedStatus } from "../store/actions/genericActions";
 import { getImageByBrand } from "../utils/getImageByBrand";
 import { AppState } from "../store/definitions";
+import { useDevice } from "../hooks/useDevice";
 
 export const Header = () => {
     const brand = useSelector((state: AppState) => state.config.brand);
     const dispatch = useDispatch();
+    const { isMobile } = useDevice();
 
     return (
-        <Box as="header" {...containerStyles}>
+        <Box as="header" {...getContainerStyles(isMobile)}>
             <img
                 style={{
                     height: "30px",

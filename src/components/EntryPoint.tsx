@@ -6,13 +6,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeExpandedStatus } from "../store/actions/genericActions";
 import { AppState } from "../store/definitions";
 import { containerStyles } from "./styles/EntryPoint.styles";
+import { useDevice } from "../hooks/useDevice";
 
 export const EntryPoint = () => {
+    const { isMobile } = useDevice();
     const dispatch = useDispatch();
     const expanded = useSelector((state: AppState) => state.session.expanded);
     const hideChatBubble = useSelector((state: AppState) => state.config.hideChatBubble);
 
     if (hideChatBubble) return null;
+    if (isMobile && expanded) return null;
 
     return (
         <Box
