@@ -6,7 +6,7 @@ import { Text } from "@twilio-paste/core/text";
 import { FileIcon } from "@twilio-paste/icons/esm/FileIcon";
 import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
 import { Button } from "@twilio-paste/core/button";
-import { Media } from "@twilio/conversations";
+import { Media } from "@twilio/webchat";
 import { extension as mimeToExtension } from "mime-types";
 import { Truncate } from "@twilio-paste/core/truncate";
 

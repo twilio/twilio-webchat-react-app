@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 import { Spinner } from "@twilio-paste/core/spinner";
-import { Message } from "@twilio/conversations";
+import { Message } from "@twilio/webchat";
 import throttle from "lodash.throttle";
 
 import { MessageBubble } from "./MessageBubble";
@@ -43,12 +43,12 @@ const isFirstOfDateGroup = (message: Message, i: number, messages: Message[]) =>
 };
 
 export const MessageList = () => {
-    const { messages, participants, users, conversation, conversationsClient } = useSelector((state: AppState) => ({
+    const { messages, participants, users, conversation, webchatClient } = useSelector((state: AppState) => ({
         messages: state.chat.messages,
         participants: state.chat.participants,
         users: state.chat.users,
         conversation: state.chat.conversation,
-        conversationsClient: state.chat.conversationsClient
+        webchatClient: state.chat.webchatClient
     }));
     const dispatch = useDispatch();
     const messageListRef = useRef<HTMLDivElement>(null);
@@ -89,7 +89,7 @@ export const MessageList = () => {
             }
 
             // Ensure that any new message sent by the current user is within scroll view.
-            const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
+            const belongsToCurrentUser = message.author === webchatClient?.user.identity; // @todo export and reuse?
             if (belongsToCurrentUser) {
                 scrollToBottom();
             }
@@ -100,7 +100,7 @@ export const MessageList = () => {
         return () => {
             conversation?.removeListener("messageAdded", messageListener);
         };
-    }, [conversation, conversationsClient]);
+    }, [conversation, webchatClient]);
 
     useEffect(() => {
         const checkIfAllMessagesLoaded = async () => {
@@ -137,7 +137,7 @@ export const MessageList = () => {
     };
 
     const renderSeparatorIfApplicable = (message: Message, i: number) => {
-        const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
+        const belongsToCurrentUser = message.author === webchatClient?.user.identity; // @todo export and reuse?
         const isFirstUnreadMessage = message.index === (conversation?.lastReadMessageIndex as number) + 1;
 
         /*
@@ -241,7 +241,7 @@ export const MessageList = () => {
                     {renderChatStarted()}
                     {renderChatItems()}
                     {participants
-                        ?.filter((p) => p.isTyping && p.identity !== conversationsClient?.user.identity)
+                        ?.filter((p) => p.isTyping && p.identity !== webchatClient?.user.identity)// @todo export and reuse belongsToCurrentUser?
                         .map((p) => (
                             <Text {...participantTypingStyles} as="p" key={p.identity}>
                                 {users?.find((u) => u.identity === p.identity)?.friendlyName} is typing...

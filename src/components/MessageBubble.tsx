@@ -1,4 +1,4 @@
-import { Media, Message } from "@twilio/conversations";
+import { Media, Message } from "@twilio/webchat";
 import { Box } from "@twilio-paste/core/box";
 import { ScreenReaderOnly } from "@twilio-paste/core/screen-reader-only";
 import { useSelector } from "react-redux";
@@ -39,19 +39,19 @@ export const MessageBubble = ({
 }) => {
     const [read, setRead] = useState(false);
     const [isMouseDown, setIsMouseDown] = useState(false);
-    const { conversationsClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
-        conversationsClient: state.chat.conversationsClient,
+    const { webchatClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
+        webchatClient: state.chat.webchatClient,
         participants: state.chat.participants,
         users: state.chat.users,
         fileAttachmentConfig: state.config.fileAttachment
     }));
     const messageRef = useRef<HTMLDivElement>(null);
 
-    const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
+    const belongsToCurrentUser = message.attributes.includes("twi_from_customer"); // @todo mark as webchat-sourced on the backend? via attributes? twi_from_customer or sth
 
     useEffect(() => {
         if (isLast && participants && belongsToCurrentUser) {
-            const getOtherParticipants = participants.filter((p) => p.identity !== conversationsClient?.user.identity);
+            const getOtherParticipants = participants.filter((p) => p.identity !== webchatClient?.user.identity);
             setRead(
                 Boolean(getOtherParticipants.length) &&
                     getOtherParticipants.every((p) => p.lastReadMessageIndex === message.index)
@@ -59,7 +59,7 @@ export const MessageBubble = ({
         } else {
             setRead(false);
         }
-    }, [participants, isLast, belongsToCurrentUser, conversationsClient, message]);
+    }, [participants, isLast, belongsToCurrentUser, webchatClient, message]);
 
     useEffect(() => {
         if (focusable) {
