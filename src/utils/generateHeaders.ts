@@ -1,14 +1,24 @@
 import { LOCALSTORAGE_SESSION_ITEM_ID } from "../sessionDataHandler";
 import { LocalStorageUtil } from "./LocalStorage";
 
+declare const appVersion: string;
+declare const webchatVersion: string;
+
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
 const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
 const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
+const HEADER_APP_VERSION = "ui-version";
+const HEADER_WEBCHAT_VERSION = "webchat-version";
 
 type SecurityHeadersType = {
     [HEADER_SEC_USERSETTINGS]: string;
     [HEADER_SEC_WEBCHAT]: string;
     [HEADER_SEC_DECODER]: string;
+};
+
+type MixPanelHeadersType = {
+    [HEADER_APP_VERSION]: string;
+    [HEADER_WEBCHAT_VERSION]: string;
 };
 
 type MediaCapabilitiesInfo = MediaCapabilitiesDecodingInfo | MediaCapabilitiesEncodingInfo;
@@ -90,4 +100,12 @@ export const generateSecurityHeaders = async (): Promise<SecurityHeadersType> =>
 
         return headers;
     });
+};
+
+// eslint-disable-next-line import/no-unused-modules
+export const generateMixPanelHeaders = (): MixPanelHeadersType => {
+    return {
+        [HEADER_APP_VERSION]: appVersion,
+        [HEADER_WEBCHAT_VERSION]: webchatVersion
+    };
 };

@@ -1,4 +1,6 @@
 const FileManagerPlugin = require('filemanager-webpack-plugin');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
 
 const OUTPUT_FILENAME = "webchat.min.js"
 const DIST_CDN_DIR = "dist/cdn"
@@ -23,6 +25,10 @@ module.exports = function override(config) {
                       copy: [{ source: `build/static/js/${OUTPUT_FILENAME}`, destination: `${DIST_CDN_DIR}/${OUTPUT_FILENAME}` }]
                   }
               }
+        }),
+        new webpack.DefinePlugin({
+            appVersion: JSON.stringify(require("./package.json").version),
+            webchatVersion: JSON.stringify(dotenv.config().parsed.WEBCHAT_VERSION)
         })
     ];
     return config;
