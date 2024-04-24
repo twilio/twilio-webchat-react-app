@@ -2,7 +2,8 @@ import {
     generateSecurityHeaders,
     DEFAULT_COOKIE_ENABLED,
     DEFAULT_LOGIN_TIMESTAMP,
-    DEFAULT_NAVIGATOR_LANG
+    DEFAULT_NAVIGATOR_LANG,
+    generateMixPanelHeaders
 } from "./generateHeaders";
 import WebChatLogger from "../logger";
 
@@ -134,6 +135,28 @@ describe("Headers", () => {
             expect(JSON.parse(headers[HEADER_SEC_DECODER])).toMatchObject({
                 audio: sampleDefaultCodecInfo,
                 video: sampleDefaultCodecInfo
+            });
+        });
+    });
+
+    describe("Generate MixPanel headers", () => {
+        const originalEnv = process.env;
+        beforeAll(() => {
+            process.env = {
+                ...originalEnv,
+                APP_VERSION: "1.25.10",
+                WEBCHAT_VERSION: "3.55"
+              };
+        });
+        afterAll(() => {
+            process.env = originalEnv;
+        });
+
+        it("should return the MixPanel headers value from the process.env variables", () => {
+            const headers = generateMixPanelHeaders();
+            expect(headers).toMatchObject({
+                "ui-version": "1.25.10",
+                "webchat-version": "3.55"
             });
         });
     });

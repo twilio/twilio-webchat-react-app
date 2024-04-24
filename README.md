@@ -69,6 +69,8 @@ deploymentKey=DEPLOYMENT_KEY \
 
 You can find your **Account Sid** and **Auth Token** on the main [Twilio Console page](https://console.twilio.com/).
 
+Copy the Webchat version from the `.env.sample` file. Either use this or update it to the most appropriate version.
+
 For more info on how to create an **API key** and an **API secret**, please check the [documentation](https://www.twilio.com/docs/glossary/what-is-an-api-key#how-can-i-create-api-keys).
 
 The environment variables associated with **deploymentKey** can be found in the `.env.sample` file. You can find more details about them in [Configuration section](#configuration)

@@ -12,6 +12,8 @@ Object.defineProperty(navigator, "mediaCapabilities", {
     }
 });
 
+const originalEnv = process.env;
+
 describe("session data handler", () => {
     beforeAll(() => {
         Object.defineProperty(window, "Twilio", {
@@ -21,9 +23,18 @@ describe("session data handler", () => {
                 }
             }
         });
+        process.env = {
+            ...originalEnv,
+            APP_VERSION: "1.25.10",
+            WEBCHAT_VERSION: "3.55"
+          };
     });
     afterEach(() => {
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        process.env = originalEnv;
     });
 
     it("should set the region", () => {

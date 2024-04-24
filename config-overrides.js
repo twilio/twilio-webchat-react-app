@@ -27,8 +27,8 @@ module.exports = function override(config) {
               }
         }),
         new webpack.DefinePlugin({
-            appVersion: JSON.stringify(require("./package.json").version),
-            webchatVersion: JSON.stringify(dotenv.config().parsed.WEBCHAT_VERSION)
+            "process.env.APP_VERSION": JSON.stringify(require("./package.json").version),
+            "process.env.WEBCHAT_VERSION": JSON.stringify(dotenv.config().parsed.WEBCHAT_VERSION)
         })
     ];
     return config;
