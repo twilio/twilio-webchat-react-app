@@ -3,6 +3,7 @@ const { createToken } = require("../helpers/createToken");
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { getTwilioClient } = require("../helpers/getTwilioClient");
 const { logFinalAction, logInitialAction, logInterimAction } = require("../helpers/logs");
+const { version } = require('./../../package.json');
 
 const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     logInterimAction("Calling Webchat Orchestrator");
@@ -27,6 +28,9 @@ const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
             auth: {
                 username: process.env.ACCOUNT_SID,
                 password: process.env.AUTH_TOKEN
+            },
+            headers: {
+                "ui-version": version
             }
         });
         ({ identity, conversation_sid: conversationSid } = res.data);
