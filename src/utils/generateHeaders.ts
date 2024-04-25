@@ -4,11 +4,18 @@ import { LocalStorageUtil } from "./LocalStorage";
 const HEADER_SEC_DECODER = "x-twilio-sec-decoders";
 const HEADER_SEC_USERSETTINGS = "x-twilio-sec-usersettings";
 const HEADER_SEC_WEBCHAT = "x-twilio-sec-webchatinfo";
+const HEADER_APP_VERSION = "ui-version";
+const HEADER_WEBCHAT_VERSION = "webchat-version";
 
 type SecurityHeadersType = {
     [HEADER_SEC_USERSETTINGS]: string;
     [HEADER_SEC_WEBCHAT]: string;
     [HEADER_SEC_DECODER]: string;
+};
+
+type MixPanelHeadersType = {
+    [HEADER_APP_VERSION]: string;
+    [HEADER_WEBCHAT_VERSION]: string;
 };
 
 type MediaCapabilitiesInfo = MediaCapabilitiesDecodingInfo | MediaCapabilitiesEncodingInfo;
@@ -90,4 +97,12 @@ export const generateSecurityHeaders = async (): Promise<SecurityHeadersType> =>
 
         return headers;
     });
+};
+
+// eslint-disable-next-line import/no-unused-modules
+export const generateMixPanelHeaders = (): MixPanelHeadersType => {
+    return {
+        [HEADER_APP_VERSION]: process.env.APP_VERSION ?? "",
+        [HEADER_WEBCHAT_VERSION]: process.env.WEBCHAT_VERSION ?? ""
+    };
 };

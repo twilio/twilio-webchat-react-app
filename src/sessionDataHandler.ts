@@ -1,6 +1,6 @@
 import { ProcessedTokenResponse, TokenResponse } from "./definitions";
 import { LocalStorageUtil } from "./utils/LocalStorage";
-import { generateSecurityHeaders } from "./utils/generateSecurityHeaders";
+import { generateMixPanelHeaders, generateSecurityHeaders } from "./utils/generateHeaders";
 import { buildRegionalHost } from "./utils/regionUtil";
 
 export const LOCALSTORAGE_SESSION_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
@@ -29,6 +29,7 @@ export async function contactBackend<T>(
     /* eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define */
     const _endpoint = `https://flex-api${buildRegionalHost(sessionDataHandler.getRegion())}.twilio.com/v2`;
     const securityHeaders = await generateSecurityHeaders();
+    const mixpanelHeaders = generateMixPanelHeaders();
     const logger = window.Twilio.getLogger("SessionDataHandler");
     const urlEncodedBody = new URLSearchParams();
     for (const key in body) {
@@ -41,7 +42,8 @@ export async function contactBackend<T>(
         headers: {
             Accept: "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
-            ...securityHeaders
+            ...securityHeaders,
+            ...mixpanelHeaders
         },
         body: urlEncodedBody.toString()
     });
