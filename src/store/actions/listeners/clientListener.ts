@@ -1,4 +1,4 @@
-import { Client } from "@twilio/conversations";
+import { WebChatClient } from "@twilio/webchat";
 import { Dispatch } from "redux";
 import log from "loglevel";
 
@@ -7,18 +7,15 @@ import { notifications } from "../../../notifications";
 import { addNotification, removeNotification } from "../genericActions";
 import { ACTION_UPDATE_SESSION_DATA } from "../actionTypes";
 
-export const initClientListeners = (conversationClient: Client, dispatch: Dispatch) => {
-    const tokenAboutToExpireEvent = "tokenAboutToExpire";
-    const connectionStateChangedEvent = "connectionStateChanged";
-
+export const initClientListeners = (webchatClient: WebChatClient, dispatch: Dispatch) => {
     // remove any other refresh handler added before and add it again
-    conversationClient.removeAllListeners(tokenAboutToExpireEvent);
-    conversationClient.addListener(tokenAboutToExpireEvent, async () => {
-        log.debug("conversationClientListener: token about to expire");
+    webchatClient.removeAllListeners(WebChatClient.tokenAboutToExpire);
+    webchatClient.onWithReplay(WebChatClient.tokenAboutToExpire, async () => {
+        log.debug("webchatClientListener: token about to expire");
 
         const data = await sessionDataHandler.getUpdatedToken();
-        if (data?.token && data?.conversationSid) {
-            await conversationClient.updateToken(data.token);
+        if (data?.token && data?.conversationSid) { // @fixme: cannot update conversationSid mid-run
+            await webchatClient.updateToken(data.token);
             dispatch({
                 type: ACTION_UPDATE_SESSION_DATA,
                 payload: {
@@ -29,8 +26,8 @@ export const initClientListeners = (conversationClient: Client, dispatch: Dispat
         }
     });
 
-    conversationClient.removeAllListeners(connectionStateChangedEvent);
-    conversationClient.addListener(connectionStateChangedEvent, (connectionStatus: string) => {
+    webchatClient.removeAllListeners(WebChatClient.connectionStateChanged);
+    webchatClient.addListener(WebChatClient.connectionStateChanged, (connectionStatus: string) => {
         if (connectionStatus === "connected") {
             dispatch(removeNotification(notifications.noConnectionNotification().id));
         } else if (connectionStatus === "connecting") {

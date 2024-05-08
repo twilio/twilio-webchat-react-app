@@ -1,4 +1,4 @@
-import { Message } from "@twilio/conversations";
+import { Message } from "@twilio/webchat";
 import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 

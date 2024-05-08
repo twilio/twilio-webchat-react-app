@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { Conversation } from "@twilio/conversations";
+import { WebChatClient } from "@twilio/webchat";
 
 import { EngagementPhase, Notification, PreEngagementData } from "../definitions";
 import {
@@ -41,12 +41,12 @@ export function removeNotification(id: string) {
     };
 }
 
-export function getMoreMessages({ anchor, conversation }: { anchor: number; conversation: Conversation }) {
+export function getMoreMessages({ anchor, webchatClient }: { anchor: number; webchatClient: WebChatClient }) {
     return async (dispatch: Dispatch) =>
         dispatch({
             type: ACTION_ADD_MULTIPLE_MESSAGES,
             payload: {
-                messages: (await conversation.getMessages(MESSAGES_LOAD_COUNT, anchor)).items
+                messages: (await webchatClient.getMessages(MESSAGES_LOAD_COUNT, anchor)).items
             }
         });
 }
