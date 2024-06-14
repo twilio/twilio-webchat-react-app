@@ -2,7 +2,10 @@
  * Gets the number of days between the given date and the current date.
  * e.g. if today is 10/01/2022 then 08/01/2022 returns 2
  */
-export const getDaysOld = (date: Date): number => {
+export const getDaysOld = (date: Date | null): number => {
+    if (date === null) {
+        return 0;
+    }
     const messageDate = new Date(date.getTime());
     messageDate.setUTCHours(0);
     messageDate.setUTCMinutes(0);
