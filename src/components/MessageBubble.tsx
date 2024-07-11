@@ -39,12 +39,14 @@ export const MessageBubble = ({
 }) => {
     const [read, setRead] = useState(false);
     const [isMouseDown, setIsMouseDown] = useState(false);
-    const { conversationsClient, participants, users, fileAttachmentConfig } = useSelector((state: AppState) => ({
-        conversationsClient: state.chat.conversationsClient,
-        participants: state.chat.participants,
-        users: state.chat.users,
-        fileAttachmentConfig: state.config.fileAttachment
-    }));
+    const { conversationsClient, participants, fileAttachmentConfig, participantNames } = useSelector(
+        (state: AppState) => ({
+            conversationsClient: state.chat.conversationsClient,
+            participants: state.chat.participants,
+            fileAttachmentConfig: state.config.fileAttachment,
+            participantNames: state.chat.participantNames
+        })
+    );
     const messageRef = useRef<HTMLDivElement>(null);
 
     const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
@@ -54,7 +56,7 @@ export const MessageBubble = ({
             const getOtherParticipants = participants.filter((p) => p.identity !== conversationsClient?.user.identity);
             setRead(
                 Boolean(getOtherParticipants.length) &&
-                    getOtherParticipants.every((p) => p.lastReadMessageIndex === message.index)
+                getOtherParticipants.every((p) => p.lastReadMessageIndex === message.index)
             );
         } else {
             setRead(false);
@@ -109,7 +111,8 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    // const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    const name = participantNames ? participantNames[message.participantSid] : "";
 
     return (
         <Box
@@ -131,13 +134,11 @@ export const MessageBubble = ({
                 )}
                 <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
                     <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={author}>
-                            {author}
+                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={name}>
+                            {name}
                         </Text>
                         <ScreenReaderOnly as="p">
-                            {belongsToCurrentUser
-                                ? "You sent at"
-                                : `${users?.find((u) => u.identity === message.author)?.friendlyName} sent at`}
+                            {belongsToCurrentUser ? "You sent at" : `${name} sent at`}
                         </ScreenReaderOnly>
                         <Text {...timeStampStyles} as="p">
                             {`${doubleDigit(message.dateCreated.getHours())}:${doubleDigit(

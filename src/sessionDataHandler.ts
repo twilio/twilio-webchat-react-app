@@ -8,6 +8,7 @@ const CUSTOMER_DEFAULT_NAME = "Customer";
 
 type SessionDataStorage = ProcessedTokenResponse & {
     loginTimestamp: string | null;
+    participantNameMap?: Record<string, string>;
 };
 
 type InitWebchatAPIPayload = {

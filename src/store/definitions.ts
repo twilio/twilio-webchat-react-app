@@ -18,6 +18,7 @@ export type ChatState = {
     messages?: Message[];
     attachedFiles?: File[];
     conversationState?: string;
+    participantNames?: { [key: string]: string };
 };
 
 export type PreEngagementData = { name: string; email: string; query: string };
