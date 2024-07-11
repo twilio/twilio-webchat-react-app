@@ -13,7 +13,8 @@ import {
     ACTION_START_SESSION,
     ACTION_UPDATE_CONVERSATION_STATE,
     ACTION_UPDATE_MESSAGE,
-    ACTION_UPDATE_PARTICIPANT
+    ACTION_UPDATE_PARTICIPANT,
+    ACTION_UPDATE_PARTICIPANT_NAME
 } from "./actions/actionTypes";
 
 const initialState: ChatState = {};
@@ -40,7 +41,8 @@ export const ChatReducer: Reducer = (state: ChatState = initialState, action: An
                 conversationState: action.payload.conversationState,
                 users: action.payload.users,
                 participants: action.payload.participants,
-                messages: action.payload.messages
+                messages: action.payload.messages,
+                participantNames: action.payload.participantNames
             };
         }
         case ACTION_ADD_MULTIPLE_MESSAGES: {
@@ -122,6 +124,15 @@ export const ChatReducer: Reducer = (state: ChatState = initialState, action: An
             return {
                 ...state,
                 conversationState: action.payload.conversationState
+            };
+        }
+        case ACTION_UPDATE_PARTICIPANT_NAME: {
+            return {
+                ...state,
+                participantNames: {
+                    ...state.participantNames,
+                    [action.payload.participantSid]: action.payload.name
+                }
             };
         }
 

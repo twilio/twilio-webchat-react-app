@@ -12,6 +12,7 @@ import { addNotification, changeEngagementPhase } from "./genericActions";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
 import { parseRegionForConversations } from "../../utils/regionUtil";
 import { sessionDataHandler } from "../../sessionDataHandler";
+import { createParticipantNameMap } from "../../utils/participantNameMap";
 
 export function initConfig(config: ConfigState) {
     return {
@@ -33,6 +34,7 @@ export function initSession({ token, conversationSid }: InitSessionPayload) {
         let participants;
         let users;
         let messages;
+        let participantNameMap;
 
         try {
             conversationsClient = await Client.create(token, {
@@ -49,6 +51,13 @@ export function initSession({ token, conversationSid }: InitSessionPayload) {
             participants = await conversation.getParticipants();
             users = await Promise.all(participants.map(async (p) => p.getUser()));
             messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
+
+            /*
+             * TODO:  If we have an existing participantNameMap for this conversationSid,
+             *  in localStorage, use it and update it with the new participants.
+             */
+            participantNameMap = createParticipantNameMap(participants, users);
+    
         } catch (e) {
             logger.error("Something went wrong when initializing session", e);
             throw e;
@@ -65,7 +74,8 @@ export function initSession({ token, conversationSid }: InitSessionPayload) {
                 participants,
                 messages,
                 conversationState: conversation.state?.current,
-                currentPhase: EngagementPhase.MessagingCanvas
+                currentPhase: EngagementPhase.MessagingCanvas,
+                participantNames: participantNameMap
             }
         });
 
