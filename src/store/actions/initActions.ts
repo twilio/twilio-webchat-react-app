@@ -56,7 +56,8 @@ export function initSession({ token, conversationSid }: InitSessionPayload) {
              * TODO:  If we have an existing participantNameMap for this conversationSid,
              *  in localStorage, use it and update it with the new participants.
              */
-            participantNameMap = createParticipantNameMap(participants, users);
+
+            participantNameMap = createParticipantNameMap(participants, users, conversation);
     
         } catch (e) {
             logger.error("Something went wrong when initializing session", e);
