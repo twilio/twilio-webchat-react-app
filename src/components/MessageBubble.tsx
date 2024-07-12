@@ -56,7 +56,7 @@ export const MessageBubble = ({
             const getOtherParticipants = participants.filter((p) => p.identity !== conversationsClient?.user.identity);
             setRead(
                 Boolean(getOtherParticipants.length) &&
-                getOtherParticipants.every((p) => p.lastReadMessageIndex === message.index)
+                    getOtherParticipants.every((p) => p.lastReadMessageIndex === message.index)
             );
         } else {
             setRead(false);

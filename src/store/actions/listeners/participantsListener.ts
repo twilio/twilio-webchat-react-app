@@ -19,10 +19,7 @@ export const initParticipantsListener = (conversation: Conversation, dispatch: D
 
         // set the name to empty string if we do not have a user
         const name = user ? user.friendlyName : "";
-        updatePraticipants(
-            participant,
-            name
-        )
+        updatePraticipants(participant, name);
         dispatch({
             type: ACTION_UPDATE_PARTICIPANT_NAME,
             payload: { participantSid: participant.sid, name }

@@ -16,7 +16,7 @@ const storeAndUpdateParticipants = (participants: Participant[], conversation: C
 export const createParticipantNameMap = (participants: Participant[], users: User[], conversation: Conversation) => {
     const participantStore = LocalStorageUtil.get(LOCALSTORAGE_PARTICIPANTS_LIST) ?? {};
     let participantMap = participantStore?.participants || [];
-    if(Object.keys(participantStore).length === 0 || participantStore.conversationSid !== conversation.sid){
+    if (Object.keys(participantStore).length === 0 || participantStore.conversationSid !== conversation.sid) {
         participantMap = participants.reduce((acc: { [key: string]: string }, p) => {
             const user = users.find((u) => u.identity === p.identity);
             if (user) {
@@ -33,8 +33,11 @@ export const createParticipantNameMap = (participants: Participant[], users: Use
 export const updatePraticipants = (participant: Participant, name: string) => {
     const participantStore = LocalStorageUtil.get(LOCALSTORAGE_PARTICIPANTS_LIST);
 
+    if (participantStore === null) {
+        return;
+    }
     participantStore.participants = {
-        ...(participantStore.participants || {}),
+        ...(participantStore?.participants || {}),
         [participant.sid]: name
     };
 

@@ -3,7 +3,7 @@ import { waitFor } from "@testing-library/react";
 
 import { Conversation } from "../../../../__mocks__/@twilio/conversations/conversation";
 import { initParticipantsListener } from "../participantsListener";
-import { ACTION_ADD_PARTICIPANT, ACTION_REMOVE_PARTICIPANT, ACTION_UPDATE_PARTICIPANT } from "../../actionTypes";
+import { ACTION_ADD_PARTICIPANT, ACTION_REMOVE_PARTICIPANT, ACTION_UPDATE_PARTICIPANT, ACTION_UPDATE_PARTICIPANT_NAME } from "../../actionTypes";
 
 describe("initParticipantsListener", () => {
     let conversation: Conversation;
@@ -60,10 +60,14 @@ describe("initParticipantsListener", () => {
         await waitFor(() => {
             expect(getUserSpy).toHaveBeenCalled();
         });
-        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledTimes(2);
         expect(dispatch).toHaveBeenCalledWith({
             type: ACTION_ADD_PARTICIPANT,
             payload: expect.objectContaining({ participant, user })
+        });
+        expect(dispatch).toHaveBeenCalledWith({
+            type: ACTION_UPDATE_PARTICIPANT_NAME,
+            payload: expect.objectContaining({ participantSid: participant.sid, name: user.friendlyName })
         });
     });
 
