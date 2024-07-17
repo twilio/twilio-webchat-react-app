@@ -2,27 +2,23 @@ import { Box } from "@twilio-paste/core/box";
 import { Text } from "@twilio-paste/core/text";
 import { Button } from "@twilio-paste/core/button";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-
 
 import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
-import { removeParticpantMap } from "../utils/participantNameMap";
+import { useClearParticipantNameMap } from "../hooks/useClearParticipantNameMap";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
 
-    useEffect(()=>{
-        removeParticpantMap()
-    },[])
+    useClearParticipantNameMap();
+
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
         dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
         dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     };
-
 
     return (
         <Box {...containerStyles}>
