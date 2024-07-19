@@ -7,7 +7,7 @@ import {
     ACTION_UPDATE_PARTICIPANT,
     ACTION_UPDATE_PARTICIPANT_NAME
 } from "../actionTypes";
-import { updatePraticipants } from "../../../utils/participantNameMap";
+import { updatePraticipants, customAgentName } from "../../../utils/participantNameMap";
 
 export const initParticipantsListener = (conversation: Conversation, dispatch: Dispatch) => {
     conversation.addListener("participantJoined", async (participant: Participant) => {
@@ -18,7 +18,8 @@ export const initParticipantsListener = (conversation: Conversation, dispatch: D
         });
 
         // set the name to empty string if we do not have a user
-        const name = user ? user.friendlyName : "";
+        const name = user ? user.friendlyName : customAgentName();
+
         updatePraticipants(participant, name);
         dispatch({
             type: ACTION_UPDATE_PARTICIPANT_NAME,

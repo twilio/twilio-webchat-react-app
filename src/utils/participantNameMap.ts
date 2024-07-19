@@ -3,6 +3,7 @@ import { Participant, User, Conversation } from "@twilio/conversations";
 import { LocalStorageUtil } from "./LocalStorage";
 
 const LOCALSTORAGE_PARTICIPANTS_LIST = "PARTICIPANTS_LIST";
+const NAME_COUNT = "NAME_COUNT";
 
 const storeAndUpdateParticipants = (participants: Participant[], conversation: Conversation) => {
     const newParticipantList = {
@@ -46,4 +47,14 @@ export const updatePraticipants = (participant: Participant, name: string) => {
 
 export const removeParticpantMap = () => {
     LocalStorageUtil.set(LOCALSTORAGE_PARTICIPANTS_LIST, {});
+    LocalStorageUtil.set(NAME_COUNT, 0);
 };
+
+
+export const customAgentName = () => {
+    const baseName = 'Agent';
+    let count = parseInt(LocalStorageUtil.get(NAME_COUNT),10) || 0;
+    count += 1;
+    LocalStorageUtil.set(NAME_COUNT, count.toString());
+    return `${baseName} ${count}`;
+}

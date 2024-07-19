@@ -52,11 +52,6 @@ export function initSession({ token, conversationSid }: InitSessionPayload) {
             users = await Promise.all(participants.map(async (p) => p.getUser()));
             messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
 
-            /*
-             * TODO:  If we have an existing participantNameMap for this conversationSid,
-             *  in localStorage, use it and update it with the new participants.
-             */
-
             participantNameMap = createParticipantNameMap(participants, users, conversation);
     
         } catch (e) {
