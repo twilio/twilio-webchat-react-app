@@ -1,7 +1,13 @@
 import { Conversation, Participant } from "@twilio/conversations";
 import { Dispatch } from "redux";
 
-import { ACTION_ADD_PARTICIPANT, ACTION_REMOVE_PARTICIPANT, ACTION_UPDATE_PARTICIPANT } from "../actionTypes";
+import {
+    ACTION_ADD_PARTICIPANT,
+    ACTION_REMOVE_PARTICIPANT,
+    ACTION_UPDATE_PARTICIPANT,
+    ACTION_UPDATE_PARTICIPANT_NAME
+} from "../actionTypes";
+import { updatePraticipants, customAgentName } from "../../../utils/participantNameMap";
 
 export const initParticipantsListener = (conversation: Conversation, dispatch: Dispatch) => {
     conversation.addListener("participantJoined", async (participant: Participant) => {
@@ -9,6 +15,15 @@ export const initParticipantsListener = (conversation: Conversation, dispatch: D
         dispatch({
             type: ACTION_ADD_PARTICIPANT,
             payload: { participant, user }
+        });
+
+        // set the name to empty string if we do not have a user
+        const name = user ? user.friendlyName : customAgentName();
+
+        updatePraticipants(participant, name);
+        dispatch({
+            type: ACTION_UPDATE_PARTICIPANT_NAME,
+            payload: { participantSid: participant.sid, name }
         });
     });
 

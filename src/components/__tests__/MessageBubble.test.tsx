@@ -12,18 +12,24 @@ const fileAttachmentConfig = {
 };
 const user1 = {
     identity: "my-identity",
-    friendlyName: "my name"
+    friendlyName: "my name",
+    sid: "12233cwqdc213cwc23"
 };
 const user2 = {
     identity: "your-identity",
-    friendlyName: "your name"
+    friendlyName: "your name",
+    sid: "62563cwqdc213cec23"
 };
 const defaultState = {
     config: { fileAttachment: fileAttachmentConfig },
     chat: {
         conversationsClient: { user: user1 },
         participants: [{ identity: user1.identity }, { identity: user2.identity }],
-        users: [user1, user2]
+        users: [user1, user2],
+        participantNames:{
+            [user1.sid]: user1.friendlyName,
+            [user2.sid]: user2.friendlyName
+        }
     }
 };
 
@@ -52,13 +58,15 @@ describe("Message Bubble", () => {
         index: 0,
         author: user1.identity,
         dateCreated,
-        body: "message by me"
+        body: "message by me",
+        participantSid: user1.sid
     } as Message;
     const messageOtherUser = {
         index: 0,
         author: user2.identity,
         dateCreated,
-        body: "message by you"
+        body: "message by you",
+        participantSid: user2.sid
     } as Message;
     const avatarContainerTestId = "avatar-container";
 

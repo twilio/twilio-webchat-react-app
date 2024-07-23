@@ -7,9 +7,13 @@ import { sessionDataHandler } from "../sessionDataHandler";
 import { changeEngagementPhase, updatePreEngagementData } from "../store/actions/genericActions";
 import { EngagementPhase } from "../store/definitions";
 import { containerStyles, textStyles, titleStyles } from "./styles/ConversationEnded.styles";
+import { useClearParticipantNameMap } from "../hooks/useClearParticipantNameMap";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
+
+    useClearParticipantNameMap();
+
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
         dispatch(updatePreEngagementData({ email: "", name: "", query: "" }));
