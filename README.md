@@ -1,12 +1,12 @@
 # Twilio Webchat React App
 
-## Deprecation Notice
+## Deprecation notice
 
-**Notice:** This repository, including both the `main` branch and the v3 `flex-webchat-ui` branch, will no longer be maintained. All future development has moved to an internal Twilio repository and is no longer open source.
+**Notice:** This repository, including both the `main` branch and the v3 `flex-webchat-ui` branch, are no longer maintained. All future development has moved to an internal Twilio repository and is no longer open source.
 
-Development for Webchat UI V3 is still ongoing. If you want to use it or see the latest updates, please check the [Twilio Documentation](https://www.twilio.com/docs/flex/developer/conversations/webchat).
+Webchat 3.x.x is still actively being developed and maintained. To begin using Webchat 3.x.x or see the latest updates, please check the [Flex Webchat 3.x.x documentation](https://www.twilio.com/docs/flex/developer/conversations/webchat).
 
-Thank you for your understanding.
+Thank you for understanding.
 
 ## Summary
 
