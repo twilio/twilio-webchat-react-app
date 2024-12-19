@@ -1,4 +1,4 @@
-import { Client } from "@twilio/conversations";
+import { WebChatClient } from "@twilio/webchat";
 import { Dispatch } from "redux";
 import log from "loglevel";
 
@@ -21,25 +21,13 @@ export function initConfig(config: ConfigState) {
 
 export function initSession({ token, conversationSid }: { token: string; conversationSid: string }) {
     return async (dispatch: Dispatch) => {
-        let conversationsClient: Client;
-        let conversation;
-        let participants;
-        let users;
+        let webchatClient: WebChatClient;
         let messages;
 
         try {
-            conversationsClient = await Client.create(token);
-            try {
-                conversation = await conversationsClient.getConversationBySid(conversationSid);
-            } catch (e) {
-                dispatch(addNotification(notifications.failedToInitSessionNotification("Couldn't load conversation")));
-                dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-                return;
-            }
-
-            participants = await conversation.getParticipants();
-            users = await Promise.all(participants.map(async (p) => p.getUser()));
-            messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
+            webchatClient = new WebChatClient(token, conversationSid);
+            await webchatClient.ready; // @todo set up signal await here -- not needed, as getMessages will wait for it
+            messages = (await webchatClient.getMessages(MESSAGES_LOAD_COUNT)).items;
         } catch (e) {
             log.error("Something went wrong when initializing session", e);
             throw e;
@@ -50,19 +38,16 @@ export function initSession({ token, conversationSid }: { token: string; convers
             payload: {
                 token,
                 conversationSid,
-                conversationsClient,
-                conversation,
-                users,
-                participants,
+                webchatClient,
                 messages,
                 conversationState: conversation.state?.current,
                 currentPhase: EngagementPhase.MessagingCanvas
             }
         });
 
-        initClientListeners(conversationsClient, dispatch);
-        initConversationListener(conversation, dispatch);
-        initMessagesListener(conversation, dispatch);
-        initParticipantsListener(conversation, dispatch);
+        initClientListeners(webchatClient, dispatch);
+        // initConversationListener(conversation, dispatch);
+        initMessagesListener(webchatClient, dispatch);
+        initParticipantsListener(webchatClient, dispatch); // typing events
     };
 }

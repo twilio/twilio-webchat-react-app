@@ -1,4 +1,4 @@
-import { Message, User } from "@twilio/conversations";
+import { Message } from "@twilio/webchat";
 import { useState } from "react";
 import log from "loglevel";
 import { Box } from "@twilio-paste/core/box";
@@ -25,7 +25,6 @@ import { PreEngagementData } from "../store/definitions";
 
 interface TranscriptProps {
     messages: Message[] | undefined;
-    users: User[] | undefined;
     preEngagementData: PreEngagementData;
     transcriptConfig: TranscriptConfig | undefined;
 }
@@ -59,7 +58,7 @@ export const Transcript = (props: TranscriptProps) => {
     const handleDownloadTranscript = async () => {
         setIsDownloadingTranscript(true);
         setIsGeneratingTranscript(true);
-        const transcriptData = getTranscriptData(props.messages, props.users);
+        const transcriptData = getTranscriptData(props.messages);
         const customerName = props.preEngagementData?.name || transcriptData[0].author?.trim();
         const agentNames = getAgentNames(customerName, transcriptData);
         const transcript = generateDownloadTranscript(customerName, agentNames, transcriptData);
@@ -103,7 +102,7 @@ export const Transcript = (props: TranscriptProps) => {
         setEmailingTranscript(true);
         setIsGeneratingTranscript(true);
         if (props.preEngagementData) {
-            const transcriptData = getTranscriptData(props.messages, props.users);
+            const transcriptData = getTranscriptData(props.messages);
             const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = props.preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);

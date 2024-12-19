@@ -1,4 +1,4 @@
-import { Media, Message, User } from "@twilio/conversations";
+import { Media, Message } from "@twilio/webchat";
 
 import { generateDuration } from "./generateDuration";
 
@@ -9,16 +9,16 @@ interface Transcript {
     attachedMedia?: Media[] | null;
 }
 
-const getTranscriptData = (messages: Message[] | undefined, users: User[] | undefined): Transcript[] => {
+const getTranscriptData = (messages: Message[] | undefined): Transcript[] => {
     const transcriptData = [];
-    if (messages && users) {
+    if (messages) {
         for (const message of messages) {
-            const currentUser = users.find((user) => user.identity === message.author);
+            const currentUser = users.find((user) => user.identity === message.author); // @todo reuse message from local user
             transcriptData.push({
-                author: message.author === "Concierge" ? message.author : currentUser?.friendlyName,
+                author: message.author,
                 body: message.body,
                 timeStamp: message.dateCreated,
-                attachedMedia: message.attachedMedia
+                attachedMedia: message.attachedMedia // @todo need to convert sids to Media in SDK?
             });
         }
     }
