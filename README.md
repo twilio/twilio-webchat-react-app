@@ -2,7 +2,7 @@
 
 _The Twilio Webchat React app_ is an open-source project built with Twilio's Conversations JS SDK, the Twilio Paste design library, and the Create React app. It provides an example of how to build a basic webchat widget, integrate it with the Flex platform, and use it as a communication channel between your website visitors and your Flex-powered contact center.
 
-Before deciding to use the Webchat React app, we recommend reviewing Webchat 3.x.x, our out-of-the-box webchat solution for Flex that features enhanced security capabilities. Webchat 3.x.x meets most customers’ standard webchat needs.
+Before deciding to use the Webchat React app, we recommend reviewing [Webchat 3.x.x](https://www.twilio.com/docs/flex/developer/conversations/webchat), our out-of-the-box webchat solution for Flex that features enhanced security capabilities. Webchat 3.x.x meets most customers’ standard webchat needs.
 
 If Webchat 3.x.x’s out-of-the-box functionality doesn't fully meet your requirements and you need extensive customization, consider building with the Webchat React app. However, note that Twilio does not provide support for your implementation of the Webchat React app. 
 
