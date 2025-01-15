@@ -1,5 +1,5 @@
 import { AnyAction, Reducer } from "redux";
-import { Message, Participant } from "@twilio/conversations";
+import { Message } from "@twilio/webchat";
 
 import { ChatState } from "./definitions";
 import {
@@ -35,11 +35,9 @@ export const ChatReducer: Reducer = (state: ChatState = initialState, action: An
         case ACTION_START_SESSION: {
             return {
                 ...state,
-                conversationsClient: action.payload.conversationsClient,
+                webchatClient: action.payload.webchatClient,
                 conversation: action.payload.conversation,
                 conversationState: action.payload.conversationState,
-                users: action.payload.users,
-                participants: action.payload.participants,
                 messages: action.payload.messages
             };
         }
@@ -89,33 +87,19 @@ export const ChatReducer: Reducer = (state: ChatState = initialState, action: An
                 attachedFiles: detachFiles(state.attachedFiles, filesToDetach)
             };
         }
-        case ACTION_ADD_PARTICIPANT: {
+        case ACTION_ADD_PARTICIPANT: { // @todo No-op
             return {
-                ...state,
-                participants: [...(state.participants || []), action.payload.participant],
-                users: [...(state.users || []), action.payload.user]
+                ...state
             };
         }
-        case ACTION_REMOVE_PARTICIPANT: {
+        case ACTION_REMOVE_PARTICIPANT: { // @todo No-op
             return {
-                ...state,
-                participants: [...(state.participants || []).filter((p) => p.sid !== action.payload.participant.sid)],
-                users: [...(state.users || []).filter((u) => u.identity !== action.payload.participant.identity)]
+                ...state
             };
         }
-        case ACTION_UPDATE_PARTICIPANT: {
+        case ACTION_UPDATE_PARTICIPANT: { // @todo No-op
             return {
-                ...state,
-                participants: [
-                    ...(state.participants || []).reduce((acc: Participant[], p) => {
-                        if (p.sid === action.payload.participant.sid) {
-                            acc.push(action.payload.participant);
-                        } else {
-                            acc.push(p);
-                        }
-                        return acc;
-                    }, [])
-                ]
+                ...state
             };
         }
         case ACTION_UPDATE_CONVERSATION_STATE: {
