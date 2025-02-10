@@ -8,13 +8,17 @@ import type {
     ParticipantBindingOptions,
     SendEmailOptions,
     SendMediaOptions,
-    Conversation as ConversationType
+    Conversation as ConversationType,
+    JSONValue
 } from "@twilio/conversations";
+import { ParticipantResponse } from "../../../definitions";
+import { SyncDocument } from "twilio-sync";
 
 import { MockedPaginator } from "../../../test-utils";
 
-const { Conversation: OriginalConversation } =
-    jest.requireActual<{ Conversation: typeof ConversationType }>("@twilio/conversations");
+const { Conversation: OriginalConversation } = jest.requireActual<{ Conversation: typeof ConversationType }>(
+    "@twilio/conversations"
+);
 
 export class Conversation extends OriginalConversation {
     /**
@@ -22,8 +26,8 @@ export class Conversation extends OriginalConversation {
      * @param identity Identity of the Client to add.
      * @param attributes Attributes to be attached to the participant.
      */
-    async add(identity: string, attributes?: Record<string, unknown>): Promise<void> {
-        return Promise.resolve();
+    async add(identity: string, attributes?: JSONValue): Promise<ParticipantResponse> {
+        return Promise.resolve() as unknown as ParticipantResponse;
     }
 
     /**
@@ -36,10 +40,10 @@ export class Conversation extends OriginalConversation {
     async addNonChatParticipant(
         proxyAddress: string,
         address: string,
-        attributes?: Record<string, unknown>,
+        attributes?: JSONValue,
         bindingOptions?: ParticipantBindingOptions
-    ): Promise<void> {
-        return Promise.resolve();
+    ): Promise<ParticipantResponse> {
+        return Promise.resolve() as unknown as ParticipantResponse;
     }
 
     /**
@@ -56,14 +60,14 @@ export class Conversation extends OriginalConversation {
     /**
      * Delete the conversation and unsubscribe from its events.
      */
-    async delete(): Promise<Conversation> {
-        return this as unknown as Conversation;
+    async delete(): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
      * Get the custom attributes of this Conversation.
      */
-    async getAttributes(): Promise<Record<string, unknown>> {
+    async getAttributes(): Promise<JSONValue> {
         return Promise.resolve({});
     }
 
@@ -156,15 +160,15 @@ export class Conversation extends OriginalConversation {
     /**
      * Join the conversation and subscribe to its events.
      */
-    async join(): Promise<Conversation> {
-        return this;
+    async join(): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
      * Leave the conversation.
      */
-    async leave(): Promise<Conversation> {
-        return this;
+    async leave(): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
@@ -186,7 +190,7 @@ export class Conversation extends OriginalConversation {
      */
     async sendMessage(
         message: string | FormData | SendMediaOptions | null,
-        messageAttributes?: Record<string, unknown>,
+        messageAttributes?: JSONValue,
         emailOptions?: SendEmailOptions
     ): Promise<number> {
         return Promise.resolve(1);
@@ -237,16 +241,16 @@ export class Conversation extends OriginalConversation {
      * Update the attributes of the conversation.
      * @param attributes New attributes.
      */
-    async updateAttributes(attributes: Record<string, unknown>): Promise<Conversation> {
-        return this;
+    async updateAttributes(attributes: JSONValue): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
      * Update the friendly name of the conversation.
      * @param friendlyName New friendly name.
      */
-    async updateFriendlyName(friendlyName: string): Promise<Conversation> {
-        return this;
+    async updateFriendlyName(friendlyName: string): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
@@ -263,8 +267,8 @@ export class Conversation extends OriginalConversation {
      * Update the unique name of the conversation.
      * @param uniqueName New unique name for the conversation. Setting unique name to null removes it.
      */
-    async updateUniqueName(uniqueName: string | null): Promise<Conversation> {
-        return this;
+    async updateUniqueName(uniqueName: string | null): Promise<ConversationType> {
+        return this as unknown as ConversationType;
     }
 
     /**
@@ -272,8 +276,8 @@ export class Conversation extends OriginalConversation {
      * This or _subscribeStreams will need to be called before any events on conversation will fire.
      * @internal
      */
-    async _subscribe(): Promise<unknown> {
-        return Promise.resolve({});
+    async _subscribe(): Promise<SyncDocument> {
+        return Promise.resolve({}) as unknown as SyncDocument;
     }
 
     /**
