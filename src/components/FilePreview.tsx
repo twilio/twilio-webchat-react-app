@@ -7,7 +7,7 @@ import { FileIcon } from "@twilio-paste/icons/esm/FileIcon";
 import { CloseIcon } from "@twilio-paste/icons/esm/CloseIcon";
 import { Button } from "@twilio-paste/core/button";
 import { Media } from "@twilio/conversations";
-import { extension as mimeToExtension } from "mime-types";
+import { extensions as mimeToExtensions } from "mime-types";
 import { Truncate } from "@twilio-paste/core/truncate";
 
 import { addNotification, detachFiles } from "../store/actions/genericActions";
@@ -58,7 +58,11 @@ export const FilePreview = (props: FilePreviewProps) => {
 
         if (
             fileAttachmentConfig?.acceptedExtensions &&
-            !fileAttachmentConfig.acceptedExtensions.includes(mimeToExtension(file.type) as string)
+            !mimeToExtensions[file.type].some(
+                (type) =>
+                    fileAttachmentConfig?.acceptedExtensions &&
+                    fileAttachmentConfig.acceptedExtensions.indexOf(type) >= 0
+            )
         ) {
             dispatch(
                 addNotification(
