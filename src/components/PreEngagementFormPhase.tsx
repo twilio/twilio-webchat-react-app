@@ -50,13 +50,13 @@ export const PreEngagementFormPhase = () => {
             <Header />
             <NotificationBar />
             <Box as="form" data-test="pre-engagement-chat-form" onSubmit={handleSubmit} {...formStyles}>
-                <Text {...titleStyles} as="h3">
+                <Text {...titleStyles} as="h4">
                     Hi there!
                 </Text>
                 <Text {...introStyles} as="p">
-                    We&#39;re here to help. Please give us some info to get started.
+                    Welcome to AnyVan Chat Support, in order for us to put you through to our team please provide us with your email address and a short description of how we can help.
                 </Text>
-                <Box {...fieldStyles}>
+                {/* <Box {...fieldStyles}>
                     <Label htmlFor="name">Name</Label>
                     <Input
                         type="text"
@@ -67,7 +67,7 @@ export const PreEngagementFormPhase = () => {
                         onChange={(e) => dispatch(updatePreEngagementData({ name: e.target.value }))}
                         required
                     />
-                </Box>
+                </Box> */}
                 <Box {...fieldStyles}>
                     <Label htmlFor="email">Email address</Label>
                     <Input
@@ -82,7 +82,7 @@ export const PreEngagementFormPhase = () => {
                 </Box>
 
                 <Box {...fieldStyles}>
-                    <Label htmlFor="query">How can we help you?</Label>
+                    <Label htmlFor="query">How can we assist today?</Label>
                     <TextArea
                         placeholder="Ask a question"
                         name="query"

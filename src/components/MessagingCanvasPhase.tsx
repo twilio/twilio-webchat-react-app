@@ -5,7 +5,6 @@ import { Header } from "./Header";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
 import { AppState } from "../store/definitions";
-import { ConversationEnded } from "./ConversationEnded";
 import { NotificationBar } from "./NotificationBar";
 import { removeNotification } from "../store/actions/genericActions";
 import { notifications } from "../notifications";
@@ -26,7 +25,7 @@ export const MessagingCanvasPhase = () => {
             <Header />
             <NotificationBar />
             <MessageList />
-            {conversationState === "active" ? <MessageInput /> : <ConversationEnded />}
+            <MessageInput />
         </Wrapper>
     );
 };

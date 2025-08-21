@@ -11,7 +11,6 @@ import JSZip from "jszip";
 import saveAs from "file-saver";
 
 import { contactBackend } from "../sessionDataHandler";
-import { textStyles } from "./styles/ConversationEnded.styles";
 import { buttonStyles, progressStyles } from "./styles/Transcript.styles";
 import {
     getTranscriptData,
@@ -203,7 +202,7 @@ export const Transcript = (props: TranscriptProps) => {
 
     return (
         <>
-            <Text as="p" {...textStyles}>
+            <Text as="p" marginBottom="space50" marginTop="space50">
                 Do you want a transcript of our chat?
             </Text>
             <Flex>

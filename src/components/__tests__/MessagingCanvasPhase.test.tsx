@@ -31,10 +31,6 @@ jest.mock("../MessageInput", () => ({
     MessageInput: () => <div title="MessageInput" />
 }));
 
-jest.mock("../ConversationEnded", () => ({
-    ConversationEnded: () => <div title="ConversationEnded" />
-}));
-
 describe("Messaging Canvas Phase", () => {
     let dispatchSpy: jest.SpyInstance;
     beforeEach(() => {
@@ -74,7 +70,7 @@ describe("Messaging Canvas Phase", () => {
         expect(queryByTitle("MessageList")).toBeInTheDocument();
     });
 
-    it("renders message input (and file drop area wrapper) when conversation state is active", () => {
+    it("renders message input when conversation state is active", () => {
         (useSelector as jest.Mock).mockImplementation((callback: any) =>
             callback({ chat: { conversationState: "active" } })
         );
@@ -83,17 +79,15 @@ describe("Messaging Canvas Phase", () => {
 
         expect(queryByTitle("AttachFileDropArea")).toBeInTheDocument();
         expect(queryByTitle("MessageInput")).toBeInTheDocument();
-        expect(queryByTitle("ConversationEnded")).not.toBeInTheDocument();
     });
 
-    it("renders conversation ended when conversation state is closed", () => {
+    it("renders message input when conversation state is closed", () => {
         (useSelector as jest.Mock).mockImplementation((callback: any) =>
             callback({ chat: { conversationState: "closed" } })
         );
 
         const { queryByTitle } = render(<MessagingCanvasPhase />);
 
-        expect(queryByTitle("ConversationEnded")).toBeInTheDocument();
-        expect(queryByTitle("MessageInput")).not.toBeInTheDocument();
+        expect(queryByTitle("MessageInput")).toBeInTheDocument();
     });
 });

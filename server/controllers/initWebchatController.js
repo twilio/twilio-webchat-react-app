@@ -5,45 +5,63 @@ const { getTwilioClient } = require("../helpers/getTwilioClient");
 const { logFinalAction, logInitialAction, logInterimAction } = require("../helpers/logs");
 const { version } = require('./../../package.json');
 
-const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
-    logInterimAction("Calling Webchat Orchestrator");
+const createConversationAndTriggerStudioFlow = async (request, customerFriendlyName) => {
+    logInterimAction("Creating conversation for Studio Flow webhook triggering");
+    
+    const twilioClient = getTwilioClient();
+    
+    // 1) Create the conversation
+    const conversation = await twilioClient.conversations.v1.conversations.create({
+        friendlyName: `Webchat - ${customerFriendlyName}`,
+        uniqueName: `webchat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    });
 
-    const params = new URLSearchParams();
-    params.append("AddressSid", process.env.ADDRESS_SID);
-    params.append("ChatFriendlyName", "Webchat widget");
-    params.append("CustomerFriendlyName", customerFriendlyName);
-    params.append(
-        "PreEngagementData",
-        JSON.stringify({
-            ...request.body?.formData,
-            friendlyName: customerFriendlyName
-        })
-    );
-
-    let conversationSid;
-    let identity;
-
-    try {
-        const res = await axios.post(`https://flex-api.twilio.com/v2/WebChats`, params, {
-            auth: {
-                username: process.env.ACCOUNT_SID,
-                password: process.env.AUTH_TOKEN
-            },
-            headers: {
-                "ui-version": version
-            }
+    // 2) Attach a conversation-scoped webhook that targets Studio
+    await twilioClient.conversations.v1
+        .conversations(conversation.sid)
+        .webhooks
+        .create({
+            target: 'studio',
+            'configuration.flowSid': process.env.STUDIO_FLOW_SID,
+            'configuration.filters': ['onMessageAdded'] // fire Studio on inbound messages
         });
-        ({ identity, conversation_sid: conversationSid } = res.data);
-    } catch (e) {
-        logInterimAction("Something went wrong during the orchestration:", e.response?.data?.message);
-        throw e.response.data;
-    }
+    
+    // Add customer participant
+    const customerParticipant = await twilioClient.conversations
+        .conversations(conversation.sid)
+        .participants.create({
+            identity: `customer-${Date.now()}`,
+            attributes: JSON.stringify({
+                friendlyName: customerFriendlyName,
+                ...request.body?.formData
+            })
+        });
 
-    logInterimAction("Webchat Orchestrator successfully called");
+    // Send initial message to trigger the Studio Flow webhook
+    const initialMessage = await twilioClient.conversations.v1
+        .conversations(conversation.sid)
+        .messages
+        .create({ 
+            author: 'System', 
+            body: `New webchat session started by ${customerFriendlyName}`,
+            attributes: JSON.stringify({
+                flowTrigger: true,
+                customerName: customerFriendlyName,
+                customerEmail: request.body?.formData?.email || '',
+                customerQuery: request.body?.formData?.query || '',
+                channelType: 'webchat',
+                direction: 'inbound',
+                ...request.body?.formData
+            }),
+            xTwilioWebhookEnabled: true 
+        });
 
+    logInterimAction("Conversation created - Studio Flow will be triggered via webhook");
+        
     return {
-        conversationSid,
-        identity
+        conversationSid: conversation.sid,
+        flowExecutionSid: initialMessage.sid, // Use message SID as flow execution reference
+        identity: customerParticipant.identity
     };
 };
 
@@ -54,7 +72,6 @@ const sendUserMessage = (conversationSid, identity, messageBody) => {
         .messages.create({
             body: messageBody,
             author: identity,
-            xTwilioWebhookEnabled: true // trigger webhook
         })
         .then(() => {
             logInterimAction("(async) User message sent");
@@ -70,7 +87,7 @@ const sendWelcomeMessage = (conversationSid, customerFriendlyName) => {
         .conversations.conversations(conversationSid)
         .messages.create({
             body: `Welcome ${customerFriendlyName}! An agent will be with you in just a moment.`,
-            author: "Concierge"
+            author: "AnyVan"
         })
         .then(() => {
             logInterimAction("(async) Welcome message sent");
@@ -81,18 +98,21 @@ const sendWelcomeMessage = (conversationSid, customerFriendlyName) => {
 };
 
 const initWebchatController = async (request, response) => {
-    logInitialAction("Initiating webchat");
+    const useStudioFlow = !!process.env.STUDIO_FLOW_SID;
+    logInitialAction(`Initiating webchat with ${useStudioFlow ? 'Studio Flow' : 'TaskRouter'}`);
 
     const customerFriendlyName = request.body?.formData?.friendlyName || "Customer";
 
     let conversationSid;
+    let flowExecutionSid;
+    let taskSid;
     let identity;
 
-    // Hit Webchat Orchestration endpoint to generate conversation and get customer participant sid
     try {
-        const result = await contactWebchatOrchestrator(request, customerFriendlyName);
-        ({ identity, conversationSid } = result);
+        const result = await createConversationAndTriggerStudioFlow(request, customerFriendlyName);
+        ({ conversationSid, flowExecutionSid, taskSid, identity } = result);
     } catch (error) {
+        logInterimAction(`Error creating conversation/triggering flow: ${error?.message}`);
         return response.status(500).send(`Couldn't initiate WebChat: ${error?.message}`);
     }
 
@@ -101,20 +121,27 @@ const initWebchatController = async (request, response) => {
 
     // OPTIONAL — if user query is defined
     if (request.body?.formData?.query) {
-        // use it to send a message in behalf of the user with the query as body
         sendUserMessage(conversationSid, identity, request.body.formData.query).then(() =>
-            // and then send another message from Concierge, letting the user know that an agent will help them soon
             sendWelcomeMessage(conversationSid, customerFriendlyName)
         );
     }
 
-    response.send({
+    const responseData = {
         token,
         conversationSid,
         expiration: Date.now() + TOKEN_TTL_IN_SECONDS * 1000
-    });
+    };
 
-    logFinalAction("Webchat successfully initiated");
+    // Add the appropriate ID based on what was created
+    if (flowExecutionSid) {
+        responseData.flowExecutionSid = flowExecutionSid;
+    } else if (taskSid) {
+        responseData.taskSid = taskSid;
+    }
+
+    response.send(responseData);
+
+    logFinalAction(`Webchat successfully initiated with ${useStudioFlow ? 'Studio Flow' : 'TaskRouter'}`);
 };
 
 module.exports = { initWebchatController };

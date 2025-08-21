@@ -5,7 +5,6 @@ import { CSSProperties, FC, useEffect } from "react";
 import { RootContainer } from "./RootContainer";
 import { AppState, EngagementPhase } from "../store/definitions";
 import { sessionDataHandler } from "../sessionDataHandler";
-import { initSession } from "../store/actions/initActions";
 import { changeEngagementPhase } from "../store/actions/genericActions";
 
 const AnyCustomizationProvider: FC<CustomizationProviderProps & { style: CSSProperties }> = CustomizationProvider;
@@ -15,18 +14,11 @@ export function WebchatWidget() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const data = sessionDataHandler.tryResumeExistingSession();
-        if (data) {
-            try {
-                dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
-            } catch (e) {
-                // if initSession fails, go to changeEngagement phase - most likely there's something wrong with the store token or conversation sis
-                dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-            }
-        } else {
-            // if no token is stored, got engagement form
-            dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-        }
+        // Clear session data on page refresh to ensure fresh start
+        sessionDataHandler.clear();
+        
+        // Always start with pre-engagement form
+        dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     }, [dispatch]);
 
     return (
