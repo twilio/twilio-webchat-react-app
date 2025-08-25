@@ -1,14 +1,12 @@
 /**
- * Extracts the first name from a full name string
- * @param fullName - The full name string
- * @returns The first name, or the original string if no space is found
+ * Extracts the first name from a full name
+ * @param fullName - The full name to extract the first name from
+ * @returns The first name, or the original name if it's a single word
  */
 export const getFirstName = (fullName: string | undefined): string => {
-    if (!fullName) {
-        return "";
-    }
+    if (!fullName) return "";
     
-    // Split by space and take the first part
+    // Split by spaces and take the first part
     const nameParts = fullName.trim().split(/\s+/);
     return nameParts[0] || fullName;
 };

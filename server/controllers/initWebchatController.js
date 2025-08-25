@@ -30,7 +30,7 @@ const createConversationAndTriggerStudioFlow = async (request, customerFriendlyN
     const customerParticipant = await twilioClient.conversations
         .conversations(conversation.sid)
         .participants.create({
-            identity: `customer-${Date.now()}`,
+            identity: customerFriendlyName,
             attributes: JSON.stringify({
                 friendlyName: customerFriendlyName,
                 ...request.body?.formData
@@ -46,6 +46,7 @@ const createConversationAndTriggerStudioFlow = async (request, customerFriendlyN
             body: `New webchat session started by ${customerFriendlyName}`,
             attributes: JSON.stringify({
                 flowTrigger: true,
+                systemMessage: true,
                 customerName: customerFriendlyName,
                 customerEmail: request.body?.formData?.email || '',
                 customerQuery: request.body?.formData?.query || '',
@@ -86,7 +87,7 @@ const sendWelcomeMessage = (conversationSid, customerFriendlyName) => {
     return getTwilioClient()
         .conversations.conversations(conversationSid)
         .messages.create({
-            body: `Welcome ${customerFriendlyName}! An agent will be with you in just a moment.`,
+            body: `Welcome! An agent will be with you in just a moment.`,
             author: "AnyVan"
         })
         .then(() => {
@@ -101,7 +102,7 @@ const initWebchatController = async (request, response) => {
     const useStudioFlow = !!process.env.STUDIO_FLOW_SID;
     logInitialAction(`Initiating webchat with ${useStudioFlow ? 'Studio Flow' : 'TaskRouter'}`);
 
-    const customerFriendlyName = request.body?.formData?.friendlyName || "Customer";
+    const customerFriendlyName = request.body?.formData?.email || "Customer";
 
     let conversationSid;
     let flowExecutionSid;

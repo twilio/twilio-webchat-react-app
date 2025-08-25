@@ -1,30 +1,45 @@
-import { Box, Text } from "@twilio-paste/core";
-import { Message, User } from "@twilio/conversations";
-import { useEffect, useRef, useState, UIEvent } from "react";
+import { UIEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Box } from "@twilio-paste/core/box";
+import { Text } from "@twilio-paste/core/text";
+import { Spinner } from "@twilio-paste/core/spinner";
+import { Message } from "@twilio/conversations";
+import throttle from "lodash.throttle";
 
+import { MessageBubble } from "./MessageBubble";
 import { AppState } from "../store/definitions";
 import { getMoreMessages } from "../store/actions/genericActions";
-import { MessageBubble } from "./MessageBubble";
+import { getDaysOld } from "../utils/getDaysOld";
 import { MessageListSeparator } from "./MessageListSeparator";
-import { getFirstName } from "../utils/getFirstName";
+import { MESSAGES_SPINNER_BOX_HEIGHT } from "../constants";
 import {
+    conversationEventContainerStyles,
+    conversationEventTitleStyles,
+    conversationEventDateStyles,
+    spinnerContainerStyles,
     messageListStyles,
-    outerContainerStyles,
     innerContainerStyles,
+    outerContainerStyles,
     participantTypingStyles
 } from "./styles/MessageList.styles";
 
-const MESSAGES_SPINNER_BOX_HEIGHT = 60;
+const isLastOfUserGroup = (message: Message, i: number, messages: Message[]) => {
+    const nextMessage = messages[i + 1];
 
-const isFirstOfDateGroup = (message: Message, i: number, messages: Message[]) => {
-    const currentMessageDate = message.dateCreated.toDateString();
-    const previousMessageDate = messages[i - 1].dateCreated.toDateString();
-    return currentMessageDate !== previousMessageDate;
+    // if there's no message afterwards, it's definitely the last of a group
+    if (!nextMessage) {
+        return true;
+    }
+
+    // if the author of the next message is different from current one's, then yes, this message is last of its group
+    return nextMessage.author !== message.author;
 };
 
-const renderChatStarted = () => {
-    return <MessageListSeparator separatorType="chatStarted" />;
+const isFirstOfDateGroup = (message: Message, i: number, messages: Message[]) => {
+    const prevMessage = messages[i - 1];
+
+    // if the previous message has a date older than the current message, this message is the first for this date
+    return getDaysOld(prevMessage.dateCreated) > getDaysOld(message.dateCreated);
 };
 
 export const MessageList = () => {
@@ -37,10 +52,12 @@ export const MessageList = () => {
     }));
     const dispatch = useDispatch();
     const messageListRef = useRef<HTMLDivElement>(null);
-    const [focusIndex, setFocusIndex] = useState(-1);
-    const [hasLoadedAllMessages, setHasLoadedAllMessages] = useState(false);
     const isLoadingMessages = useRef(false);
-    const oldMessagesLength = useRef(0);
+    const oldMessagesLength = useRef((messages || []).length);
+    const [hasLoadedAllMessages, setHasLoadedAllMessages] = useState(true);
+    const [focusIndex, setFocusIndex] = useState(
+        messages && messages.length ? messages[messages?.length - 1].index : -1
+    );
     const [shouldFocusLatest, setShouldFocusLatest] = useState(false);
 
     const updateFocus = (newFocus: number) => {
@@ -89,7 +106,12 @@ export const MessageList = () => {
         const checkIfAllMessagesLoaded = async () => {
             const totalMessagesCount = await conversation?.getMessagesCount();
             if (totalMessagesCount) {
-                setHasLoadedAllMessages(totalMessagesCount === messages?.length);
+                /*
+                 * Account for filtered system messages by subtracting 1 from total count
+                 * since we filter out the system message
+                 */
+                const expectedCount = totalMessagesCount - 1;
+                setHasLoadedAllMessages(expectedCount === messages?.length);
             }
 
             // if messages were added to state, loading is complete
@@ -113,7 +135,7 @@ export const MessageList = () => {
             oldMessagesLength.current = messages.length;
             const totalMessagesCount = await conversation?.getMessagesCount();
 
-            if (totalMessagesCount && messages.length < totalMessagesCount) {
+            if (totalMessagesCount && messages.length < totalMessagesCount - 1) {
                 dispatch(getMoreMessages({ anchor: totalMessagesCount - messages.length - 1, conversation }));
             }
         }
@@ -143,36 +165,69 @@ export const MessageList = () => {
         return null;
     };
 
+    const renderChatStarted = () =>
+        hasLoadedAllMessages ? (
+            <>
+                <Box {...conversationEventContainerStyles}>
+                    <Text as="h3" {...conversationEventTitleStyles} data-test="chat-started">
+                        Chat started
+                    </Text>
+                    <Text as="p" {...conversationEventDateStyles}>
+                        {conversation?.dateCreated.toLocaleString()}
+                    </Text>
+                </Box>
+            </>
+        ) : null;
+
     const renderChatItems = () => {
         if (!messages) {
             return null;
         }
 
-        return messages.map((message: Message, i: number) => {
-            const belongsToCurrentUser = message.author === conversationsClient?.user.identity;
-            const isLast = i === messages.length - 1;
-            const isLastOfUserGroup =
-                i === messages.length - 1 ||
-                messages[i + 1].author !== message.author ||
-                isFirstOfDateGroup(messages[i + 1], i + 1, messages);
+        /*
+         * We use a copy of the messages array where the first message is a placeholder for the loading spinner.
+         * By assigning the loading spinner to the same index and key as the previous message,
+         * we avoid a snappy scroll position change when loading spinner disappears.
+         */
+        const spinnerIndex = (messages[0]?.index || 0) - 1;
+        const messagesWithSpinner = [
+            {
+                index: spinnerIndex
+            } as Message,
+            ...messages
+        ];
+
+        return messagesWithSpinner.map((message: Message, i: number) => {
+            // First message in array represents the loading spinner
+            if (message.index === spinnerIndex) {
+                // Only render loading spinner if there are remaining messages to load
+                return hasLoadedAllMessages ? null : (
+                    <Box {...spinnerContainerStyles} key={message.index}>
+                        <Spinner color="colorTextWeak" decorative={false} title="Loading" />
+                    </Box>
+                );
+            }
+            // Discount loading spinner from indices
+            i -= 1;
 
             return (
-                <div key={message.sid}>
+                <Box data-test="all-message-bubbles" key={message.index}>
                     {renderSeparatorIfApplicable(message, i)}
                     <MessageBubble
                         message={message}
-                        isLast={isLast}
-                        isLastOfUserGroup={isLastOfUserGroup}
-                        focusable={focusIndex === message.index}
+                        isLast={i === messages.length - 1}
+                        isLastOfUserGroup={isLastOfUserGroup(message, i, messages)}
+                        focusable={message.index === focusIndex}
                         updateFocus={updateFocus}
                     />
-                </div>
+                </Box>
             );
         });
     };
 
     const handleFocus = () => {
-        if (messages && messages.length > 0) {
+        // Hand over focus to message bubbles once there is at least one
+        if (messages && messages.length && focusIndex < 0) {
             setFocusIndex(messages[messages.length - 1].index);
         }
     };
@@ -194,7 +249,7 @@ export const MessageList = () => {
                         ?.filter((p) => p.isTyping && p.identity !== conversationsClient?.user.identity)
                         .map((p) => (
                             <Text {...participantTypingStyles} as="p" key={p.identity}>
-                                {getFirstName(users?.find((u) => u.identity === p.identity)?.friendlyName)} is typing...
+                                {users?.find((u) => u.identity === p.identity)?.friendlyName} is typing...
                             </Text>
                         ))}
                 </Box>
@@ -202,26 +257,3 @@ export const MessageList = () => {
         </Box>
     );
 };
-
-// Throttle function to limit the frequency of scroll event handling
-function throttle<T extends (...args: any[]) => any>(func: T, delay: number): T {
-    let timeoutId: NodeJS.Timeout | null = null;
-    let lastExecTime = 0;
-    
-    return ((...args: any[]) => {
-        const currentTime = Date.now();
-        
-        if (currentTime - lastExecTime > delay) {
-            func(...args);
-            lastExecTime = currentTime;
-        } else {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-            }
-            timeoutId = setTimeout(() => {
-                func(...args);
-                lastExecTime = Date.now();
-            }, delay - (currentTime - lastExecTime));
-        }
-    }) as T;
-}

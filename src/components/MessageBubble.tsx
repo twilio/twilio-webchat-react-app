@@ -11,6 +11,7 @@ import { SuccessIcon } from "@twilio-paste/icons/esm/SuccessIcon";
 import { AppState } from "../store/definitions";
 import { FilePreview } from "./FilePreview";
 import { parseMessageBody } from "../utils/parseMessageBody";
+import { getFirstName } from "../utils/getFirstName";
 import {
     getAvatarContainerStyles,
     getInnerContainerStyles,
@@ -109,7 +110,8 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    const fullName = users?.find((u) => u.identity === message.author)?.friendlyName || message.author || "AnyVan Support";
+    const displayName = belongsToCurrentUser ? fullName : getFirstName(fullName);
 
     return (
         <Box
@@ -131,13 +133,13 @@ export const MessageBubble = ({
                 )}
                 <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
                     <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={author}>
-                            {author}
+                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={displayName}>
+                            {displayName}
                         </Text>
                         <ScreenReaderOnly as="p">
                             {belongsToCurrentUser
                                 ? "You sent at"
-                                : `${users?.find((u) => u.identity === message.author)?.friendlyName} sent at`}
+                                : `${fullName} sent at`}
                         </ScreenReaderOnly>
                         <Text {...timeStampStyles} as="p">
                             {`${doubleDigit(message.dateCreated.getHours())}:${doubleDigit(

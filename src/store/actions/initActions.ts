@@ -40,6 +40,9 @@ export function initSession({ token, conversationSid }: { token: string; convers
             participants = await conversation.getParticipants();
             users = await Promise.all(participants.map(async (p) => p.getUser()));
             messages = (await conversation.getMessages(MESSAGES_LOAD_COUNT)).items;
+            
+            // Filter out system messages so they don't appear to customers
+            messages = messages.filter((message) => message.author !== "System");
         } catch (e) {
             log.error("Something went wrong when initializing session", e);
             throw e;
