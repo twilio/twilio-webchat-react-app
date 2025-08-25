@@ -1,9 +1,14 @@
 {
   "extends": [
-    "twilio-ts",
-    "twilio-react",
+    "twilio-ts", 
+    "twilio",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:no-unsanitized/recommended-legacy",
     "prettier"
   ],
+  "plugins": ["jsx-a11y", "react", "react-hooks"],
   "env": {
     "browser": true,
     "commonjs": true,
@@ -35,7 +40,24 @@
     "@typescript-eslint/no-shadow": ["error"],
     "@typescript-eslint/no-unused-vars": "error",
     "import/no-duplicates": ["error"],
+    "@typescript-eslint/no-empty-function": "off",
     "spaced-comment": "warn",
     "prefer-named-capture-group": "off"
-  }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*", "**/__mocks__/**/*", "**/*.test.*", "**/*.spec.*"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "import/no-unused-modules": "off",
+        "sonarjs/no-identical-functions": "off",
+        "sonarjs/no-duplicate-string": "off"
+      }
+    }
+  ]
 }

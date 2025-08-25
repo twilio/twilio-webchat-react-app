@@ -8,7 +8,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@sendgrid/mail": "7.7.0",
-    "@twilio-paste/core": "^10.20.0",
+    "@twilio-paste/core": "^20.9.0",
     "@twilio-paste/icons": "^6.1.0",
     "@twilio-paste/theme": "^5.3.3",
     "@twilio/conversations": "2.1.0-rc.0",
@@ -47,11 +47,11 @@
     "cypress": "^9.3.1",
     "cypress-file-upload": "^5.0.8",
     "dotenv": "^16.0.0",
-    "eslint": "^7.11.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-config-twilio-react": "^1.35.1",
-    "eslint-config-twilio-ts": "^1.35.1",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-twilio-react": "^2.0.0",
+    "eslint-config-twilio-ts": "^2.0.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "express": "4.17.2",
     "fetch-mock-jest": "^1.5.1",
     "jsonwebtoken": "^8.5.1",
@@ -72,7 +72,8 @@
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
     "deploy": "yarn build && node scripts/deploy",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "lint": "eslint --fix src --ext js,ts,tsx"
   },
   "browserslist": [
     ">0.2%",

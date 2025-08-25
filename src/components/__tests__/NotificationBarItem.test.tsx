@@ -45,9 +45,9 @@ describe("Notification Bar Item", () => {
 
     it("dismisses notification when dismiss button is clicked", () => {
         const removeNotificationSpy = jest.spyOn(genericActions, "removeNotification");
-        const { getByTitle } = render(<NotificationBarItem {...notification} dismissible={true} />);
+        const { getByText } = render(<NotificationBarItem {...notification} dismissible={true} />);
 
-        const dismissButton = getByTitle(dismissButtonTitle);
+        const dismissButton = getByText(dismissButtonTitle);
         fireEvent.click(dismissButton);
 
         expect(removeNotificationSpy).toHaveBeenCalledWith(notification.id);
@@ -55,11 +55,11 @@ describe("Notification Bar Item", () => {
 
     it("runs onDismiss function prop when dismiss button is clicked", () => {
         const onDismiss = jest.fn();
-        const { getByTitle } = render(
+        const { getByText } = render(
             <NotificationBarItem {...notification} dismissible={true} onDismiss={onDismiss} />
         );
 
-        const dismissButton = getByTitle(dismissButtonTitle);
+        const dismissButton = getByText(dismissButtonTitle);
         fireEvent.click(dismissButton);
 
         expect(onDismiss).toHaveBeenCalled();
