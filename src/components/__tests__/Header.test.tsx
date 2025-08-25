@@ -20,6 +20,6 @@ describe("Header", () => {
     it("renders header with default text when no custom title provided", () => {
         const { queryByText } = render(<Header />);
 
-        expect(queryByText("Live Chat")).toBeInTheDocument();
+        expect(queryByText("AnyVan Chat")).toBeInTheDocument();
     });
 });

@@ -1,0 +1,29 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Remove untagged images",
+      "selection": {
+        "tagStatus": "untagged",
+        "countType": "imageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 2,
+      "description": "Remove images older than last ${countLastImages} versions",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["commit-"],
+        "countType": "imageCountMoreThan",
+        "countNumber": "${countLastImages}"
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}

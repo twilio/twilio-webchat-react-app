@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 
 const { validateRequestOriginMiddleware } = require("./middlewares/validateRequestOriginMiddleware");
 const { initWebchatController } = require("./controllers/initWebchatController");
@@ -18,10 +19,20 @@ app.use(
         origins: allowedOrigins
     })
 );
-app.listen(port, () => {
-    console.log(`Twilio Webchat App server running on port ${port}`);
-});
 
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '../build')));
+
+// API routes
 app.post("/initWebchat", validateRequestOriginMiddleware, initWebchatController);
 app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
 app.post("/email", validateRequestOriginMiddleware, emailTranscriptController);
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
+
+app.listen(port, () => {
+    console.log(`Twilio Webchat App server running on port ${port}`);
+});
