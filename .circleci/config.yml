@@ -80,17 +80,10 @@ jobs:
       - run:
           name: "Build and push image to ECR"
           command: |
-            PROJECT_REPOSITORY_URL=<< parameters.ecr_app_host >>/twilio-webchat-widget/<<parameters.env>>/<< parameters.repository >>
-            PROJECT_REPOSITORY_HOST=<< parameters.ecr_app_host >>
-            aws ecr get-login-password | docker login --username AWS --password-stdin $PROJECT_REPOSITORY_HOST
-            cd << parameters.project-root >>
-
-            docker build -f << parameters.dockerfile >> -t << parameters.image >>-latest \
-              << parameters.entry >>
-
-            docker tag << parameters.image >>-latest $PROJECT_REPOSITORY_URL:<< parameters.image >>-latest
-            docker tag << parameters.image >>-latest $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
-            docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-latest
+            PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/<<parameters.env>>/<< parameters.repository >>
+            PROJECT_REPOSITORY_HOST=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST
+            
+            docker build -f << parameters.dockerfile >> -t << parameters.image >>:$CIRCLE_SHA1  
             docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
 
   tag_image:
