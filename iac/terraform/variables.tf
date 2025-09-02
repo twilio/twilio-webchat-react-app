@@ -10,17 +10,6 @@ variable "profile" {
   type        = string
   description = "Default profile for AWS"
 }
-variable "ecr_registry_id" {
-  type    = string
-  default = "331151898531"
-}
-variable "ecr_repository_name" {
-  type = string
-}
-variable "create_ecr_repository" {
-  type    = bool
-  default = true
-}
 
 variable "vpc_environment" {
   type        = string
@@ -55,11 +44,6 @@ variable "git_sha" {
   type        = string
   default     = ""
   description = "Git SHA for the current commit"
-}
-
-variable "application_container_image_url" {
-  type        = string
-  description = "URL of the application container image in ECR"
 }
 
 variable "server_container_image_url" {
@@ -112,9 +96,4 @@ variable "fargate_task_memory" {
 variable "squad" {
   type    = string
   default = "lions"
-}
-variable "slack_channel_web_hook" {
-  type      = string
-  default   = ""
-  sensitive = true
 }
