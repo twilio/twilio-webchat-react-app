@@ -157,7 +157,11 @@ workflows:
           env: testing
           requires:
             - "Log in to AWS ECR"
-      
+      - hold_pr:
+          type: approval
+          requires:
+            - build_webchat_client_pr
+            - build_webchat_server_pr
       # Plan Terraform for PR Environment
       - terraform-helper/plan: &plan
           name: plan_webchat_widget_pr
@@ -176,8 +180,8 @@ workflows:
           path: terraform/
           terraform_version: << pipeline.parameters.terraform_version >>
           requires:
-            - build_webchat_server_pr
-            - build_webchat_client_pr
+            - hold_pr
+            - hold_pr
       
       # Apply Terraform for PR Environment
       - terraform-helper/apply: &apply
