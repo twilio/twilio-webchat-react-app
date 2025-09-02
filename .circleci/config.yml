@@ -186,7 +186,7 @@ workflows:
             terraform_version=<< pipeline.parameters.terraform_version >>
           var_file: env/testing.tfvars
           modules_branch: << pipeline.parameters.modules >>
-          path: terraform/
+          path: iac/terraform/
           terraform_version: << pipeline.parameters.terraform_version >>
           requires:
             - hold_pr
@@ -197,7 +197,7 @@ workflows:
           context: anyvan
           workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
           modules_branch: << pipeline.parameters.modules >>
-          path: terraform/
+          path: iac/terraform/
           terraform_version: << pipeline.parameters.terraform_version >>
           requires:
             - plan_webchat_widget_pr
