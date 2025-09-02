@@ -80,7 +80,8 @@ jobs:
       - run:
           name: "Build and push image to ECR"
           command: |
-            PROJECT_REPOSITORY_URL=$AWS_ECR_APP_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name>>/<<parameters.env>>/<< parameters.image >>
+            PROJECT_REPO_HOST="331151898531.dkr.ecr.eu-west-1.amazonaws.com"
+            PROJECT_REPOSITORY_URL=$PROJECT_REPO_HOST/<< pipeline.parameters.app_name>>/<<parameters.env>>/<< parameters.image >>
             echo "Repository URL: $PROJECT_REPOSITORY_URL"
             docker build -f << parameters.dockerfile >> -t "${PROJECT_REPOSITORY_URL}:${CIRCLE_SHA1}" .
             docker push "${PROJECT_REPOSITORY_URL}:${CIRCLE_SHA1}"
