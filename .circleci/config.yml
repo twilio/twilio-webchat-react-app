@@ -116,11 +116,12 @@ workflows:
         - not:
             equal: ["", << pipeline.parameters.jira_ticket_number >>]
     jobs:
-      - aws/init:
+      - aws/init: &aws_init
           name: "Log in to AWS"
           context: anyvan
           region: << pipeline.parameters.region >>
           account: PRODUCTION HORIZONTAL TEST1
+          persist: .aws
       
       # Build Server Image for PR Environment
       - build-image:
