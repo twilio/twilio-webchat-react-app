@@ -32,7 +32,7 @@ parameters:
     default: "deploy_to_pr_env"
   app_name:
     type: string
-    default: "<< pipeline.parameters.app_name >>"
+    default: "twilio-webchat-widget"
 
 executors:
   base:
@@ -145,7 +145,7 @@ workflows:
           env: testing
           requires:
             - "Log in to AWS ECR"
-      
+
       # Build Client Image for PR Environment
       - build-and-push:
           name: build_webchat_client_pr
@@ -182,7 +182,7 @@ workflows:
           requires:
             - hold_pr
             - hold_pr
-      
+
       # Apply Terraform for PR Environment
       - terraform-helper/apply: &apply
           name: apply_webchat_widget_pr
