@@ -116,11 +116,29 @@ workflows:
         - not:
             equal: ["", << pipeline.parameters.jira_ticket_number >>]
     jobs:
-      - aws/init:
+      - aws/init: &aws_init
           name: "Log in to AWS"
           context: anyvan
-          region: << pipeline.parameters.region >>
-          account: PRODUCTION HORIZONTAL TEST1
+          region: << pipeline.parameters.aws_region >>
+          account: HORIZONTAL PRODUCTION TEST1
+          persist: .aws
+      - login-codeartifact-registry:
+          name: "Log in to AWS CodeArtifact"
+          requires:
+            - "Log in to AWS"
+      - aws-ecr-helper/create_aws_ecr: &create_ecr
+          name: "Create AWS ECR repository"
+          context: anyvan
+          module_path: "iac/terraform/image_repository"
+          app_name: << pipeline.parameters.app_name >>
+          tf_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - "Log in to AWS"
+      - aws-ecr-helper/ecr_login: &ecr_login
+          name: "Log in to AWS ECR"
+          context: anyvan
+          requires:
+            - "Create AWS ECR repository"
       
       # Build Server Image for PR Environment
       - build-image:
@@ -146,50 +164,56 @@ workflows:
           requires:
             - "Log in to AWS"
       
-      # Plan Terraform for PR Environment
-      - terraform-helper/plan:
-          name: plan_webchat_widget_pr
-          context:
-            - anyvan
-            - twilio-flex-stage
-          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
-          var: >-
-            jira_ticket_number=<< pipeline.parameters.jira_ticket_number >>,
-            server_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/server:twilio-webchat-server-<< pipeline.parameters.image_tag >>,
-            client_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/client:twilio-webchat-client-<< pipeline.parameters.image_tag >>,
-            git_sha=$CIRCLE_SHA1,
-            terraform_version=<< pipeline.parameters.terraform_version >>
-          var_file: env/testing.tfvars
-          modules_branch: << pipeline.parameters.modules >>
-          path: terraform/
-          terraform_version: << pipeline.parameters.terraform_version >>
-          requires:
-            - build_webchat_server_pr
-            - build_webchat_client_pr
-      
-      # Apply Terraform for PR Environment
-      - terraform-helper/apply:
-          name: apply_webchat_widget_pr
-          context: anyvan
-          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
-          modules_branch: << pipeline.parameters.modules >>
-          path: terraform/
-          terraform_version: << pipeline.parameters.terraform_version >>
-          requires:
-            - plan_webchat_widget_pr
+     - terraform-helper/plan:
+        <<: *plan
+        name: "TF Plan for PR"
+        env: branches
+        expire: true
+        var_file: env/branches.tfvars
+        workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+        requires:
+          - build-and-push
+    - terraform-helper/apply:
+        <<: *apply
+        name: "Apply TF plan for PR"
+        expire: true
+        workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+        requires:
+          - "TF Plan for PR"
+
+pull_request_closed:
+  when:
+    and:
+      - equal: [pull_request_closed, << pipeline.parameters.workflow >>]
+      - not:
+          equal: [main, << pipeline.git.branch >>]
+      - not:
+          equal: ["", << pipeline.parameters.jira_ticket_number >>]
+  jobs:
+    - aws/init:
+        *aws_init
+    - terraform-helper/plan:
+        <<: *plan
+        name: "Plan destroy PR environment"
+        env: branches
+        destroy: true
+        var_file: env/branches.tfvars
+        workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+        requires:
+          - "Log in to AWS"
+    - terraform-helper/apply:
+        <<: *apply
+        name: "Apply Destroy of PR environment"
+        destroy: true
+        workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+        requires:
+          - "Plan destroy PR environment"
 
 
-  # Scheduled cleanup
-  scheduled:
-    triggers:
-      - schedule:
-          cron: "0 1 * * *"
-          filters:
-            branches:
-              only: main
-    jobs:
-      - compliance/verify:
-          context: anyvan
-      - ci/cancel_workflows:
-          context: anyvan
-          timeout: 3d
+
+
+
+
+
+
+
