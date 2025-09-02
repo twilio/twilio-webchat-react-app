@@ -6,6 +6,12 @@ const { validateRequestOriginMiddleware } = require("./middlewares/validateReque
 const { initWebchatController } = require("./controllers/initWebchatController");
 const { refreshTokenController } = require("./controllers/refreshTokenController");
 const { emailTranscriptController } = require("./controllers/emailTranscriptController");
+const {
+    submitRatingController,
+    hasBeenRatedController,
+    getAllRatingsController,
+    getWorkerAttributesController
+} = require("./controllers/ratingController");
 
 const cors = require("cors");
 const { allowedOrigins } = require("./helpers/getAllowedOrigins");
@@ -27,6 +33,12 @@ app.use(express.static(path.join(__dirname, '../build')));
 app.post("/initWebchat", validateRequestOriginMiddleware, initWebchatController);
 app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
 app.post("/email", validateRequestOriginMiddleware, emailTranscriptController);
+
+// Rating routes
+app.post("/submitRating", validateRequestOriginMiddleware, submitRatingController);
+app.get("/hasBeenRated", validateRequestOriginMiddleware, hasBeenRatedController);
+app.get("/ratings", validateRequestOriginMiddleware, getAllRatingsController);
+app.post("/getWorkerAttributes", validateRequestOriginMiddleware, getWorkerAttributesController);
 
 // Catch-all handler: send back React's index.html file for any non-API routes
 app.get('*', (req, res) => {

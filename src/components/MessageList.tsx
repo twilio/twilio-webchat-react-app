@@ -10,6 +10,7 @@ import { MessageBubble } from "./MessageBubble";
 import { AppState } from "../store/definitions";
 import { getMoreMessages } from "../store/actions/genericActions";
 import { getDaysOld } from "../utils/getDaysOld";
+import { getFirstName } from "../utils/getFirstName";
 import { MessageListSeparator } from "./MessageListSeparator";
 import { MESSAGES_SPINNER_BOX_HEIGHT } from "../constants";
 import {
@@ -249,7 +250,7 @@ export const MessageList = () => {
                         ?.filter((p) => p.isTyping && p.identity !== conversationsClient?.user.identity)
                         .map((p) => (
                             <Text {...participantTypingStyles} as="p" key={p.identity}>
-                                {users?.find((u) => u.identity === p.identity)?.friendlyName} is typing...
+                                {getFirstName(users?.find((u) => u.identity === p.identity)?.friendlyName)} is typing...
                             </Text>
                         ))}
                 </Box>
