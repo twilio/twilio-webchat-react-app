@@ -30,7 +30,7 @@ module "cpu_monitor" {
   name               = "Anyvan ${var.webchat_widget_name} CPU usage monitor - ${local.environment_name}"
   message            = "CPU usage of ${var.webchat_widget_name} ${local.notification_channels}${var.env == "production" ? " | @${local.team}-engineers" : ""}"
   type               = "query alert"
-  query              = "avg(last_5m):avg:aws.ecs.service.cpuutilization{servicename:${module.app.service_name}} > 90"
+  query              = "avg(last_5m):avg:aws.ecs.service.cpuutilization{servicename:${module.webchat_server.service_name}} > 90"
   critical_threshold = 90
   notify_no_data     = true
   no_data_timeframe  = 20 // There is a 15+ mins delay in receiving ECS metrices on Datadog
@@ -50,7 +50,7 @@ module "memory_monitor" {
   name               = "Anyvan ${var.webchat_widget_name} Memory usage monitor - ${local.environment_name}"
   message            = "Memory usage of ${var.webchat_widget_name} ${local.notification_channels}${var.env == "production" ? " | @${local.team}-engineers" : ""}"
   type               = "query alert"
-  query              = "avg(last_5m):avg:aws.ecs.service.memory_utilization{servicename:${module.app.service_name}} > 90"
+  query              = "avg(last_5m):avg:aws.ecs.service.memory_utilization{servicename:${module.webchat_server.service_name}} > 90"
   critical_threshold = 90
   notify_no_data     = true
   no_data_timeframe  = 20 // There is a 15+ mins delay in receiving ECS metrices on Datadog

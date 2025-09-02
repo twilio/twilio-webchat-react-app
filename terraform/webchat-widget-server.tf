@@ -1,15 +1,15 @@
-module "app" {
+module "webchat_server" {
   source  = "terraform-registry.anyvan.com/anyvan/ecs_project/aws"
   version = "~>1.6.2"
 
-  app_name                        = var.webchat_widget_name
+  app_name                        = "${var.webchat_widget_name}-server"
   env                             = var.env
   jira_ticket_number              = var.jira_ticket_number
-  application_container_image_url = var.application_container_image_url
+  application_container_image_url = var.server_container_image_url
   commit_hash                     = var.git_sha
   region                          = var.aws_region
   profile                         = var.profile
-  internal_fqdn                   = local.internal_fqdn
+  internal_fqdn                   = local.server_internal_fqdn
 
   cpu    = var.fargate_task_cpu
   memory = var.fargate_task_memory
@@ -28,7 +28,6 @@ module "app" {
     listener_port                     = 443
   }
 
-
   task_permissions = {
     allow_sm = {
       sm_arns = [
@@ -38,12 +37,14 @@ module "app" {
     }
     ecs_task_statements = []
   }
-  env_variables = {}
+  
+  env_variables = {
+    NODE_ENV = "production"
+  }
 
   env_secrets      = {}
   enable_appconfig = false
-
-  enable_database = false
+  enable_database  = false
 
   providers = {
     aws            = aws

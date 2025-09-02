@@ -54,7 +54,6 @@ const createRatingLogTask = async (ratingData) => {
         return false;
     }
 };
-
 /**
  * Submit a service rating
  */

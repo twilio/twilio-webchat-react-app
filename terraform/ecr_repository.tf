@@ -2,7 +2,7 @@ locals {
   ecr_keep_last_images_count = var.env == "production" ? 40 : 200
 }
 
-resource "aws_ecr_repository" "twilio_flex" {
+resource "aws_ecr_repository" "twilio_webchat_widget" {
   count    = var.create_ecr_repository ? 1 : 0
   name     = var.ecr_repository_name
   provider = aws.horizontal
@@ -16,9 +16,9 @@ resource "aws_ecr_repository" "twilio_flex" {
   tags = tomap({ "Name" = var.ecr_repository_name })
 }
 
-resource "aws_ecr_repository_policy" "twilio_flex" {
+resource "aws_ecr_repository_policy" "twilio_webchat_widget" {
   policy     = data.aws_iam_policy_document.allows_other_accounts_to_retrieve.json
-  repository = aws_ecr_repository.twilio_flex[0].name
+  repository = aws_ecr_repository.twilio_webchat_widget[0].name
   provider   = aws.horizontal
 }
 
@@ -63,8 +63,8 @@ data "aws_iam_policy_document" "allows_other_accounts_to_retrieve" {
   }
 }
 
-resource "aws_ecr_lifecycle_policy" "twilio_flex" {
-  repository = aws_ecr_repository.twilio_flex[0].name
+resource "aws_ecr_lifecycle_policy" "twilio_webchat_widget" {
+  repository = aws_ecr_repository.twilio_webchat_widget[0].name
 
   policy = templatefile("${path.module}/files/ecr_retention_policies.json", {
     countLastImages = local.ecr_keep_last_images_count

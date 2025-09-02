@@ -62,6 +62,16 @@ variable "application_container_image_url" {
   description = "URL of the application container image in ECR"
 }
 
+variable "server_container_image_url" {
+  type        = string
+  description = "URL of the server container image in ECR"
+}
+
+variable "client_container_image_url" {
+  type        = string
+  description = "URL of the client container image in ECR"
+}
+
 variable "aws_region" {
   type    = string
   default = "eu-west-1"
@@ -71,6 +81,18 @@ variable "internal_fqdn" {
   type        = string
   default     = ""
   description = "Internal FQDN (private endpoint)"
+}
+
+variable "server_internal_fqdn" {
+  type        = string
+  default     = ""
+  description = "Server internal FQDN (private endpoint)"
+}
+
+variable "client_internal_fqdn" {
+  type        = string
+  default     = ""
+  description = "Client internal FQDN (private endpoint)"
 }
 
 variable "external_fqdn" {
