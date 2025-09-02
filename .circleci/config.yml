@@ -28,6 +28,9 @@ parameters:
   workflow:
     type: string
     default: "deploy_to_pr_env"
+  app_name:
+    type: string
+    default: "twilio-webchat-widget"
 
 executors:
   base:
