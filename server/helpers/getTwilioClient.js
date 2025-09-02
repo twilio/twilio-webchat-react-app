@@ -7,10 +7,11 @@ const getTwilioClient = () => {
         return twilioClient;
     }
 
-    // Use staging credentials which are properly configured
+    // Use API Key authentication
     const newClient = new Twilio(
-        process.env.TWILIO_ACCOUNT_SID_STAGING || process.env.ACCOUNT_SID, 
-        process.env.TWILIO_AUTH_TOKEN_STAGING || process.env.AUTH_TOKEN
+        process.env.API_KEY, 
+        process.env.API_SECRET,
+        { accountSid: process.env.ACCOUNT_SID }
     );
 
     twilioClient = newClient;

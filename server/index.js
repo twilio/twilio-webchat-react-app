@@ -2,6 +2,17 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 
+// Debug: Log key environment variables
+console.log("Environment Variables Debug:");
+console.log("ACCOUNT_SID:", process.env.ACCOUNT_SID ? "SET" : "NOT SET");
+console.log("API_KEY:", process.env.API_KEY ? "SET" : "NOT SET");
+console.log("API_SECRET:", process.env.API_SECRET ? "SET" : "NOT SET");
+console.log("CONVERSATIONS_SERVICE_SID:", process.env.CONVERSATIONS_SERVICE_SID ? "SET" : "NOT SET");
+console.log("TASKROUTER_WORKSPACE_SID:", process.env.TASKROUTER_WORKSPACE_SID ? "SET" : "NOT SET");
+console.log("WORKSPACE_SID:", process.env.WORKSPACE_SID ? "SET" : "NOT SET");
+console.log("SENDGRID_API_KEY:", process.env.SENDGRID_API_KEY ? "SET" : "NOT SET");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
 const { validateRequestOriginMiddleware } = require("./middlewares/validateRequestOriginMiddleware");
 const { initWebchatController } = require("./controllers/initWebchatController");
 const { refreshTokenController } = require("./controllers/refreshTokenController");

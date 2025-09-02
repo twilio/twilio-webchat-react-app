@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 interface RatingSubmission {
     conversationSid: string;
     rating: number;
