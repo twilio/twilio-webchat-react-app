@@ -87,6 +87,7 @@ commands:
 
 jobs:
   build-image:
+    executor: node-docker
     parameters:
       image:
         type: string
@@ -100,9 +101,14 @@ jobs:
         type: string
       dockerfile:
         type: string
-    executor: iac-base
     steps:
       - checkout
+      - attach_workspace:
+            at: ~/
+      - run:
+        name: Ensure docker-credential-helper is installed
+        command: |
+          sudo apt update && sudo apt install amazon-ecr-credential-helper
       - setup_remote_docker:
           docker_layer_caching: false
           version: default
@@ -113,6 +119,25 @@ jobs:
           repository: << parameters.repository >>
           entry: << parameters.entry >>
           dockerfile: << parameters.dockerfile >>
+
+  tag_image:
+    executor:
+      name: aws-ecr/default
+    parameters:
+      additional_tag:
+        type: string
+      source_tag:
+        type: string
+        default: "$CIRCLE_SHA1"
+    steps:
+      - attach_workspace:
+          at: ~/
+      - anyvan_github_ssh_key/install_ssh_key
+      - aws-ecr/tag_image:
+          repo: "<< pipeline.parameters.app_name >>"
+          source_tag: "<< parameters.source_tag >>"
+          target_tag: "<< parameters.additional_tag >>"
+
 
 workflows:
   # Default workflow - Deploy to PR Environment
