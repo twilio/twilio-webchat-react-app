@@ -1,74 +1,76 @@
-locals {
-  ecr_keep_last_images_count = var.env == "production" ? 40 : 200
-}
+module "ecr_repository" {
+  source  = "terraform-registry.anyvan.com/anyvan/ecr_repository/aws"
+  version = "1.1.0"
 
-resource "aws_ecr_repository" "twilio_webchat_widget" {
-  count    = var.create_ecr_repository ? 1 : 0
-  name     = var.ecr_repository_name
-  provider = aws.horizontal
-
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
+  providers = {
+    aws = aws.horizontal
   }
+  ecr_repository_name       = var.app_name
+  allow_cross_account_fetch = true
 
-  tags = tomap({ "Name" = var.ecr_repository_name })
-}
-
-resource "aws_ecr_repository_policy" "twilio_webchat_widget" {
-  policy     = data.aws_iam_policy_document.allows_other_accounts_to_retrieve.json
-  repository = aws_ecr_repository.twilio_webchat_widget[0].name
-  provider   = aws.horizontal
-}
-
-data "aws_iam_policy_document" "allows_other_accounts_to_retrieve" {
-  statement {
-    sid    = "CrossAccountRetrievalPermission"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer"
-    ]
-    principals {
-      type = "AWS"
-      identifiers = [
-        for account_id in data.terraform_remote_state.accounts.outputs.aws_accounts_ids : "arn:aws:iam::${account_id}:root"
+  lifecycle_policy = <<EOF
+    {
+      "rules": [
+        {
+          "description": "prevent removing latest two production images",
+          "rulePriority": 1,
+          "action": {
+            "type": "expire"
+          },
+          "selection": {
+            "countType": "imageCountMoreThan",
+            "countNumber": 2,
+            "tagStatus": "tagged",
+            "tagPatternList": [
+              "production*"
+            ]
+          }
+        },
+        {
+          "description": "prevent removing latest two staging images",
+          "rulePriority": 2,
+          "action": {
+            "type": "expire"
+          },
+          "selection": {
+            "countType": "imageCountMoreThan",
+            "countNumber": 2,
+            "tagStatus": "tagged",
+            "tagPatternList": [
+              "staging*"
+            ]
+          }
+        },
+        {
+          "description": "remove old pull_request images",
+          "rulePriority": 3,
+          "action": {
+            "type": "expire"
+          },
+          "selection": {
+            "countType": "sinceImagePushed",
+            "countUnit": "days",
+            "countNumber": 14,
+            "tagStatus": "tagged",
+            "tagPrefixList": [
+              "pull_request"
+            ]
+          }
+        },
+        {
+          "description": "remove any old images over 1 year",
+          "rulePriority": 10,
+          "action": {
+            "type": "expire"
+          },
+          "selection": {
+            "tagStatus": "any",
+            "countType": "sinceImagePushed",
+            "countUnit": "days",
+            "countNumber": 365
+          }
+        }
       ]
     }
-  }
-
-  statement {
-    sid    = "LambdaECRCrossAccountRerievalPermission"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer"
-    ]
-    principals {
-      type = "Service"
-      identifiers = [
-        "lambda.amazonaws.com"
-      ]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:sourceArn"
-      values = [
-        for account_id in data.terraform_remote_state.accounts.outputs.aws_accounts_ids : "arn:aws:lambda:${var.region}:${account_id}:function:*"
-      ]
-    }
-  }
-}
-
-resource "aws_ecr_lifecycle_policy" "twilio_webchat_widget" {
-  repository = aws_ecr_repository.twilio_webchat_widget[0].name
-
-  policy = templatefile("${path.module}/files/ecr_retention_policies.json", {
-    countLastImages = local.ecr_keep_last_images_count
-  })
-
-  provider = aws.horizontal
+  EOF
 }
