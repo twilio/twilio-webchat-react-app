@@ -81,9 +81,8 @@ jobs:
           name: "Build and push image to ECR"
           command: |
             PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name >>
-            PROJECT_REPOSITORY_HOST=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST
-            docker build -f << parameters.dockerfile >> -t "${PROJECT_REPOSITORY_URL}/<< parameters.image >>:${CIRCLE_SHA1}" .
-            docker push "${PROJECT_REPOSITORY_URL}/<< parameters.image >>:${CIRCLE_SHA1}"
+            docker build -f << parameters.dockerfile >> -t "${PROJECT_REPOSITORY_URL}:<< parameters.image >>-${CIRCLE_SHA1}" .
+            docker push "${PROJECT_REPOSITORY_URL}:<< parameters.image >>-${CIRCLE_SHA1}"
   tag_image:
     executor:
       name: aws-ecr/default
@@ -119,19 +118,19 @@ workflows:
           region: << pipeline.parameters.region >>
           account: PRODUCTION HORIZONTAL TEST1
           persist: .aws
-      - aws-ecr-helper/create_aws_ecr: &create_ecr
-          name: "Create AWS ECR repository"
-          context: anyvan
-          module_path: "iac/terraform/image_repository"
-          app_name: << pipeline.parameters.app_name >>
-          tf_version: << pipeline.parameters.terraform_version >>
-          requires:
-            - "Log in to AWS"
+#      - aws-ecr-helper/create_aws_ecr: &create_ecr
+#          name: "Create AWS ECR repository"
+#          context: anyvan
+#          module_path: "iac/terraform/image_repository"
+#          app_name: << pipeline.parameters.app_name >>
+#          tf_version: << pipeline.parameters.terraform_version >>
+#          requires:
+#            - "Log in to AWS"
       - aws-ecr-helper/ecr_login: &ecr_login
           name: "Log in to AWS ECR"
           context: anyvan
           requires:
-            - "Create AWS ECR repository"
+            - "Log in to AWS"
       # Build Server Image for PR Environment
       - build-and-push:
           name: build_webchat_server_pr
