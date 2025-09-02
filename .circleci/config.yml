@@ -1,69 +1,195 @@
 version: "2.1"
 
-setup: true
-
 orbs:
-  path-filtering: circleci/path-filtering@0.1.3
   compliance: anyvan/compliance@1
   ci: anyvan/ci@1
+  aws: anyvan/aws_auth_config@2
+  terraform-helper: anyvan/terraform-helper@1
+  node: circleci/node@5.1.0
+  aws-ecr: circleci/aws-ecr@9.0
+  aws-cli: circleci/aws-cli@3.1
 
 parameters:
-  workflow:
-    type: enum
-    enum: [
-      "default",
-      "deploy_webchat_widget",
-      "deploy_to_pr_env"
-    ]
-    default: "default"
-    description: "Select which service to deploy"
+  region:
+    default: eu-west-1
+    type: string
+  modules:
+    default: v0.0.79
+    type: string
+  terraform_version:
+    default: "1.9.5"
+    type: string
+  jira_ticket_number:
+    type: string
+    default: $(echo $CIRCLE_BRANCH | sed -ne 's/[A-Z]*-\([0-9]*\)-.*/\1/p')
+  image_tag:
+    type: string
+    default: $CIRCLE_SHA1
 
 executors:
+  base:
+    docker:
+      - image: cimg/base:current
+
   node-docker:
     docker:
       - image: cimg/node:20.19.2
     resource_class: small
 
+  iac-base:
+    docker:
+      - image: $AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/base/iac-base:noble
+        aws_auth:
+          oidc_role_arn: arn:aws:iam::$HORIZONTAL_ACCOUNT:role/circleci_oidc_role
+
+commands:
+  build-and-push:
+    parameters:
+      image:
+        type: string
+      env:
+        type: string
+      project-root:
+        type: string
+      repository:
+        type: string
+      entry:
+        type: string
+      dockerfile:
+        type: string
+      ecr_app_host:
+        type: string
+        default: $AWS_ECR_APP_IMAGES_REPOSITORY_HOST
+    steps:
+      - run:
+          name: "Build and push image to ECR"
+          command: |
+            PROJECT_REPOSITORY_URL=<< parameters.ecr_app_host >>/twilio-webchat-widget/<<parameters.env>>/<< parameters.repository >>
+            PROJECT_REPOSITORY_HOST=<< parameters.ecr_app_host >>
+            aws ecr get-login-password | docker login --username AWS --password-stdin $PROJECT_REPOSITORY_HOST
+            cd << parameters.project-root >>
+
+            docker build -f << parameters.dockerfile >> -t << parameters.image >>-latest \
+              << parameters.entry >>
+
+            docker tag << parameters.image >>-latest $PROJECT_REPOSITORY_URL:<< parameters.image >>-latest
+            docker tag << parameters.image >>-latest $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
+            docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-latest
+            docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
+
 jobs:
-  format-and-lint-check:
-    executor: node-docker
+   build-image:
+    parameters:
+      image:
+        type: string
+      project-root:
+        type: string
+      env:
+        type: string
+      repository:
+        type: string
+      entry:
+        type: string
+      dockerfile:
+        type: string
+    executor: iac-base
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            npm ci
-      - run:
-          name: Run format check
-          command: |
-            npm run format:check
-
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: default
+      - build-and-push:
+          image: << parameters.image >>
+          env: << parameters.env >>
+          project-root: << parameters.project-root >>
+          repository: << parameters.repository >>
+          entry: << parameters.entry >>
+          dockerfile: << parameters.dockerfile >>
 
 workflows:
-  setup:
+  # Default workflow - Deploy to PR Environment
+  deploy_to_pr_env:
     when:
-      equal: ["default", << pipeline.parameters.workflow >>]
+      and:
+        - not:
+            equal: ["main", << pipeline.git.branch >>]
+        - not:
+            equal: ["", << pipeline.parameters.jira_ticket_number >>]
+    jobs:
+      - aws/init:
+          name: "Log in to AWS"
+          context: anyvan
+          region: << pipeline.parameters.region >>
+          account: PRODUCTION HORIZONTAL TEST1
+      
+      # Build Server Image for PR Environment
+      - build-image:
+          name: build_webchat_server_pr
+          project-root: .
+          entry: .
+          repository: server
+          image: twilio-webchat-server
+          dockerfile: Dockerfile.server
+          env: testing
+          requires:
+            - "Log in to AWS"
+      
+      # Build Client Image for PR Environment
+      - build-image:
+          name: build_webchat_client_pr
+          project-root: .
+          entry: .
+          repository: client
+          image: twilio-webchat-client
+          dockerfile: Dockerfile.client
+          env: testing
+          requires:
+            - "Log in to AWS"
+      
+      # Plan Terraform for PR Environment
+      - terraform-helper/plan:
+          name: plan_webchat_widget_pr
+          context:
+            - anyvan
+            - twilio-flex-stage
+          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
+          var: >-
+            jira_ticket_number=<< pipeline.parameters.jira_ticket_number >>,
+            server_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/server:twilio-webchat-server-<< pipeline.parameters.image_tag >>,
+            client_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/client:twilio-webchat-client-<< pipeline.parameters.image_tag >>,
+            git_sha=$CIRCLE_SHA1,
+            terraform_version=<< pipeline.parameters.terraform_version >>
+          var_file: env/testing.tfvars
+          modules_branch: << pipeline.parameters.modules >>
+          path: terraform/
+          terraform_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - build_webchat_server_pr
+            - build_webchat_client_pr
+      
+      # Apply Terraform for PR Environment
+      - terraform-helper/apply:
+          name: apply_webchat_widget_pr
+          context: anyvan
+          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
+          modules_branch: << pipeline.parameters.modules >>
+          path: terraform/
+          terraform_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - plan_webchat_widget_pr
+
+
+  # Scheduled cleanup
+  scheduled:
+    triggers:
+      - schedule:
+          cron: "0 1 * * *"
+          filters:
+            branches:
+              only: main
     jobs:
       - compliance/verify:
           context: anyvan
-      - format-and-lint-check
-      - path-filtering/filter:
-          name: "Setup deployment workflow"
-          base-revision: master
-          config-path: .circleci/continue-config.yml
-          mapping: |
-            .* run-continue-workflow true
-          requires:
-            - format-and-lint-check
-
-  deploy-workflow:
-    when:
-      not:
-        equal: ["default", << pipeline.parameters.workflow >>]
-    jobs:
-      - path-filtering/filter:
-          name: "Setup deployment workflow"
-          base-revision: master
-          config-path: .circleci/continue-config.yml
-          mapping: |
-            .* run-continue-workflow true
+      - ci/cancel_workflows:
+          context: anyvan
+          timeout: 3d
