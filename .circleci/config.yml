@@ -1,13 +1,15 @@
 version: "2.1"
 
 orbs:
-  compliance: anyvan/compliance@1
-  ci: anyvan/ci@1
-  aws: anyvan/aws_auth_config@2
-  terraform-helper: anyvan/terraform-helper@1
   node: circleci/node@5.1.0
   aws-ecr: circleci/aws-ecr@9.0
   aws-cli: circleci/aws-cli@3.1
+  terraform-helper: anyvan/terraform-helper@1
+  aws: anyvan/aws_auth_config@1
+  deployments: anyvan/deployments@1
+  aws-ecr-helper: anyvan/aws-ecr-helper@2
+  aws-tunnel-helper: anyvan/aws-tunnel-helper@2
+  anyvan_github_ssh_key: anyvan/ssh_key_github@1
 
 parameters:
   region:
