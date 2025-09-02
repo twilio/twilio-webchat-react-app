@@ -25,6 +25,9 @@ parameters:
   image_tag:
     type: string
     default: $CIRCLE_SHA1
+  workflow:
+    type: string
+    default: "deploy_to_pr_env"
 
 executors:
   base:
