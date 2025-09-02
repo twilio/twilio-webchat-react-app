@@ -50,14 +50,14 @@ executors:
         aws_auth:
           oidc_role_arn: arn:aws:iam::$HORIZONTAL_ACCOUNT:role/circleci_oidc_role
 
-commands:
+jobs:
   build-and-push:
     parameters:
       image:
         type: string
-      env:
-        type: string
       project-root:
+        type: string
+      env:
         type: string
       repository:
         type: string
@@ -65,10 +65,18 @@ commands:
         type: string
       dockerfile:
         type: string
-      ecr_app_host:
-        type: string
-        default: $AWS_ECR_APP_IMAGES_REPOSITORY_HOST
+    executor: node-docker
     steps:
+      - checkout
+      - attach_workspace:
+            at: ~/
+      - run:
+          name: Ensure docker-credential-helper is installed
+          command: |
+            sudo apt update && sudo apt install amazon-ecr-credential-helper
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: default
       - run:
           name: "Build and push image to ECR"
           command: |
@@ -84,41 +92,6 @@ commands:
             docker tag << parameters.image >>-latest $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
             docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-latest
             docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
-
-jobs:
-  build-image:
-    executor: node-docker
-    parameters:
-      image:
-        type: string
-      project-root:
-        type: string
-      env:
-        type: string
-      repository:
-        type: string
-      entry:
-        type: string
-      dockerfile:
-        type: string
-    steps:
-      - checkout
-      - attach_workspace:
-            at: ~/
-      - run:
-        name: Ensure docker-credential-helper is installed
-        command: |
-          sudo apt update && sudo apt install amazon-ecr-credential-helper
-      - setup_remote_docker:
-          docker_layer_caching: false
-          version: default
-      - build-and-push:
-          image: << parameters.image >>
-          env: << parameters.env >>
-          project-root: << parameters.project-root >>
-          repository: << parameters.repository >>
-          entry: << parameters.entry >>
-          dockerfile: << parameters.dockerfile >>
 
   tag_image:
     executor:
