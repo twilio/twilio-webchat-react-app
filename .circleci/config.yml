@@ -83,8 +83,8 @@ jobs:
             PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/<<parameters.env>>/<< parameters.repository >>
             PROJECT_REPOSITORY_HOST=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST
             
-            docker build -f << parameters.dockerfile >> -t << parameters.image >>:$CIRCLE_SHA1  
-            docker push $PROJECT_REPOSITORY_URL:<< parameters.image >>-$CIRCLE_SHA1
+            docker build -f << parameters.dockerfile >> -t $PROJECT_REPOSITORY_URL/<< parameters.image >>:$CIRCLE_SHA1 .
+            docker push $PROJECT_REPOSITORY_URL/<< parameters.image >>:$CIRCLE_SHA1
 
   tag_image:
     executor:
