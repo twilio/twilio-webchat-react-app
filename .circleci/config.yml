@@ -32,7 +32,7 @@ parameters:
     default: "deploy_to_pr_env"
   app_name:
     type: string
-    default: "twilio-webchat-widget"
+    default: "<< pipeline.parameters.app_name >>"
 
 executors:
   base:
@@ -80,7 +80,7 @@ jobs:
       - run:
           name: "Build and push image to ECR"
           command: |
-            PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/<<parameters.env>>/<< parameters.repository >>
+            PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name >>
             PROJECT_REPOSITORY_HOST=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST
             
             docker build -f << parameters.dockerfile >> -t $PROJECT_REPOSITORY_URL/<< parameters.image >>:$CIRCLE_SHA1 .
@@ -168,11 +168,11 @@ workflows:
           context:
             - anyvan
             - twilio-flex-stage
-          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
+          workspace: testing-<< pipeline.parameters.app_name >>-<< pipeline.parameters.jira_ticket_number >>
           var: >-
             jira_ticket_number=<< pipeline.parameters.jira_ticket_number >>,
-            server_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/server:twilio-webchat-server-<< pipeline.parameters.image_tag >>,
-            client_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/twilio-webchat-widget/testing/client:twilio-webchat-client-<< pipeline.parameters.image_tag >>,
+            server_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name >>/twilio-webchat-server-<< pipeline.parameters.image_tag >>,
+            client_container_image_url=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name >>/twilio-webchat-client-<< pipeline.parameters.image_tag >>,
             git_sha=$CIRCLE_SHA1,
             terraform_version=<< pipeline.parameters.terraform_version >>
           var_file: env/testing.tfvars
@@ -187,7 +187,7 @@ workflows:
       - terraform-helper/apply: &apply
           name: apply_webchat_widget_pr
           context: anyvan
-          workspace: testing-twilio-webchat-widget-<< pipeline.parameters.jira_ticket_number >>
+          workspace: testing-<< pipeline.parameters.app_name >>-<< pipeline.parameters.jira_ticket_number >>
           modules_branch: << pipeline.parameters.modules >>
           path: terraform/
           terraform_version: << pipeline.parameters.terraform_version >>
