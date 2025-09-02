@@ -81,6 +81,7 @@ jobs:
           name: "Build and push image to ECR"
           command: |
             PROJECT_REPOSITORY_URL=$AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/<< pipeline.parameters.app_name >>
+            echo "Repository URL: $PROJECT_REPOSITORY_URL"
             docker build -f << parameters.dockerfile >> -t "${PROJECT_REPOSITORY_URL}:<< parameters.image >>-${CIRCLE_SHA1}" .
             docker push "${PROJECT_REPOSITORY_URL}:<< parameters.image >>-${CIRCLE_SHA1}"
   tag_image:
