@@ -1,114 +1,69 @@
-# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
-version: 2.1
+version: "2.1"
 
-# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
-# See: https://circleci.com/docs/2.0/orb-intro/
+setup: true
+
 orbs:
-  node: circleci/node@4.7
-  cypress: cypress-io/cypress@1
+  path-filtering: circleci/path-filtering@0.1.3
+  compliance: anyvan/compliance@1
+  ci: anyvan/ci@1
+
+parameters:
+  workflow:
+    type: enum
+    enum: [
+      "default",
+      "deploy_webchat_widget",
+      "deploy_to_pr_env"
+    ]
+    default: "default"
+    description: "Select which service to deploy"
 
 executors:
-  with-chrome:
+  node-docker:
     docker:
-      - image: 'cypress/browsers:node14.17.0-chrome91-ff89'
+      - image: cimg/node:20.19.2
+    resource_class: small
 
 jobs:
-  cleanUp:
-    docker:
-      - image: cimg/node:14.18.1
+  format-and-lint-check:
+    executor: node-docker
     steps:
       - checkout
       - run:
-          command: npm install twilio --no-save
-          name: Install Twilio client
-      - run:
+          name: Install dependencies
           command: |
-            yarn e2eCleanupExistingTasks \
-                accountSid=$TWILIO_ACCOUNT_SID \
-                authToken=$TWILIO_AUTH_TOKEN \
-          name: Cleanup existing tasks
-  runUnitTests:
-    docker:
-      - image: cimg/node:14.18.1
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          with-cache: true
+            npm ci
       - run:
-          command: yarn test:nowatch
-          name: Run YARN tests
-  cypressTestsOnSauce:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - run:
-          name: "Install dependencies"
+          name: Run format check
           command: |
-            yarn install --frozen-lockfile
-      - run:
-          name: "Initialize accounts"
-          command: |
-                yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-      - run:
-          name: "Running Application"
-          background: true
-          command: |
-            yarn start & yarn server:ci
-      - run:
-          name: "Set Up Tunnel"
-          background: true
-          command: |
-            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
-            tar -xzf saucelabs.tar.gz
-            cd sc-*
-            bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} --region ${SAUCE_REGION} --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
-      - run:
-          name: "Install Sauce Labs saucectl"
-          command: |
-            curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
-            chmod 700 get_saucectl.sh && \
-            sudo ./get_saucectl.sh -b /usr/local/bin
-      - run:
-          name: "Configure Sauce saucectl"
-          command: |
-            saucectl configure -u ${SAUCE_USERNAME} -a ${SAUCE_ACCESS_KEY}
-      - run:
-          name: "Run Cypress on Sauce"
-          command: |
-            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e TEST_EMAIL=${TEST_EMAIL}
+            npm run format:check
+
 
 workflows:
-  build:
+  setup:
+    when:
+      equal: ["default", << pipeline.parameters.workflow >>]
     jobs:
-      - cleanUp
-      - runUnitTests:
+      - compliance/verify:
+          context: anyvan
+      - format-and-lint-check
+      - path-filtering/filter:
+          name: "Setup deployment workflow"
+          base-revision: master
+          config-path: .circleci/continue-config.yml
+          mapping: |
+            .* run-continue-workflow true
           requires:
-            - cleanUp
-      - cypress/run:
-          requires:
-            - cleanUp
-          executor: with-chrome
-          post-install:
-            - run: "yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-                "
-          browser: chrome
-          yarn: true
-          start: 'yarn start & yarn server:ci' # start server before running tests
-          store_artifacts: true
-      - cypressTestsOnSauce:
-          requires:
-            - cleanUp
+            - format-and-lint-check
+
+  deploy-workflow:
+    when:
+      not:
+        equal: ["default", << pipeline.parameters.workflow >>]
+    jobs:
+      - path-filtering/filter:
+          name: "Setup deployment workflow"
+          base-revision: master
+          config-path: .circleci/continue-config.yml
+          mapping: |
+            .* run-continue-workflow true
