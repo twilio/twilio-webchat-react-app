@@ -30,15 +30,15 @@ module "webchat_client" {
 
   task_permissions = {
     allow_sm = {
-      sm_arns = []
+      sm_arns  = []
       key_arns = []
     }
     ecs_task_statements = []
   }
-  
+
   env_variables = {
-    NODE_ENV = "production"
-    PORT = "3000"
+    NODE_ENV             = "production"
+    PORT                 = "3000"
     REACT_APP_SERVER_URL = "https://${local.server_internal_fqdn}"
   }
 

@@ -37,7 +37,7 @@ module "webchat_server" {
     }
     ecs_task_statements = []
   }
-  
+
   env_variables = {
     NODE_ENV = "production"
   }

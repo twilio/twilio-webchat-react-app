@@ -21,7 +21,7 @@ locals {
 
   internal_fqdn = var.env == "testing" ? replace(var.internal_fqdn, "<jira-ticket-number>", var.jira_ticket_number) : var.internal_fqdn
   external_fqdn = var.env == "testing" ? replace(var.external_fqdn, "<jira-ticket-number>", var.jira_ticket_number) : var.external_fqdn
-  
+
   # Server and Client specific FQDNs
   server_internal_fqdn = var.env == "testing" ? replace(var.server_internal_fqdn, "<jira-ticket-number>", var.jira_ticket_number) : var.server_internal_fqdn
   client_internal_fqdn = var.env == "testing" ? replace(var.client_internal_fqdn, "<jira-ticket-number>", var.jira_ticket_number) : var.client_internal_fqdn
