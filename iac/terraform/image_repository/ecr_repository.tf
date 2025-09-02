@@ -5,7 +5,7 @@ module "ecr_repository" {
   providers = {
     aws = aws.horizontal
   }
-  ecr_repository_name       = var.app_name
+  ecr_repository_name       = "${var.app_name}/${var.env}/${var.repository_name}"
   allow_cross_account_fetch = true
 
   lifecycle_policy = <<EOF

@@ -120,19 +120,26 @@ workflows:
           region: << pipeline.parameters.region >>
           account: PRODUCTION HORIZONTAL TEST1
           persist: .aws
-#      - aws-ecr-helper/create_aws_ecr: &create_ecr
-#          name: "Create AWS ECR repository"
-#          context: anyvan
-#          module_path: "iac/terraform/image_repository"
-#          app_name: << pipeline.parameters.app_name >>
-#          tf_version: << pipeline.parameters.terraform_version >>
-#          requires:
-#            - "Log in to AWS"
+      - aws-ecr-helper/create_aws_ecr: &create_ecr
+          name: "Create AWS ECR Client repository"
+          context: anyvan
+          module_path: "iac/terraform/image_repository"
+          app_name: << pipeline.parameters.app_name >>
+          env: testing
+          repository_name: twilio-webchat-client
+          tf_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - "Log in to AWS"
+      - aws-ecr-helper/create_aws_ecr:
+          <<: *create_ecr
+          name: "Create AWS ECR Server repository"
+          repository_name: twilio-webchat-server
       - aws-ecr-helper/ecr_login: &ecr_login
           name: "Log in to AWS ECR"
           context: anyvan
           requires:
-            - "Log in to AWS"
+            - "Create AWS ECR Server repository"
+            - "Create AWS ECR Client repository"
       # Build Server Image for PR Environment
       - build-and-push:
           name: build_webchat_server_pr
