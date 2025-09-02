@@ -142,7 +142,7 @@ workflows:
           requires:
             - "Create AWS ECR repository"
       # Build Server Image for PR Environment
-      - build-image:
+      - build-and-push:
           name: build_webchat_server_pr
           project-root: .
           entry: .
@@ -154,7 +154,7 @@ workflows:
             - "Log in to AWS ECR"
       
       # Build Client Image for PR Environment
-      - build-image:
+      - build-and-push:
           name: build_webchat_client_pr
           project-root: .
           entry: .
