@@ -128,7 +128,23 @@ workflows:
           region: << pipeline.parameters.region >>
           account: PRODUCTION HORIZONTAL TEST1
           persist: .aws
-      
+      - login-codeartifact-registry:
+          name: "Log in to AWS CodeArtifact"
+          requires:
+            - "Log in to AWS"
+      - aws-ecr-helper/create_aws_ecr: &create_ecr
+          name: "Create AWS ECR repository"
+          context: anyvan
+          module_path: "iac/terraform/image_repository"
+          app_name: << pipeline.parameters.app_name >>
+          tf_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - "Log in to AWS"
+      - aws-ecr-helper/ecr_login: &ecr_login
+          name: "Log in to AWS ECR"
+          context: anyvan
+          requires:
+            - "Create AWS ECR repository"
       # Build Server Image for PR Environment
       - build-image:
           name: build_webchat_server_pr
