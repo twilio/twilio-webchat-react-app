@@ -131,7 +131,7 @@ workflows:
       - aws-ecr-helper/create_aws_ecr:
           <<: *create_ecr
           name: "Create AWS ECR Server repository"
-          app_name: testing/twilio-webchat-server
+          app_name: twilio-webchat-server
       - aws-ecr-helper/ecr_login: &ecr_login
           name: "Log in to AWS ECR"
           context: anyvan
