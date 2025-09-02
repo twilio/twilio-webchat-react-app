@@ -153,7 +153,7 @@ workflows:
           dockerfile: Dockerfile.server
           env: testing
           requires:
-            - "Log in to AWS"
+            - "Log in to AWS ECR"
       
       # Build Client Image for PR Environment
       - build-image:
@@ -165,7 +165,7 @@ workflows:
           dockerfile: Dockerfile.client
           env: testing
           requires:
-            - "Log in to AWS"
+            - "Log in to AWS ECR"
       
       # Plan Terraform for PR Environment
       - terraform-helper/plan: &plan
