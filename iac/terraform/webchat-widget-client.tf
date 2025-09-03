@@ -2,7 +2,7 @@ module "webchat_client" {
   source  = "terraform-registry.anyvan.com/anyvan/ecs_project/aws"
   version = "~>1.6.2"
 
-  app_name                        = "${var.webchat_widget_name}-client"
+  app_name                        = "twilio-webchat-client"
   env                             = var.env
   jira_ticket_number              = var.jira_ticket_number
   application_container_image_url = var.client_container_image_url

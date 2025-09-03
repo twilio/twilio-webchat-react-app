@@ -1,8 +1,6 @@
 region               = "eu-west-1"
-env                  = "testing"
-prefix               = "test"
+env                  = "development"
 profile              = "test1"
-ecr_repository_name  = "twilio-webchat-widget/testing"
 vpc_environment      = "staging"
 notify               = ["@slack-alerting-centralised"]
 internal_fqdn        = "test-webchat-widget-internal-<jira-ticket-number>.anyvan.com"

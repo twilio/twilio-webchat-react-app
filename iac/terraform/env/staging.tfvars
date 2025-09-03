@@ -1,8 +1,6 @@
 region               = "eu-west-1"
 env                  = "staging"
-prefix               = "stage"
 profile              = "test1"
-ecr_repository_name  = "twilio-webchat-widget/stage"
 vpc_environment      = "staging"
 notify               = ["@slack-alerting-centralised"]
 internal_fqdn        = "stage-webchat-widget-internal.anyvan.com"

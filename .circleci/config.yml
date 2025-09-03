@@ -151,7 +151,7 @@ workflows:
           repository: server
           image: twilio-webchat-server
           dockerfile: Dockerfile.server
-          env: testing
+          env: development
           requires:
             - "Log in to AWS ECR"
 
@@ -163,7 +163,7 @@ workflows:
           repository: client
           image: twilio-webchat-client
           dockerfile: Dockerfile.client
-          env: testing
+          env: development
           requires:
             - "Log in to AWS ECR"
       - hold_pr:
@@ -184,7 +184,7 @@ workflows:
             client_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-client-<< pipeline.parameters.image_tag >>,
             git_sha=$CIRCLE_SHA1,
             terraform_version=<< pipeline.parameters.terraform_version >>
-          var_file: env/testing.tfvars
+          var_file: env/development.tfvars
           modules_branch: << pipeline.parameters.modules >>
           path: iac/terraform/
           terraform_version: << pipeline.parameters.terraform_version >>
