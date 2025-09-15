@@ -180,8 +180,8 @@ workflows:
           workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
           var: >-
             jira_ticket_number=<< pipeline.parameters.jira_ticket_number >>,
-            server_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-server-<< pipeline.parameters.image_tag >>,
-            client_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-client-<< pipeline.parameters.image_tag >>,
+            server_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-server:${CIRCLE_SHA1},
+            client_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-client:${CIRCLE_SHA1},
             git_sha=$CIRCLE_SHA1,
             terraform_version=<< pipeline.parameters.terraform_version >>
           var_file: env/development.tfvars
