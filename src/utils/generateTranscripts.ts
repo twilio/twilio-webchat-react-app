@@ -1,6 +1,7 @@
 import { Media, Message, User } from "@twilio/conversations";
 
 import { generateDuration } from "./generateDuration";
+import { getFirstName } from "./getFirstName";
 
 interface Transcript {
     author?: string;
@@ -13,9 +14,18 @@ const getTranscriptData = (messages: Message[] | undefined, users: User[] | unde
     const transcriptData = [];
     if (messages && users) {
         for (const message of messages) {
+            // Filter out system messages
+            if (message.author === "System") {
+                continue;
+            }
+            
             const currentUser = users.find((user) => user.identity === message.author);
+            const fullName = message.author === "Concierge" ? message.author : (currentUser?.friendlyName || message.author || "AnyVan Support");
+            const isCustomer = message.author === currentUser?.identity; // Assuming customer is the current user
+            const displayName = isCustomer ? fullName : getFirstName(fullName);
+            
             transcriptData.push({
-                author: message.author === "Concierge" ? message.author : currentUser?.friendlyName,
+                author: displayName,
                 body: message.body,
                 timeStamp: message.dateCreated,
                 attachedMedia: message.attachedMedia

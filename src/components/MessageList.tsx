@@ -10,6 +10,7 @@ import { MessageBubble } from "./MessageBubble";
 import { AppState } from "../store/definitions";
 import { getMoreMessages } from "../store/actions/genericActions";
 import { getDaysOld } from "../utils/getDaysOld";
+import { getFirstName } from "../utils/getFirstName";
 import { MessageListSeparator } from "./MessageListSeparator";
 import { MESSAGES_SPINNER_BOX_HEIGHT } from "../constants";
 import {
@@ -106,7 +107,12 @@ export const MessageList = () => {
         const checkIfAllMessagesLoaded = async () => {
             const totalMessagesCount = await conversation?.getMessagesCount();
             if (totalMessagesCount) {
-                setHasLoadedAllMessages(totalMessagesCount === messages?.length);
+                /*
+                 * Account for filtered system messages by subtracting 1 from total count
+                 * since we filter out the system message
+                 */
+                const expectedCount = totalMessagesCount - 1;
+                setHasLoadedAllMessages(expectedCount === messages?.length);
             }
 
             // if messages were added to state, loading is complete
@@ -130,7 +136,7 @@ export const MessageList = () => {
             oldMessagesLength.current = messages.length;
             const totalMessagesCount = await conversation?.getMessagesCount();
 
-            if (totalMessagesCount && messages.length < totalMessagesCount) {
+            if (totalMessagesCount && messages.length < totalMessagesCount - 1) {
                 dispatch(getMoreMessages({ anchor: totalMessagesCount - messages.length - 1, conversation }));
             }
         }
@@ -244,7 +250,7 @@ export const MessageList = () => {
                         ?.filter((p) => p.isTyping && p.identity !== conversationsClient?.user.identity)
                         .map((p) => (
                             <Text {...participantTypingStyles} as="p" key={p.identity}>
-                                {users?.find((u) => u.identity === p.identity)?.friendlyName} is typing...
+                                {getFirstName(users?.find((u) => u.identity === p.identity)?.friendlyName)} is typing...
                             </Text>
                         ))}
                 </Box>

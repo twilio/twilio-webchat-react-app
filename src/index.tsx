@@ -10,7 +10,7 @@ import { ConfigState } from "./store/definitions";
 import { initLogger } from "./logger";
 
 const defaultConfig: ConfigState = {
-    serverUrl: "http://localhost:3001",
+    serverUrl: "http://localhost:3002",
     theme: {
         isLight: true
     },

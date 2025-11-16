@@ -14,7 +14,8 @@ jest.mock("react-redux", () => ({
 
 jest.mock("../../sessionDataHandler", () => ({
     sessionDataHandler: {
-        tryResumeExistingSession: jest.fn()
+        tryResumeExistingSession: jest.fn(),
+        clear: jest.fn()
     }
 }));
 
@@ -52,31 +53,12 @@ describe("Webchat Lite", () => {
         expect(queryByTitle("RootContainer")).toBeInTheDocument();
     });
 
-    it("initializes session with fetched session data", () => {
-        const initSessionSpy = jest.spyOn(initActions, "initSession");
-
-        render(<WebchatWidget />);
-
-        expect(initSessionSpy).toHaveBeenCalledWith(sessionData);
-    });
-
-    it("start pre-engagement form if no pre-existing session data", () => {
-        (sessionDataHandler.tryResumeExistingSession as jest.Mock).mockReturnValueOnce(null);
+    it("clears session data and starts pre-engagement form", () => {
         const changeEngagementPhaseSpy = jest.spyOn(genericActions, "changeEngagementPhase");
 
         render(<WebchatWidget />);
 
-        expect(changeEngagementPhaseSpy).toHaveBeenCalledWith({ phase: EngagementPhase.PreEngagementForm });
-    });
-
-    it("start pre-engagement form if session initialization failed", () => {
-        (initActions.initSession as jest.Mock).mockImplementationOnce(() => {
-            throw new Error("Failed Initialization");
-        });
-        const changeEngagementPhaseSpy = jest.spyOn(genericActions, "changeEngagementPhase");
-
-        render(<WebchatWidget />);
-
+        expect(sessionDataHandler.clear).toHaveBeenCalled();
         expect(changeEngagementPhaseSpy).toHaveBeenCalledWith({ phase: EngagementPhase.PreEngagementForm });
     });
 });

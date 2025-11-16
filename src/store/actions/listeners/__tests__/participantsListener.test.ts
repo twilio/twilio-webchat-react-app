@@ -67,12 +67,22 @@ describe("initParticipantsListener", () => {
         });
     });
 
-    it('adds a listener for the "participantLeft" event', () => {
+    it('adds a listener for the "participantLeft" event', async () => {
         const dispatch = jest.fn();
+        
+        // Mock the conversation's localParticipant to simulate a customer
+        (conversation as any).localParticipant = { identity: 'customer@example.com' };
+        
+        // Mock the user identity to simulate an agent
+        (user as any).identity = 'agent@example.com';
 
         initParticipantsListener(conversation, dispatch);
         conversation.emit("participantLeft", participant);
-        expect(dispatch).toHaveBeenCalledTimes(1);
+        
+        await waitFor(() => {
+            expect(dispatch).toHaveBeenCalledTimes(1);
+        });
+        
         expect(dispatch).toHaveBeenCalledWith({
             type: ACTION_REMOVE_PARTICIPANT,
             payload: expect.objectContaining({ participant })

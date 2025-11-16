@@ -5,6 +5,11 @@ import { ACTION_ADD_MESSAGE, ACTION_REMOVE_MESSAGE, ACTION_UPDATE_MESSAGE } from
 
 export const initMessagesListener = (conversation: Conversation, dispatch: Dispatch) => {
     conversation.addListener("messageAdded", (message: Message) => {
+        // Filter out system messages so they don't appear to customers
+        if (message.author === "System") {
+            return;
+        }
+        
         dispatch({
             type: ACTION_ADD_MESSAGE,
             payload: { message }

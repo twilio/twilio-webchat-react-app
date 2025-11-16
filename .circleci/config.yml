@@ -1,114 +1,240 @@
-# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
-version: 2.1
+version: "2.1"
 
-# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
-# See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
-  node: circleci/node@4.7
-  cypress: cypress-io/cypress@1
+  node: circleci/node@5.1.0
+  aws-ecr: circleci/aws-ecr@9.0
+  aws-cli: circleci/aws-cli@3.1
+  terraform-helper: anyvan/terraform-helper@1
+  aws: anyvan/aws_auth_config@1
+  deployments: anyvan/deployments@1
+  aws-ecr-helper: anyvan/aws-ecr-helper@2
+  aws-tunnel-helper: anyvan/aws-tunnel-helper@2
+  anyvan_github_ssh_key: anyvan/ssh_key_github@1
+
+parameters:
+  region:
+    default: eu-west-1
+    type: string
+  modules:
+    default: v0.0.79
+    type: string
+  terraform_version:
+    default: "1.9.5"
+    type: string
+  jira_ticket_number:
+    type: string
+    default: $(echo $CIRCLE_BRANCH | sed -ne 's/[A-Z]*-\([0-9]*\)-.*/\1/p')
+  image_tag:
+    type: string
+    default: $CIRCLE_SHA1
+  workflow:
+    type: string
+    default: "deploy_to_pr_env"
+  app_name:
+    type: string
+    default: "twilio-webchat-widget"
+  ecr_repo_host:
+    type: string
+    default: "331151898531.dkr.ecr.eu-west-1.amazonaws.com"
+
 
 executors:
-  with-chrome:
+  base:
     docker:
-      - image: 'cypress/browsers:node14.17.0-chrome91-ff89'
+      - image: cimg/base:current
+
+  node-docker:
+    docker:
+      - image: cimg/node:20.19.2
+    resource_class: small
+
+  iac-base:
+    docker:
+      - image: $AWS_ECR_CIRCLECI_IMAGES_REPOSITORY_HOST/base/iac-base:noble
+        aws_auth:
+          oidc_role_arn: arn:aws:iam::$HORIZONTAL_ACCOUNT:role/circleci_oidc_role
 
 jobs:
-  cleanUp:
-    docker:
-      - image: cimg/node:14.18.1
+  build-and-push:
+    parameters:
+      image:
+        type: string
+      project-root:
+        type: string
+      env:
+        type: string
+      repository:
+        type: string
+      entry:
+        type: string
+      dockerfile:
+        type: string
+    executor: node-docker
     steps:
       - checkout
+      - attach_workspace:
+            at: ~/
       - run:
-          command: npm install twilio --no-save
-          name: Install Twilio client
-      - run:
+          name: Ensure docker-credential-helper is installed
           command: |
-            yarn e2eCleanupExistingTasks \
-                accountSid=$TWILIO_ACCOUNT_SID \
-                authToken=$TWILIO_AUTH_TOKEN \
-          name: Cleanup existing tasks
-  runUnitTests:
-    docker:
-      - image: cimg/node:14.18.1
+            sudo apt update && sudo apt install amazon-ecr-credential-helper
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: default
+      - run:
+          name: "Build and push image to ECR"
+          command: |
+            
+            PROJECT_REPOSITORY_URL=<< pipeline.parameters.ecr_repo_host >>/<< parameters.image >>
+            echo "Repository URL: $PROJECT_REPOSITORY_URL"
+            docker build -f << parameters.dockerfile >> -t "${PROJECT_REPOSITORY_URL}:${CIRCLE_SHA1}" .
+            docker push "${PROJECT_REPOSITORY_URL}:${CIRCLE_SHA1}"
+  tag_image:
+    executor:
+      name: aws-ecr/default
+    parameters:
+      additional_tag:
+        type: string
+      source_tag:
+        type: string
+        default: "$CIRCLE_SHA1"
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          with-cache: true
-      - run:
-          command: yarn test:nowatch
-          name: Run YARN tests
-  cypressTestsOnSauce:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - run:
-          name: "Install dependencies"
-          command: |
-            yarn install --frozen-lockfile
-      - run:
-          name: "Initialize accounts"
-          command: |
-                yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-      - run:
-          name: "Running Application"
-          background: true
-          command: |
-            yarn start & yarn server:ci
-      - run:
-          name: "Set Up Tunnel"
-          background: true
-          command: |
-            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
-            tar -xzf saucelabs.tar.gz
-            cd sc-*
-            bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} --region ${SAUCE_REGION} --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER}
-      - run:
-          name: "Install Sauce Labs saucectl"
-          command: |
-            curl -fsSL -o get_saucectl.sh https://saucelabs.github.io/saucectl/install && \
-            chmod 700 get_saucectl.sh && \
-            sudo ./get_saucectl.sh -b /usr/local/bin
-      - run:
-          name: "Configure Sauce saucectl"
-          command: |
-            saucectl configure -u ${SAUCE_USERNAME} -a ${SAUCE_ACCESS_KEY}
-      - run:
-          name: "Run Cypress on Sauce"
-          command: |
-            saucectl run --tunnel-name ${SAUCE_TUNNEL_IDENTIFIER} -e TEST_EMAIL=${TEST_EMAIL}
+      - attach_workspace:
+          at: ~/
+      - anyvan_github_ssh_key/install_ssh_key
+      - aws-ecr/tag_image:
+          repo: "<< pipeline.parameters.app_name >>"
+          source_tag: "<< parameters.source_tag >>"
+          target_tag: "<< parameters.additional_tag >>"
+
 
 workflows:
-  build:
+  # Default workflow - Deploy to PR Environment
+  deploy_to_pr_env:
+    when:
+      and:
+        - not:
+            equal: ["main", << pipeline.git.branch >>]
+        - not:
+            equal: ["", << pipeline.parameters.jira_ticket_number >>]
     jobs:
-      - cleanUp
-      - runUnitTests:
+      - aws/init: &aws_init
+          name: "Log in to AWS"
+          context: anyvan
+          region: << pipeline.parameters.region >>
+          account: PRODUCTION HORIZONTAL TEST1
+          persist: .aws
+#      - aws-ecr-helper/create_aws_ecr: &create_ecr
+#          name: "Create AWS ECR Client repository"
+#          context: anyvan
+#          module_path: "iac/terraform/image_repository"
+#          app_name: twilio-webchat-client
+#          tf_version: << pipeline.parameters.terraform_version >>
+#          requires:
+#            - "Log in to AWS"
+#      - aws-ecr-helper/create_aws_ecr:
+#          <<: *create_ecr
+#          name: "Create AWS ECR Server repository"
+#          app_name: twilio-webchat-server
+      - aws-ecr-helper/ecr_login: &ecr_login
+          name: "Log in to AWS ECR"
+          context: anyvan
           requires:
-            - cleanUp
-      - cypress/run:
+#            - "Create AWS ECR Server repository"
+#            - "Create AWS ECR Client repository"
+            - "Log in to AWS"
+      # Build Server Image for PR Environment
+      - build-and-push:
+          name: build_webchat_server_pr
+          project-root: .
+          entry: .
+          repository: server
+          image: twilio-webchat-server
+          dockerfile: Dockerfile.server
+          env: development
           requires:
-            - cleanUp
-          executor: with-chrome
-          post-install:
-            - run: "yarn bootstrap \
-                    accountSid=$TWILIO_ACCOUNT_SID \
-                    authToken=$TWILIO_AUTH_TOKEN \
-                    addressSid=$TWILIO_ADDRESS_SID \
-                    apiKey=$TWILIO_API_KEY \
-                    apiSecret=$TWILIO_API_SECRET \
-                    conversationsServiceSid=$TWILIO_CONVERSATIONS_SERVICE_SID
-                "
-          browser: chrome
-          yarn: true
-          start: 'yarn start & yarn server:ci' # start server before running tests
-          store_artifacts: true
-      - cypressTestsOnSauce:
+            - "Log in to AWS ECR"
+
+      # Build Client Image for PR Environment
+      - build-and-push:
+          name: build_webchat_client_pr
+          project-root: .
+          entry: .
+          repository: client
+          image: twilio-webchat-client
+          dockerfile: Dockerfile.client
+          env: development
           requires:
-            - cleanUp
+            - "Log in to AWS ECR"
+      - hold_pr:
+          type: approval
+          requires:
+            - build_webchat_client_pr
+            - build_webchat_server_pr
+      # Plan Terraform for PR Environment
+      - terraform-helper/plan: &plan
+          name: plan_webchat_widget_pr
+          context:
+            - anyvan
+            - twilio-flex-stage
+          workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+          var: >-
+            jira_ticket_number=<< pipeline.parameters.jira_ticket_number >>,
+            server_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-server:${CIRCLE_SHA1},
+            client_container_image_url=<< pipeline.parameters.ecr_repo_host >>/twilio-webchat-client:${CIRCLE_SHA1},
+            git_sha=$CIRCLE_SHA1,
+            terraform_version=<< pipeline.parameters.terraform_version >>
+          var_file: env/development.tfvars
+          modules_branch: << pipeline.parameters.modules >>
+          path: iac/terraform/
+          terraform_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - hold_pr
+
+      # Apply Terraform for PR Environment
+      - terraform-helper/apply: &apply
+          name: apply_webchat_widget_pr
+          context: anyvan
+          workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+          modules_branch: << pipeline.parameters.modules >>
+          path: iac/terraform/
+          terraform_version: << pipeline.parameters.terraform_version >>
+          requires:
+            - plan_webchat_widget_pr
+
+  pull_request_closed:
+    when:
+      and:
+        - equal: [pull_request_closed, << pipeline.parameters.workflow >>]
+        - not:
+            equal: [main, << pipeline.git.branch >>]
+        - not:
+            equal: ["", << pipeline.parameters.jira_ticket_number >>]
+    jobs:
+      - aws/init:
+          *aws_init
+      - terraform-helper/plan:
+          <<: *plan
+          name: "Plan destroy PR environment"
+          env: branches
+          destroy: true
+          var_file: env/branches.tfvars
+          workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+          requires:
+            - "Log in to AWS"
+      - terraform-helper/apply:
+          <<: *apply
+          name: "Apply Destroy of PR environment"
+          destroy: true
+          workspace: << pipeline.parameters.app_name >>_branches<< pipeline.parameters.jira_ticket_number >>
+          requires:
+            - "Plan destroy PR environment"
+
+
+
+
+
+
+
+
+

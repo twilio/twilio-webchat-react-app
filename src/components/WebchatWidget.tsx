@@ -3,31 +3,35 @@ import { CustomizationProvider, CustomizationProviderProps } from "@twilio-paste
 import { CSSProperties, FC, useEffect } from "react";
 
 import { RootContainer } from "./RootContainer";
+import { ServiceRating } from "./ServiceRating";
 import { AppState, EngagementPhase } from "../store/definitions";
 import { sessionDataHandler } from "../sessionDataHandler";
-import { initSession } from "../store/actions/initActions";
 import { changeEngagementPhase } from "../store/actions/genericActions";
+import { useServiceRating } from "../hooks/useServiceRating";
 
 const AnyCustomizationProvider: FC<CustomizationProviderProps & { style: CSSProperties }> = CustomizationProvider;
 
 export function WebchatWidget() {
     const theme = useSelector((state: AppState) => state.config.theme);
     const dispatch = useDispatch();
+    const { showRatingModal, closeRatingModal, submitRating, handleSkipRating, isLoading } = useServiceRating();
 
     useEffect(() => {
-        const data = sessionDataHandler.tryResumeExistingSession();
-        if (data) {
-            try {
-                dispatch(initSession({ token: data.token, conversationSid: data.conversationSid }));
-            } catch (e) {
-                // if initSession fails, go to changeEngagement phase - most likely there's something wrong with the store token or conversation sis
-                dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-            }
-        } else {
-            // if no token is stored, got engagement form
-            dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-        }
+        // Clear session data on page refresh to ensure fresh start
+        sessionDataHandler.clear();
+        
+        // Always start with pre-engagement form
+        dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
     }, [dispatch]);
+
+    const handleRatingSubmit = async (rating: number, feedback?: string) => {
+        try {
+            await submitRating(rating, feedback);
+        } catch (error) {
+            console.error('Failed to submit rating:', error);
+            // You could show a notification here
+        }
+    };
 
     return (
         <AnyCustomizationProvider
@@ -54,6 +58,13 @@ export function WebchatWidget() {
             style={{ minHeight: "100%", minWidth: "100%" }}
         >
             <RootContainer />
+            <ServiceRating
+                isOpen={showRatingModal}
+                onClose={closeRatingModal}
+                onSubmit={handleRatingSubmit}
+                onSkip={handleSkipRating}
+                isLoading={isLoading}
+            />
         </AnyCustomizationProvider>
     );
 }

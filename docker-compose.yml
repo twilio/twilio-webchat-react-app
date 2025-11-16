@@ -1,0 +1,57 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      # Explicitly set key environment variables
+      - ACCOUNT_SID=${ACCOUNT_SID}
+      - API_KEY=${API_KEY}
+      - API_SECRET=${API_SECRET}
+      - CONVERSATIONS_SERVICE_SID=${CONVERSATIONS_SERVICE_SID}
+      - TASKROUTER_WORKSPACE_SID=${TASKROUTER_WORKSPACE_SID}
+      - TASKROUTER_WORKFLOW_SID=${TASKROUTER_WORKFLOW_SID}
+      - STUDIO_FLOW_SID=${STUDIO_FLOW_SID}
+      - WORKSPACE_SID=${WORKSPACE_SID}
+      - RATING_WORKFLOW_SID=${RATING_WORKFLOW_SID}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - FROM_EMAIL=${FROM_EMAIL}
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for development (hot reload)
+      - ./server:/app/server
+      - ./scripts:/app/scripts
+    networks:
+      - twilio-widget-network
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - REACT_APP_SERVER_URL=http://localhost:3002
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for development (hot reload)
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./config-overrides.js:/app/config-overrides.js
+    depends_on:
+      - server
+    networks:
+      - twilio-widget-network
+
+networks:
+  twilio-widget-network:
+    driver: bridge

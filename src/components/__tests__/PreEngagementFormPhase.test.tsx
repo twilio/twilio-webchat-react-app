@@ -27,14 +27,11 @@ jest.mock("../NotificationBar", () => ({
 const withStore = (Component: React.ReactElement) => <Provider store={store}>{Component}</Provider>;
 
 describe("Pre Engagement Form Phase", () => {
-    const namePlaceholderText = "Please enter your name";
     const emailPlaceholderText = "Please enter your email address";
     const queryPlaceholderText = "Ask a question";
-    const nameLabelText = "Name";
     const emailLabelText = "Email address";
-    const queryLabelText = "How can we help you?";
+    const queryLabelText = "How can we assist today?";
 
-    const name = "John";
     const email = "email@email.email";
     const query = "Why is a potato?";
 
@@ -62,17 +59,13 @@ describe("Pre Engagement Form Phase", () => {
 
     it("renders the pre-engagement form inputs and labels", () => {
         const { getByPlaceholderText, getByText } = render(withStore(<PreEngagementFormPhase />));
-        const nameInput = getByPlaceholderText(namePlaceholderText);
         const emailInput = getByPlaceholderText(emailPlaceholderText);
         const queryInput = getByPlaceholderText(queryPlaceholderText);
-        const nameLabel = getByText(nameLabelText);
         const emailLabel = getByText(emailLabelText);
         const queryLabel = getByText(queryLabelText);
 
-        expect(nameInput).toBeInTheDocument();
         expect(emailInput).toBeInTheDocument();
         expect(queryInput).toBeInTheDocument();
-        expect(nameLabel).toBeInTheDocument();
         expect(emailLabel).toBeInTheDocument();
         expect(queryLabel).toBeInTheDocument();
     });
@@ -92,15 +85,6 @@ describe("Pre Engagement Form Phase", () => {
         await waitFor(() => {
             expect(initAction.initSession).toHaveBeenCalledWith({ token, conversationSid });
         });
-    });
-
-    it("renders name input value", () => {
-        const { getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
-
-        const nameInput = getByPlaceholderText(namePlaceholderText);
-        fireEvent.change(nameInput, { target: { value: name } });
-
-        expect(nameInput).toHaveValue(name);
     });
 
     it("renders email input value", () => {
@@ -126,16 +110,14 @@ describe("Pre Engagement Form Phase", () => {
 
         const { container, getByPlaceholderText } = render(withStore(<PreEngagementFormPhase />));
         const formBox = container.querySelector("form") as HTMLFormElement;
-        const nameInput = getByPlaceholderText(namePlaceholderText);
         const emailInput = getByPlaceholderText(emailPlaceholderText);
         const queryInput = getByPlaceholderText(queryPlaceholderText);
 
-        fireEvent.change(nameInput, { target: { value: name } });
         fireEvent.change(emailInput, { target: { value: email } });
         fireEvent.change(queryInput, { target: { value: query } });
         fireEvent.submit(formBox);
 
-        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: name, query, email } });
+        expect(fetchAndStoreNewSessionSpy).toHaveBeenCalledWith({ formData: { friendlyName: "", query, email } });
     });
 
     it("submits form on enter within textarea", () => {

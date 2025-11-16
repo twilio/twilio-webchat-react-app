@@ -1,0 +1,27 @@
+# Use Node.js 18 Alpine for smaller image size
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock ./
+
+# Install dependencies
+RUN yarn install --frozen-lockfile --production=false
+
+# Copy server source code
+COPY server/ ./server/
+COPY scripts/ ./scripts/
+
+# Create build directory for static files
+RUN mkdir -p build
+
+# Expose port
+EXPOSE 3002
+
+# Set environment variables
+ENV NODE_ENV=development
+
+# Start the server
+CMD ["yarn", "server"]

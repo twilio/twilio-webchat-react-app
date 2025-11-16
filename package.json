@@ -72,7 +72,17 @@
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
     "deploy": "yarn build && node scripts/deploy",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "docker:server": "docker build -f Dockerfile.server -t twilio-widget-server . && docker run -p 3002:3002 --env-file .env twilio-widget-server",
+    "docker:client": "docker build -f Dockerfile.client -t twilio-widget-client . && docker run -p 3000:3000 --env-file .env twilio-widget-client",
+    "docker:server:build": "docker build -f Dockerfile.server -t twilio-widget-server .",
+    "docker:client:build": "docker build -f Dockerfile.client -t twilio-widget-client .",
+    "docker:server:run": "docker run -p 3002:3002 --env-file .env twilio-widget-server",
+    "docker:client:run": "docker run -p 3000:3000 --env-file .env twilio-widget-client",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "docker:logs": "docker-compose logs -f"
   },
   "browserslist": [
     ">0.2%",

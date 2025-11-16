@@ -10,6 +10,7 @@
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
 	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
 	<!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -41,9 +42,23 @@
 	<script>
 		window.addEventListener("DOMContentLoaded", () => {
 			Twilio.initWebchat({
-				serverUrl: "%REACT_APP_SERVER_URL%",
+				serverUrl: "http://localhost:3002",
 				theme: {
-					isLight: true
+					isLight: true,
+					overrides: {
+						backgroundColors: {
+							colorBackgroundPrimary: "#41A5DD",
+							colorBackgroundPrimaryStronger: "#41A5DD"
+						},
+						textColors: {
+							colorTextWeakest: "#ffffff",
+							colorTextInverse: "#ffffff"
+						},
+						fonts: {
+							fontFamilyText: "'Lato', sans-serif",
+							fontFamilyCode: "'Lato', monospace"
+						}
+					}
 				}
 			})
 		})

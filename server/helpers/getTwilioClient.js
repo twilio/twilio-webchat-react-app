@@ -7,10 +7,12 @@ const getTwilioClient = () => {
         return twilioClient;
     }
 
-    const newClient = new Twilio(process.env.API_KEY, process.env.API_SECRET, {
-        accountSid: process.env.ACCOUNT_SID,
-        region: process.env.TWILIO_REGION
-    });
+    // Use API Key authentication
+    const newClient = new Twilio(
+        process.env.API_KEY, 
+        process.env.API_SECRET,
+        { accountSid: process.env.ACCOUNT_SID }
+    );
 
     twilioClient = newClient;
 

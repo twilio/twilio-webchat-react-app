@@ -2,7 +2,7 @@ import { BoxStyleProps } from "@twilio-paste/core/box";
 
 export const containerStyles: BoxStyleProps = {
     border: "none",
-    backgroundColor: "colorBackgroundPrimary",
+    backgroundColor: "#FFC907",
     display: "flex",
     height: "sizeIcon90",
     width: "sizeIcon90",
@@ -10,16 +10,16 @@ export const containerStyles: BoxStyleProps = {
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "borderRadiusCircle",
-    color: "colorTextWeakest",
+    color: "#000000",
     cursor: "pointer",
     transition: "background-color 0.2s",
     outline: "0px",
     padding: "space0",
     _hover: {
-        backgroundColor: "colorBackgroundPrimaryStronger"
+        backgroundColor: "#FFECA8"
     },
     _focusVisible: {
-        backgroundColor: "colorBackgroundPrimaryStronger",
+        backgroundColor: "#FFECA8",
         boxShadow: "shadowFocus"
     }
-};
+} as unknown as BoxStyleProps;
