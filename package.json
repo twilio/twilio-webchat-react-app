@@ -44,7 +44,7 @@
     "@types/validator": "^13.7.17",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.4.0",
-    "axios": "^0.24.0",
+    "axios": "^1.15.0",
     "cors": "^2.8.5",
     "cypress": "12.17.2",
     "cypress-file-upload": "^5.0.8",
@@ -61,7 +61,7 @@
     "node-fetch": "^2.6.6",
     "nodemon": "^2.0.15",
     "prettier": "^2.4.1",
-    "twilio": "^3.74.0",
+    "twilio": "^4.19.3",
     "typescript": "^4.4.2",
     "webpack-bundle-analyzer": "^4.5.0"
   },
