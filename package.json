@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@emotion/core": "^10.0.28",
-    "@sendgrid/mail": "7.7.0",
+    "@sendgrid/mail": "8.0.0",
     "@twilio-paste/core": "^10.20.0",
     "@twilio-paste/icons": "^6.1.0",
     "@twilio-paste/theme": "^5.3.3",
@@ -42,7 +42,7 @@
     "@types/react-dom": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.4.0",
-    "axios": "^0.24.0",
+    "axios": "^1.15.0",
     "cors": "^2.8.5",
     "cypress": "^9.3.1",
     "cypress-file-upload": "^5.0.8",
@@ -58,7 +58,7 @@
     "node-fetch": "^2.6.6",
     "nodemon": "^2.0.15",
     "prettier": "^2.4.1",
-    "twilio": "^3.74.0",
+    "twilio": "^4.19.3",
     "typescript": "^4.4.2",
     "webpack-bundle-analyzer": "^4.5.0"
   },
