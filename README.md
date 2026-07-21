@@ -18,7 +18,8 @@ If Webchat 3.x.x’s out-of-the-box functionality doesn't fully meet your requir
 4. [Working in production](#working-in-production)
 5. [Browser support](#Browser-support)
 6. [Accessibility](#Accessibility)
-7. [FAQs](#faqs)
+7. [Security](#Security)
+8. [FAQs](#faqs)
 
 ---
 
@@ -138,6 +139,16 @@ Customers can email chat transcripts to the email address provided in the pre-en
 3. Add the SendGrid API key and verified email to the `.env` file as the values for `SENDGRID_API_KEY` and `FROM_EMAIL` respectively.
 
 The email subject and content can be customised in the configuration object, as described [here](#configuration).
+
+### Disabling Email Transcripts (Emergency Kill Switch)
+
+To disable the email transcript endpoint entirely (e.g., for security or maintenance), set:
+
+```
+EMAIL_TRANSCRIPT_DISABLED=true
+```
+
+When set, the `/email` endpoint will not be registered and will return 404. By default, the endpoint is enabled.
 
 **Customisation**
 
@@ -307,6 +318,43 @@ For more information please refer to [Twilio Conversations SDK browser support](
 Twilio Webchat React App is built using [Twilio Paste Design System](https://paste.twilio.design/) and follows accessibility standards.
 Using Webchat app as a foundation for your website chat widget will make it easier to stay WCAG compliant with your website.
 Find out more about [Twilio UX principles](https://paste.twilio.design/principles) and [inclusive design guidelines](https://paste.twilio.design/inclusive-design).
+
+# Security
+
+## Email Transcript Endpoint Protection
+
+The `/email` endpoint includes several security controls to prevent Server-Side Request Forgery (SSRF) attacks:
+
+### URL Validation
+- **HTTPS Only**: Only HTTPS URLs are allowed for media attachments
+- **Private IP Blocking**: Requests to private IP ranges are blocked:
+  - `127.0.0.0/8` (loopback)
+  - `10.0.0.0/8` (RFC1918)
+  - `172.16.0.0/12` (RFC1918)
+  - `192.168.0.0/16` (RFC1918)
+  - `169.254.0.0/16` (link-local, AWS metadata)
+- **DNS Rebinding Protection**: Hostnames are resolved and checked against private IP ranges
+
+### Request Limits
+- **Timeout**: 30 second request timeout
+- **No Redirects**: HTTP redirects are not followed
+- **Size Limit**: 25MB maximum content size per file
+- **Attachment Limit**: Maximum 10 attachments per email
+
+### Input Validation
+- Email address format validation
+- Subject line length limit (200 characters)
+- Array length matching between mediaInfo and filenames
+
+### Emergency Disable
+
+To completely disable the email transcript endpoint, set:
+
+```
+EMAIL_TRANSCRIPT_DISABLED=true
+```
+
+This will prevent the `/email` route from being registered on the server.
 
 # FAQs
 
