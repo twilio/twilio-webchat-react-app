@@ -327,24 +327,24 @@ The `/email` endpoint includes several security controls to prevent Server-Side 
 
 ### URL Validation
 - **HTTPS Only**: Only HTTPS URLs are allowed for media attachments
+- **Localhost Blocking**: The hostname `localhost` is explicitly blocked
 - **Private IP Blocking**: Requests to private IP ranges are blocked:
   - `127.0.0.0/8` (loopback)
   - `10.0.0.0/8` (RFC1918)
   - `172.16.0.0/12` (RFC1918)
   - `192.168.0.0/16` (RFC1918)
   - `169.254.0.0/16` (link-local, AWS metadata)
-- **DNS Rebinding Protection**: Hostnames are resolved and checked against private IP ranges
+  - IPv6 private ranges (`::1`, `fc00:`, `fe80:`)
+- **DNS Rebinding Protection**: Hostnames are resolved (both IPv4 and IPv6) and checked against private IP ranges
 
 ### Request Limits
 - **Timeout**: 30 second request timeout
 - **No Redirects**: HTTP redirects are not followed
 - **Size Limit**: 25MB maximum content size per file
-- **Attachment Limit**: Maximum 10 attachments per email
 
 ### Input Validation
 - Email address format validation
-- Subject line length limit (200 characters)
-- Array length matching between mediaInfo and filenames
+- Required fields type checking (recipientAddress, subject, text, mediaInfo, uniqueFilenames)
 
 ### Emergency Disable
 

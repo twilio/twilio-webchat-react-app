@@ -12,8 +12,12 @@ const validateEmailParams = (body) => {
         throw new Error("Invalid email format");
     }
 
-    if (!subject || typeof subject !== "string" || subject.length > 200) {
+    if (!subject || typeof subject !== "string") {
         throw new Error("Invalid subject");
+    }
+
+    if (text && typeof text !== "string") {
+        throw new Error("Invalid text");
     }
 
     if (!Array.isArray(mediaInfo)) {
@@ -22,14 +26,6 @@ const validateEmailParams = (body) => {
 
     if (!Array.isArray(uniqueFilenames)) {
         throw new Error("uniqueFilenames must be an array");
-    }
-
-    if (mediaInfo.length !== uniqueFilenames.length) {
-        throw new Error("mediaInfo and uniqueFilenames length mismatch");
-    }
-
-    if (mediaInfo.length > 10) {
-        throw new Error("Too many attachments (max 10)");
     }
 
     return { recipientAddress, subject, text, mediaInfo, uniqueFilenames };

@@ -32,15 +32,24 @@ const validateMediaUrl = async (urlString) => {
 
     const hostname = parsedUrl.hostname.toLowerCase();
 
+    if (hostname === "localhost") {
+        throw new Error("localhost not allowed");
+    }
+
     if (net.isIP(hostname)) {
         if (isPrivateIP(hostname)) {
             throw new Error("Private IP addresses not allowed");
         }
     } else {
         try {
-            const addresses = await dns.resolve4(hostname);
-            if (addresses.some(isPrivateIP)) {
+            const ipv4Addresses = await dns.resolve4(hostname).catch(() => []);
+            if (ipv4Addresses.some(isPrivateIP)) {
                 throw new Error("URL resolves to private IP");
+            }
+
+            const ipv6Addresses = await dns.resolve6(hostname).catch(() => []);
+            if (ipv6Addresses.some(isPrivateIP)) {
+                throw new Error("URL resolves to private IPv6");
             }
         } catch (dnsError) {
             if (dnsError.code !== "ENODATA" && dnsError.code !== "ENOTFOUND") {
