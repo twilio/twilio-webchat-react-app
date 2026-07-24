@@ -1,0 +1,8 @@
+# Use Artifactory Docker proxy to avoid Docker Hub rate limits/network issues
+# If this fails, contact #help-buildkite for proper registry configuration
+FROM docker.artifacts.twilio.com/cypress/browsers:node14.17.0-chrome91-ff89
+
+WORKDIR /app
+
+ENV CI=true
+ENV LC_ALL=en_GB.UTF-8

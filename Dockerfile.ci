@@ -1,0 +1,12 @@
+# Use Artifactory Docker proxy to avoid Docker Hub rate limits/network issues
+# If this fails, contact #help-buildkite for proper registry configuration
+FROM docker.artifacts.twilio.com/node:14.18.1
+
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV CI=true
+ENV LC_ALL=en_GB.UTF-8

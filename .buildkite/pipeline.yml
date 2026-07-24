@@ -123,6 +123,7 @@ steps:
                   secret-name: jobs_webchat_twilio_conversations_service_sid
           - ./.buildkite/plugins/cache-v2: *dep-cache
           - docker-compose#v5.12.1:
+              build: ci-cypress
               run: ci-cypress
               environment:
                 - TWILIO_ACCOUNT_SID

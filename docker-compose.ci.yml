@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   ci:
-    image: node:14.18.1
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
     working_dir: /app
     volumes:
       - .:/app
@@ -12,7 +12,9 @@ services:
       - LC_ALL=en_GB.UTF-8
 
   ci-cypress:
-    image: cypress/browsers:node14.17.0-chrome91-ff89
+    build:
+      context: .
+      dockerfile: Dockerfile.ci-cypress
     working_dir: /app
     volumes:
       - .:/app
