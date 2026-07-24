@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  ci:
+    image: node:14.18.1
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - CI=true
+      - LC_ALL=en_GB.UTF-8
+
+  ci-cypress:
+    image: cypress/browsers:node14.17.0-chrome91-ff89
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - cypress_cache:/root/.cache/Cypress
+    environment:
+      - CI=true
+      - LC_ALL=en_GB.UTF-8
+
+volumes:
+  node_modules:
+  cypress_cache:
