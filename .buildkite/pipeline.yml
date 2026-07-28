@@ -3,7 +3,7 @@ env:
   COMMIT_ID: $BUILDKITE_COMMIT
   COMPOSE_FILE: docker-compose.ci.yml
   BUILDKITE_PLUGIN_DOCKER_COMPOSE_PULL_RETRIES: 3
-  CI_ROLE_ARN: "arn:aws:iam::ACCOUNT_ID:role/buildkite-webchat-ci-role"
+  CI_ROLE_ARN: "arn:aws:iam::509813731468:role/buildkite-webchat-ci-role"
   CI_ROLE_REGION: "us-east-1"
 
 retry-default: &retry-default
