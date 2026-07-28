@@ -3,6 +3,8 @@ env:
   COMMIT_ID: $BUILDKITE_COMMIT
   COMPOSE_FILE: docker-compose.ci.yml
   BUILDKITE_PLUGIN_DOCKER_COMPOSE_PULL_RETRIES: 3
+  CI_ROLE_ARN: "arn:aws:iam::ACCOUNT_ID:role/buildkite-webchat-ci-role"
+  CI_ROLE_REGION: "us-east-1"
 
 retry-default: &retry-default
   automatic:
@@ -22,6 +24,26 @@ dep-cache: &dep-cache
     - cypress/cache
 
 steps:
+  - label: ":aws: Verify AWS SM Access"
+    key: verify_aws_sm
+    plugins:
+      - ./.buildkite/plugins/aws-assume-role:
+          role-arn: $CI_ROLE_ARN
+          region: $CI_ROLE_REGION
+      - ./.buildkite/plugins/aws-sm:
+          region: $CI_ROLE_REGION
+          env:
+            TWILIO_ACCOUNT_SID:
+              secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+      - ./.buildkite/plugins/aws-unassume-role: ~
+    command: |
+      echo "AWS SM integration verified"
+      echo "TWILIO_ACCOUNT_SID is set: $${TWILIO_ACCOUNT_SID:+yes}"
+
+  - wait: ~
+    depends_on:
+      - verify_aws_sm
+
   - group: ":gear: Setup"
     key: group_setup
     steps:
@@ -41,19 +63,21 @@ steps:
         depends_on: install_deps
         retry: *retry-default
         plugins:
-          - twilio-internal/admiral-secret:
-              realm: corp-us1
-              secrets:
-                - key-full: TWILIO_ACCOUNT_SID
-                  secret-name: jobs_webchat_twilio_account_sid
-                - key-full: TWILIO_AUTH_TOKEN
-                  secret-name: jobs_webchat_twilio_auth_token
+          - ./.buildkite/plugins/aws-assume-role:
+              role-arn: $CI_ROLE_ARN
+              region: $CI_ROLE_REGION
+          - ./.buildkite/plugins/aws-sm:
+              region: $CI_ROLE_REGION
+              env:
+                TWILIO_ACCOUNT_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+                TWILIO_AUTH_TOKEN:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+          - ./.buildkite/plugins/aws-unassume-role: ~
           - ./.buildkite/plugins/cache-v2: *dep-cache
           - docker-compose#v5.12.1:
               run: ci
-              environment:
-                - TWILIO_ACCOUNT_SID
-                - TWILIO_AUTH_TOKEN
+              propagate-environment: true
               command: ["yarn", "e2eCleanupExistingTasks"]
 
   - wait: ~
@@ -106,32 +130,30 @@ steps:
         key: cypress_chrome
         retry: *retry-default
         plugins:
-          - twilio-internal/admiral-secret:
-              realm: corp-us1
-              secrets:
-                - key-full: TWILIO_ACCOUNT_SID
-                  secret-name: jobs_webchat_twilio_account_sid
-                - key-full: TWILIO_AUTH_TOKEN
-                  secret-name: jobs_webchat_twilio_auth_token
-                - key-full: TWILIO_API_KEY
-                  secret-name: jobs_webchat_twilio_api_key
-                - key-full: TWILIO_API_SECRET
-                  secret-name: jobs_webchat_twilio_api_secret
-                - key-full: TWILIO_ADDRESS_SID
-                  secret-name: jobs_webchat_twilio_address_sid
-                - key-full: TWILIO_CONVERSATIONS_SERVICE_SID
-                  secret-name: jobs_webchat_twilio_conversations_service_sid
+          - ./.buildkite/plugins/aws-assume-role:
+              role-arn: $CI_ROLE_ARN
+              region: $CI_ROLE_REGION
+          - ./.buildkite/plugins/aws-sm:
+              region: $CI_ROLE_REGION
+              env:
+                TWILIO_ACCOUNT_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+                TWILIO_AUTH_TOKEN:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+                TWILIO_API_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_key
+                TWILIO_API_SECRET:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_secret
+                TWILIO_ADDRESS_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_address_sid
+                TWILIO_CONVERSATIONS_SERVICE_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_conversations_service_sid
+          - ./.buildkite/plugins/aws-unassume-role: ~
           - ./.buildkite/plugins/cache-v2: *dep-cache
           - docker-compose#v5.12.1:
               build: ci-cypress
               run: ci-cypress
-              environment:
-                - TWILIO_ACCOUNT_SID
-                - TWILIO_AUTH_TOKEN
-                - TWILIO_API_KEY
-                - TWILIO_API_SECRET
-                - TWILIO_ADDRESS_SID
-                - TWILIO_CONVERSATIONS_SERVICE_SID
+              propagate-environment: true
         commands:
           - |
             yarn bootstrap \
@@ -152,40 +174,35 @@ steps:
         key: cypress_sauce
         retry: *retry-default
         plugins:
-          - twilio-internal/admiral-secret:
-              realm: corp-us1
-              secrets:
-                - key-full: TWILIO_ACCOUNT_SID
-                  secret-name: jobs_webchat_twilio_account_sid
-                - key-full: TWILIO_AUTH_TOKEN
-                  secret-name: jobs_webchat_twilio_auth_token
-                - key-full: TWILIO_API_KEY
-                  secret-name: jobs_webchat_twilio_api_key
-                - key-full: TWILIO_API_SECRET
-                  secret-name: jobs_webchat_twilio_api_secret
-                - key-full: TWILIO_ADDRESS_SID
-                  secret-name: jobs_webchat_twilio_address_sid
-                - key-full: TWILIO_CONVERSATIONS_SERVICE_SID
-                  secret-name: jobs_webchat_twilio_conversations_service_sid
-                - key-full: SAUCE_USERNAME
-                  secret-name: jobs_webchat_sauce_username
-                - key-full: SAUCE_ACCESS_KEY
-                  secret-name: jobs_webchat_sauce_access_key
-                - key-full: TEST_EMAIL
-                  secret-name: jobs_webchat_test_email
+          - ./.buildkite/plugins/aws-assume-role:
+              role-arn: $CI_ROLE_ARN
+              region: $CI_ROLE_REGION
+          - ./.buildkite/plugins/aws-sm:
+              region: $CI_ROLE_REGION
+              env:
+                TWILIO_ACCOUNT_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+                TWILIO_AUTH_TOKEN:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+                TWILIO_API_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_key
+                TWILIO_API_SECRET:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_secret
+                TWILIO_ADDRESS_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_address_sid
+                TWILIO_CONVERSATIONS_SERVICE_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_conversations_service_sid
+                SAUCE_USERNAME:
+                  secret-id: /twilio-webchat-react-app/job_webchat_sauce_username
+                SAUCE_ACCESS_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_sauce_access_key
+                TEST_EMAIL:
+                  secret-id: /twilio-webchat-react-app/job_webchat_test_email
+          - ./.buildkite/plugins/aws-unassume-role: ~
           - ./.buildkite/plugins/cache-v2: *dep-cache
           - docker-compose#v5.12.1:
               run: ci
-              environment:
-                - TWILIO_ACCOUNT_SID
-                - TWILIO_AUTH_TOKEN
-                - TWILIO_API_KEY
-                - TWILIO_API_SECRET
-                - TWILIO_ADDRESS_SID
-                - TWILIO_CONVERSATIONS_SERVICE_SID
-                - SAUCE_USERNAME
-                - SAUCE_ACCESS_KEY
-                - TEST_EMAIL
+              propagate-environment: true
         commands:
           - |
             yarn bootstrap \
