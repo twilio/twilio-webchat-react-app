@@ -1,0 +1,7 @@
+name: Remove AWS IAM role environment configuration
+author: ""
+description: Removes AWS IAM role configuration environment variables
+requirements: {}
+configuration:
+  properties: {}
+  additionalProperties: false

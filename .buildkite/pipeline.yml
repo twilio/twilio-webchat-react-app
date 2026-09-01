@@ -1,0 +1,206 @@
+agents:
+  queue: "general-001"
+
+env:
+  BUILD_BRANCH: $BUILDKITE_BRANCH
+  COMMIT_ID: $BUILDKITE_COMMIT
+  COMPOSE_FILE: docker-compose.ci.yml
+  BUILDKITE_PLUGIN_DOCKER_COMPOSE_PULL_RETRIES: 3
+  CI_ROLE_ARN: "arn:aws:iam::509813731468:role/buildkite-webchat-ci-role"
+  CI_ROLE_REGION: "us-east-1"
+
+retry-default: &retry-default
+  automatic:
+    - exit_status: -1
+      limit: 2
+    - exit_status: 255
+      limit: 2
+
+dep-cache: &dep-cache
+  id: dep-cache
+  key: "webchat-deps-{{ checksum 'yarn.lock' }}"
+  backend: s3
+  s3:
+    bucket: com-twilio-buildkite-artifacts-platform-corp
+  paths:
+    - node_modules
+    - cypress/cache
+
+steps:
+  - label: ":yarn: Install dependencies"
+    key: install_deps
+    retry: *retry-default
+    plugins:
+      - ./.buildkite/plugins/cache-v2: *dep-cache
+      - docker-compose#v5.12.1:
+          build: ci
+          run: ci
+          command: ["yarn", "install", "--frozen-lockfile"]
+
+  # Only Unit Tests / Lint / Build depend on this - none of them touch a live Twilio
+  # account, so they don't need to wait on (or be blocked by) the AWS-secrets-backed
+  # steps below.
+  - wait: ~
+    depends_on:
+      - install_deps
+
+  - group: ":white_check_mark: Validation"
+    key: group_validation
+    steps:
+      - label: ":jest: Unit Tests"
+        key: unit_tests
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              mount-buildkite-agent: true
+              command: ["yarn", "test:nowatch"]
+        artifact_paths:
+          - "coverage/**/*"
+
+      - label: ":eslint: Lint"
+        key: lint
+        soft_fail: true
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              command: ["yarn", "lint"]
+
+      - label: ":package: Build"
+        key: build
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              command: ["yarn", "build"]
+        artifact_paths:
+          - "build/**/*"
+
+  # Runs in parallel with Validation above - it only needs install_deps, and gates the
+  # E2E group below instead of the other way around.
+  - label: ":broom: Cleanup stale TaskRouter tasks"
+    key: cleanup_tasks
+    depends_on: install_deps
+    retry: *retry-default
+    plugins:
+      - ./.buildkite/plugins/aws-assume-role:
+          role-arn: $CI_ROLE_ARN
+          region: $CI_ROLE_REGION
+      - ./.buildkite/plugins/aws-sm:
+          region: $CI_ROLE_REGION
+          env:
+            TWILIO_ACCOUNT_SID:
+              secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+            TWILIO_AUTH_TOKEN:
+              secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+      - ./.buildkite/plugins/aws-unassume-role: ~
+      - ./.buildkite/plugins/cache-v2: *dep-cache
+      - docker-compose#v5.12.1:
+          run: ci
+          propagate-environment: true
+          command: ["yarn", "e2eCleanupExistingTasks"]
+
+  - group: ":cypress: E2E Tests"
+    key: group_e2e
+    depends_on: cleanup_tasks
+    steps:
+      - label: ":chrome: Cypress (Chrome)"
+        key: cypress_chrome
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/aws-assume-role:
+              role-arn: $CI_ROLE_ARN
+              region: $CI_ROLE_REGION
+          - ./.buildkite/plugins/aws-sm:
+              region: $CI_ROLE_REGION
+              env:
+                TWILIO_ACCOUNT_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+                TWILIO_AUTH_TOKEN:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+                TWILIO_API_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_key
+                TWILIO_API_SECRET:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_secret
+                TWILIO_ADDRESS_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_address_sid
+                TWILIO_CONVERSATIONS_SERVICE_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_conversations_service_sid
+          - ./.buildkite/plugins/aws-unassume-role: ~
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              build: ci-cypress
+              run: ci-cypress
+              propagate-environment: true
+        commands:
+          - |
+            yarn bootstrap \
+              accountSid=$$TWILIO_ACCOUNT_SID \
+              authToken=$$TWILIO_AUTH_TOKEN \
+              apiKey=$$TWILIO_API_KEY \
+              apiSecret=$$TWILIO_API_SECRET \
+              addressSid=$$TWILIO_ADDRESS_SID \
+              conversationsServiceSid=$$TWILIO_CONVERSATIONS_SERVICE_SID
+            yarn start & yarn server:ci &
+            sleep 15
+            npx cypress run --browser chrome
+        artifact_paths:
+          - "cypress/screenshots/**/*"
+          - "cypress/videos/**/*"
+
+      - label: ":sauce_labs: Cypress (Sauce Labs)"
+        key: cypress_sauce
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/aws-assume-role:
+              role-arn: $CI_ROLE_ARN
+              region: $CI_ROLE_REGION
+          - ./.buildkite/plugins/aws-sm:
+              region: $CI_ROLE_REGION
+              env:
+                TWILIO_ACCOUNT_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_account_sid
+                TWILIO_AUTH_TOKEN:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_auth_token
+                TWILIO_API_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_key
+                TWILIO_API_SECRET:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_api_secret
+                TWILIO_ADDRESS_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_address_sid
+                TWILIO_CONVERSATIONS_SERVICE_SID:
+                  secret-id: /twilio-webchat-react-app/job_webchat_twilio_conversations_service_sid
+                SAUCE_USERNAME:
+                  secret-id: /twilio-webchat-react-app/job_webchat_sauce_username
+                SAUCE_ACCESS_KEY:
+                  secret-id: /twilio-webchat-react-app/job_webchat_sauce_access_key
+                TEST_EMAIL:
+                  secret-id: /twilio-webchat-react-app/job_webchat_test_email
+          - ./.buildkite/plugins/aws-unassume-role: ~
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              propagate-environment: true
+        commands:
+          - |
+            yarn bootstrap \
+              accountSid=$$TWILIO_ACCOUNT_SID \
+              authToken=$$TWILIO_AUTH_TOKEN \
+              apiKey=$$TWILIO_API_KEY \
+              apiSecret=$$TWILIO_API_SECRET \
+              addressSid=$$TWILIO_ADDRESS_SID \
+              conversationsServiceSid=$$TWILIO_CONVERSATIONS_SERVICE_SID
+            yarn start & yarn server:ci &
+            sleep 15
+            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
+            tar -xzf saucelabs.tar.gz
+            cd sc-* && bin/sc -u $$SAUCE_USERNAME -k $$SAUCE_ACCESS_KEY --region us-west-1 --tunnel-name webchat-tunnel &
+            sleep 30
+            curl -fsSL https://saucelabs.github.io/saucectl/install | bash
+            saucectl configure -u $$SAUCE_USERNAME -a $$SAUCE_ACCESS_KEY
+            saucectl run --tunnel-name webchat-tunnel -e TEST_EMAIL=$$TEST_EMAIL
+        artifact_paths:
+          - "artifacts/**/*"
