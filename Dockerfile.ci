@@ -19,3 +19,8 @@ WORKDIR /app
 
 ENV CI=true
 ENV LC_ALL=en_GB.UTF-8
+
+# The agent auto-propagates YARN_NPM_REGISTRY_SERVER (Yarn Berry) into containers, but
+# this repo uses Yarn Classic (v1), which only respects YARN_REGISTRY - set explicitly so
+# `yarn install` doesn't fall through to the public, unreachable registry.yarnpkg.com.
+ENV YARN_REGISTRY=https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty
