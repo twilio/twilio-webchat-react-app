@@ -6,7 +6,14 @@
 FROM registry.twilio.com/library/base-node/14:latest
 
 # This base image is Alpine-based (no apt-get), unlike Docker Hub's node:14.18.1.
-RUN apk add --no-cache git
+# apk's default repos are on the public internet, unreachable from general-001 - route
+# through Artifactory's Alpine mirror instead, same pattern as console's Dockerfile.ci.
+ARG ALPINE_REPO_URL=https://apk.artifacts.twilio.com/artifactory/virtual-alpine-thirdparty
+ARG ALPINE_VER=3.17
+
+RUN echo "${ALPINE_REPO_URL}/v${ALPINE_VER}/main" > /etc/apk/repositories \
+    && echo "${ALPINE_REPO_URL}/v${ALPINE_VER}/community" >> /etc/apk/repositories \
+    && apk --no-cache --allow-untrusted add git
 
 WORKDIR /app
 
