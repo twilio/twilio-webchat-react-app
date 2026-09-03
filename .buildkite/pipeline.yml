@@ -35,10 +35,17 @@ steps:
       - docker-compose#v5.12.1:
           build: ci
           run: ci
-          # --registry: setting YARN_REGISTRY as an env var had no effect (Yarn Classic
-          # doesn't read it) - the --registry flag is the documented, unambiguous way to
-          # override Yarn v1's default registry.
-          command: ["yarn", "install", "--frozen-lockfile", "--registry", "https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty"]
+          # yarn.lock pins an exact resolved URL per package (registry.yarnpkg.com,
+          # public) - with --frozen-lockfile, Yarn Classic fetches from those URLs
+          # verbatim, so neither YARN_REGISTRY nor --registry have any effect. Swap the
+          # host to Artifactory's mirror (confirmed to serve identical, hash-matching
+          # tarballs at the same paths) on the container's own throwaway checkout only -
+          # this never gets committed, so the repo's public yarn.lock stays untouched for
+          # CircleCI and outside contributors, who have normal internet access.
+          command:
+            - "bash"
+            - "-c"
+            - "sed -i 's#https://registry.yarnpkg.com#https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty#g' yarn.lock && yarn install --frozen-lockfile"
 
   # Only Unit Tests / Lint / Build depend on this - none of them touch a live Twilio
   # account, so they don't need to wait on (or be blocked by) the AWS-secrets-backed
