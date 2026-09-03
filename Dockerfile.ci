@@ -19,3 +19,10 @@ WORKDIR /app
 
 ENV CI=true
 ENV LC_ALL=en_GB.UTF-8
+
+# config-overrides.js registers webpack.EnvironmentPlugin([...]) with no defaults for
+# these two - webpack treats an undefined listed var as a hard compile error (not just a
+# warning, despite the message's wording), so `yarn build` fails outright without them.
+# "true" matches jest.config.js's own default for tests and cypress.env.sample.json.
+ENV EMAIL_TRANSCRIPT_ENABLED=true
+ENV DOWNLOAD_TRANSCRIPT_ENABLED=true
