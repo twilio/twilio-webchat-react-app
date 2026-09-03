@@ -42,8 +42,11 @@ steps:
           # tarballs at the same paths) on the container's own throwaway checkout only -
           # this never gets committed, so the repo's public yarn.lock stays untouched for
           # CircleCI and outside contributors, who have normal internet access.
+          # sh, not bash - this base image doesn't have bash installed (console's
+          # Dockerfile has to apk add it explicitly), and without it, the base image's
+          # node entrypoint falls back to treating "bash" as a node script to run.
           command:
-            - "bash"
+            - "sh"
             - "-c"
             - "sed -i 's#https://registry.yarnpkg.com#https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty#g' yarn.lock && yarn install --frozen-lockfile"
 
