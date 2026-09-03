@@ -1,15 +1,12 @@
 # docker.artifacts.twilio.com (Artifactory's Docker Hub proxy) 401s on the general-001
 # queue - it's not Artifactory-enabled (see owl's pipeline for the same restriction on
-# its locked-down queue). Trying Twilio's internal registry instead, which other repos'
-# pipelines pull from successfully without any explicit login step (e.g. flex-admin-api's
-# registry.twilio.com/library/base-node/22:latest). If this 404s/401s too, fall back to
-# the ECR-mirrored image instead: 018537234677.dkr.ecr.us-east-1.amazonaws.com/docker.io/library/node:14.18.1
-# If both fail, contact #help-buildkite for proper registry configuration.
+# its locked-down queue). registry.twilio.com works instead - same pattern other repos'
+# pipelines use without any explicit login step (e.g. flex-admin-api's
+# registry.twilio.com/library/base-node/22:latest).
 FROM registry.twilio.com/library/base-node/14:latest
 
-RUN apt-get update && apt-get install -y \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# This base image is Alpine-based (no apt-get), unlike Docker Hub's node:14.18.1.
+RUN apk add --no-cache git
 
 WORKDIR /app
 
