@@ -35,7 +35,10 @@ steps:
       - docker-compose#v5.12.1:
           build: ci
           run: ci
-          command: ["yarn", "install", "--frozen-lockfile"]
+          # --registry: setting YARN_REGISTRY as an env var had no effect (Yarn Classic
+          # doesn't read it) - the --registry flag is the documented, unambiguous way to
+          # override Yarn v1's default registry.
+          command: ["yarn", "install", "--frozen-lockfile", "--registry", "https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty"]
 
   # Only Unit Tests / Lint / Build depend on this - none of them touch a live Twilio
   # account, so they don't need to wait on (or be blocked by) the AWS-secrets-backed
