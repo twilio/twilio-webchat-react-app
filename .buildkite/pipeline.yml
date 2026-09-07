@@ -98,12 +98,13 @@ steps:
         artifact_paths:
           - "build/**/*"
 
-  # Runs in parallel with Validation above - it only needs install_deps, and gates the
-  # E2E group below instead of the other way around.
-  - label: ":broom: Cleanup stale TaskRouter tasks"
-    key: cleanup_tasks
-    depends_on: install_deps
-    retry: *retry-default
+  # Standalone check: assume the role, pull the two Twilio secrets under their new
+  # twra_* IDs, and print whether each one actually came back non-empty - no raw
+  # values in the log, just presence, so this is safe to leave in Buildkite's log
+  # history. Once this passes, cleanup_tasks/cypress_chrome/cypress_sauce below (using
+  # the exact same secret IDs) should too - uncomment them and remove this.
+  - label: ":key: Verify secrets"
+    key: verify_secrets
     plugins:
       - ./.buildkite/plugins/aws-assume-role:
           role-arn: $CI_ROLE_ARN
@@ -116,84 +117,108 @@ steps:
             TWILIO_AUTH_TOKEN:
               secret-id: twra_job_webchat_twilio_auth_token
       - ./.buildkite/plugins/aws-unassume-role: ~
-      - ./.buildkite/plugins/cache-v2: *dep-cache
-      - docker-compose#v5.12.1:
-          run: ci
-          propagate-environment: true
-          command: ["yarn", "e2eCleanupExistingTasks"]
+    command: |
+      echo "TWILIO_ACCOUNT_SID is set: ${TWILIO_ACCOUNT_SID:+yes}"
+      echo "TWILIO_AUTH_TOKEN is set: ${TWILIO_AUTH_TOKEN:+yes}"
 
-  - group: ":cypress: E2E Tests"
-    key: group_e2e
-    depends_on: cleanup_tasks
-    steps:
-      - label: ":chrome: Cypress (Chrome)"
-        key: cypress_chrome
-        retry: *retry-default
-        plugins:
-          - ./.buildkite/plugins/aws-assume-role:
-              role-arn: $CI_ROLE_ARN
-              region: $CI_ROLE_REGION
-          - ./.buildkite/plugins/aws-sm:
-              region: $CI_ROLE_REGION
-              env:
-                TWILIO_ACCOUNT_SID:
-                  secret-id: twra_job_webchat_twilio_account_sid
-                TWILIO_AUTH_TOKEN:
-                  secret-id: twra_job_webchat_twilio_auth_token
-          - ./.buildkite/plugins/aws-unassume-role: ~
-          - ./.buildkite/plugins/cache-v2: *dep-cache
-          - docker-compose#v5.12.1:
-              build: ci-cypress
-              run: ci-cypress
-              propagate-environment: true
-        commands:
-          - |
-            yarn bootstrap \
-              accountSid=$$TWILIO_ACCOUNT_SID \
-              authToken=$$TWILIO_AUTH_TOKEN
-            yarn start & yarn server:ci &
-            sleep 15
-            npx cypress run --browser chrome
-        artifact_paths:
-          - "cypress/screenshots/**/*"
-          - "cypress/videos/**/*"
-
-      - label: ":sauce_labs: Cypress (Sauce Labs)"
-        key: cypress_sauce
-        retry: *retry-default
-        plugins:
-          - ./.buildkite/plugins/aws-assume-role:
-              role-arn: $CI_ROLE_ARN
-              region: $CI_ROLE_REGION
-          - ./.buildkite/plugins/aws-sm:
-              region: $CI_ROLE_REGION
-              env:
-                TWILIO_ACCOUNT_SID:
-                  secret-id: twra_job_webchat_twilio_account_sid
-                TWILIO_AUTH_TOKEN:
-                  secret-id: twra_job_webchat_twilio_auth_token
-          - ./.buildkite/plugins/aws-unassume-role: ~
-          - ./.buildkite/plugins/cache-v2: *dep-cache
-          - docker-compose#v5.12.1:
-              run: ci
-              propagate-environment: true
-        commands:
-          - |
-            yarn bootstrap \
-              accountSid=$$TWILIO_ACCOUNT_SID \
-              authToken=$$TWILIO_AUTH_TOKEN \
-              apiKey=$$TWILIO_API_KEY \
-              apiSecret=$$TWILIO_API_SECRET \
-              addressSid=$$TWILIO_ADDRESS_SID \
-              conversationsServiceSid=$$TWILIO_CONVERSATIONS_SERVICE_SID
-            yarn start & yarn server:ci &
-            sleep 15
-            curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
-            tar -xzf saucelabs.tar.gz
-            cd sc-* && bin/sc -u $$SAUCE_USERNAME -k $$SAUCE_ACCESS_KEY --region us-west-1 --tunnel-name webchat-tunnel &
-            sleep 30
-            curl -fsSL https://saucelabs.github.io/saucectl/install | bash
-            saucectl configure -u $$SAUCE_USERNAME -a $$SAUCE_ACCESS_KEY
-            saucectl run --tunnel-name webchat-tunnel -e TEST_EMAIL=$$TEST_EMAIL
-        artifact_paths:
-          - "artifacts/**/*"
+  # Commented out while verifying the new twra_* secret IDs above (see verify_secrets) -
+  # uncomment once that passes.
+  # # Runs in parallel with Validation above - it only needs install_deps, and gates the
+  # # E2E group below instead of the other way around.
+  # - label: ":broom: Cleanup stale TaskRouter tasks"
+  #   key: cleanup_tasks
+  #   depends_on: install_deps
+  #   retry: *retry-default
+  #   plugins:
+  #     - ./.buildkite/plugins/aws-assume-role:
+  #         role-arn: $CI_ROLE_ARN
+  #         region: $CI_ROLE_REGION
+  #     - ./.buildkite/plugins/aws-sm:
+  #         region: $CI_ROLE_REGION
+  #         env:
+  #           TWILIO_ACCOUNT_SID:
+  #             secret-id: twra_job_webchat_twilio_account_sid
+  #           TWILIO_AUTH_TOKEN:
+  #             secret-id: twra_job_webchat_twilio_auth_token
+  #     - ./.buildkite/plugins/aws-unassume-role: ~
+  #     - ./.buildkite/plugins/cache-v2: *dep-cache
+  #     - docker-compose#v5.12.1:
+  #         run: ci
+  #         propagate-environment: true
+  #         command: ["yarn", "e2eCleanupExistingTasks"]
+  #
+  # - group: ":cypress: E2E Tests"
+  #   key: group_e2e
+  #   depends_on: cleanup_tasks
+  #   steps:
+  #     - label: ":chrome: Cypress (Chrome)"
+  #       key: cypress_chrome
+  #       retry: *retry-default
+  #       plugins:
+  #         - ./.buildkite/plugins/aws-assume-role:
+  #             role-arn: $CI_ROLE_ARN
+  #             region: $CI_ROLE_REGION
+  #         - ./.buildkite/plugins/aws-sm:
+  #             region: $CI_ROLE_REGION
+  #             env:
+  #               TWILIO_ACCOUNT_SID:
+  #                 secret-id: twra_job_webchat_twilio_account_sid
+  #               TWILIO_AUTH_TOKEN:
+  #                 secret-id: twra_job_webchat_twilio_auth_token
+  #         - ./.buildkite/plugins/aws-unassume-role: ~
+  #         - ./.buildkite/plugins/cache-v2: *dep-cache
+  #         - docker-compose#v5.12.1:
+  #             build: ci-cypress
+  #             run: ci-cypress
+  #             propagate-environment: true
+  #       commands:
+  #         - |
+  #           yarn bootstrap \
+  #             accountSid=$$TWILIO_ACCOUNT_SID \
+  #             authToken=$$TWILIO_AUTH_TOKEN
+  #           yarn start & yarn server:ci &
+  #           sleep 15
+  #           npx cypress run --browser chrome
+  #       artifact_paths:
+  #         - "cypress/screenshots/**/*"
+  #         - "cypress/videos/**/*"
+  #
+  #     - label: ":sauce_labs: Cypress (Sauce Labs)"
+  #       key: cypress_sauce
+  #       retry: *retry-default
+  #       plugins:
+  #         - ./.buildkite/plugins/aws-assume-role:
+  #             role-arn: $CI_ROLE_ARN
+  #             region: $CI_ROLE_REGION
+  #         - ./.buildkite/plugins/aws-sm:
+  #             region: $CI_ROLE_REGION
+  #             env:
+  #               TWILIO_ACCOUNT_SID:
+  #                 secret-id: twra_job_webchat_twilio_account_sid
+  #               TWILIO_AUTH_TOKEN:
+  #                 secret-id: twra_job_webchat_twilio_auth_token
+  #         - ./.buildkite/plugins/aws-unassume-role: ~
+  #         - ./.buildkite/plugins/cache-v2: *dep-cache
+  #         - docker-compose#v5.12.1:
+  #             run: ci
+  #             propagate-environment: true
+  #       commands:
+  #         - |
+  #           yarn bootstrap \
+  #             accountSid=$$TWILIO_ACCOUNT_SID \
+  #             authToken=$$TWILIO_AUTH_TOKEN \
+  #             apiKey=$$TWILIO_API_KEY \
+  #             apiSecret=$$TWILIO_API_SECRET \
+  #             addressSid=$$TWILIO_ADDRESS_SID \
+  #             conversationsServiceSid=$$TWILIO_CONVERSATIONS_SERVICE_SID
+  #           yarn start & yarn server:ci &
+  #           sleep 15
+  #           curl https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz -o saucelabs.tar.gz
+  #           tar -xzf saucelabs.tar.gz
+  #           cd sc-* && bin/sc -u $$SAUCE_USERNAME -k $$SAUCE_ACCESS_KEY --region us-west-1 --tunnel-name webchat-tunnel &
+  #           sleep 30
+  #           curl -fsSL https://saucelabs.github.io/saucectl/install | bash
+  #           saucectl configure -u $$SAUCE_USERNAME -a $$SAUCE_ACCESS_KEY
+  #           saucectl run --tunnel-name webchat-tunnel -e TEST_EMAIL=$$TEST_EMAIL
+  #       artifact_paths:
+  #         - "artifacts/**/*"
