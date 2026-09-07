@@ -118,8 +118,8 @@ steps:
               secret-id: twra_job_webchat_twilio_auth_token
       - ./.buildkite/plugins/aws-unassume-role: ~
     command: |
-      echo "TWILIO_ACCOUNT_SID is set: ${TWILIO_ACCOUNT_SID:+yes}"
-      echo "TWILIO_AUTH_TOKEN is set: ${TWILIO_AUTH_TOKEN:+yes}"
+      echo "TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}"
+      echo "TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}"
 
   # Commented out while verifying the new twra_* secret IDs above (see verify_secrets) -
   # uncomment once that passes.
