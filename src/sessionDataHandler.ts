@@ -1,6 +1,6 @@
 import log from "loglevel";
 
-import { Token } from "./definitions";
+import { Token, ClosedConversationTranscript } from "./definitions";
 
 const LOCAL_STORAGE_ITEM_ID = "TWILIO_WEBCHAT_WIDGET";
 
@@ -120,5 +120,24 @@ export const sessionDataHandler = {
 
     clear: () => {
         localStorage.removeItem(LOCAL_STORAGE_ITEM_ID);
+    },
+
+    // Read-only fallback for when the customer's own SDK access to a conversation has been
+    // revoked because it's already closed. Returns null rather than throwing so callers can
+    // fall back to the normal "couldn't load conversation" handling.
+    async getTranscript({
+        token,
+        conversationSid
+    }: {
+        token: string;
+        conversationSid: string;
+    }): Promise<ClosedConversationTranscript | null> {
+        log.debug("sessionDataHandler: trying to fetch read-only transcript for a closed conversation");
+        try {
+            return await contactBackend<ClosedConversationTranscript>("/getTranscript", { token, conversationSid });
+        } catch (e) {
+            log.debug(`sessionDataHandler: couldn't fetch transcript: ${e}`);
+            return null;
+        }
     }
 };
