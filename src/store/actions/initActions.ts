@@ -1,4 +1,4 @@
-import { Client, Message, Participant, User } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { Dispatch } from "redux";
 import log from "loglevel";
 
@@ -11,7 +11,6 @@ import { notifications } from "../../notifications";
 import { ACTION_START_SESSION, ACTION_LOAD_CONFIG } from "./actionTypes";
 import { addNotification, changeEngagementPhase } from "./genericActions";
 import { MESSAGES_LOAD_COUNT } from "../../constants";
-import { sessionDataHandler } from "../../sessionDataHandler";
 
 export function initConfig(config: ConfigState) {
     return {
@@ -33,52 +32,8 @@ export function initSession({ token, conversationSid }: { token: string; convers
             try {
                 conversation = await conversationsClient.getConversationBySid(conversationSid);
             } catch (e) {
-                // Once a conversation is closed (e.g. the agent ends the chat), Twilio denies the
-                // customer's own identity-scoped SDK access to it - even with a brand new token -
-                // while the participant record itself still exists. Fall back to a read-only
-                // transcript from our own backend (account-level access) before giving up, so a
-                // reload after the chat has ended still shows the conversation instead of failing.
-                const transcript = await sessionDataHandler.getTranscript({ token, conversationSid });
-
-                if (!transcript) {
-                    dispatch(
-                        addNotification(notifications.failedToInitSessionNotification("Couldn't load conversation"))
-                    );
-                    dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
-                    return;
-                }
-
-                dispatch({
-                    type: ACTION_START_SESSION,
-                    payload: {
-                        token,
-                        conversationSid,
-                        // No live SDK client/conversation exist for a read-only transcript - every
-                        // access to these elsewhere in the app is already optional-chained, so this
-                        // degrades safely (no real-time features, which is correct: there's nothing
-                        // "live" left to listen to in a closed conversation).
-                        conversationsClient: undefined,
-                        conversation: undefined,
-                        users: transcript.users as unknown as User[],
-                        participants: transcript.participants as unknown as Participant[],
-                        messages: transcript.messages.map((message) => ({
-                            ...message,
-                            dateCreated: new Date(message.dateCreated),
-                            dateUpdated: new Date(message.dateUpdated),
-                            // Wrap the server's pre-fetched URL in the same method signature
-                            // Transcript.tsx/FilePreview.tsx already call on a real SDK Media
-                            // instance (`await media.getContentTemporaryUrl()`) - so neither of
-                            // those files need to know or care this isn't a live SDK object.
-                            attachedMedia:
-                                message.attachedMedia?.map((media) => ({
-                                    ...media,
-                                    getContentTemporaryUrl: async () => media.temporaryUrl
-                                })) ?? null
-                        })) as unknown as Message[],
-                        conversationState: transcript.conversationState,
-                        currentPhase: EngagementPhase.MessagingCanvas
-                    }
-                });
+                dispatch(addNotification(notifications.failedToInitSessionNotification("Couldn't load conversation")));
+                dispatch(changeEngagementPhase({ phase: EngagementPhase.PreEngagementForm }));
                 return;
             }
 
