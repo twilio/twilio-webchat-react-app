@@ -1,9 +1,10 @@
 const axios = require("axios");
+
 const { createToken } = require("../helpers/createToken");
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { getTwilioClient } = require("../helpers/getTwilioClient");
 const { logFinalAction, logInitialAction, logInterimAction } = require("../helpers/logs");
-const { version } = require('./../../package.json');
+const { version } = require("./../../package.json");
 
 const contactWebchatOrchestrator = async (request, customerFriendlyName) => {
     logInterimAction("Calling Webchat Orchestrator");
@@ -93,7 +94,8 @@ const initWebchatController = async (request, response) => {
         const result = await contactWebchatOrchestrator(request, customerFriendlyName);
         ({ identity, conversationSid } = result);
     } catch (error) {
-        return response.status(500).send(`Couldn't initiate WebChat: ${error?.message}`);
+        response.status(500).send(`Couldn't initiate WebChat: ${error?.message}`);
+        return;
     }
 
     // Generate token for customer

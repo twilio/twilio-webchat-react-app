@@ -1,0 +1,28 @@
+# docker.artifacts.twilio.com (Artifactory's Docker Hub proxy) 401s on the general-001
+# queue - it's not Artifactory-enabled (see owl's pipeline for the same restriction on
+# its locked-down queue). registry.twilio.com works instead - same pattern other repos'
+# pipelines use without any explicit login step (e.g. flex-admin-api's
+# registry.twilio.com/library/base-node/22:latest).
+FROM registry.twilio.com/library/base-node/14:latest
+
+# This base image is Alpine-based (no apt-get), unlike Docker Hub's node:14.18.1.
+# apk's default repos are on the public internet, unreachable from general-001 - route
+# through Artifactory's Alpine mirror instead, same pattern as console's Dockerfile.ci.
+ARG ALPINE_REPO_URL=https://apk.artifacts.twilio.com/artifactory/virtual-alpine-thirdparty
+ARG ALPINE_VER=3.17
+
+RUN echo "${ALPINE_REPO_URL}/v${ALPINE_VER}/main" > /etc/apk/repositories \
+    && echo "${ALPINE_REPO_URL}/v${ALPINE_VER}/community" >> /etc/apk/repositories \
+    && apk --no-cache --allow-untrusted add git
+
+WORKDIR /app
+
+ENV CI=true
+ENV LC_ALL=en_GB.UTF-8
+
+# config-overrides.js registers webpack.EnvironmentPlugin([...]) with no defaults for
+# these two - webpack treats an undefined listed var as a hard compile error (not just a
+# warning, despite the message's wording), so `yarn build` fails outright without them.
+# "true" matches jest.config.js's own default for tests and cypress.env.sample.json.
+ENV EMAIL_TRANSCRIPT_ENABLED=true
+ENV DOWNLOAD_TRANSCRIPT_ENABLED=true

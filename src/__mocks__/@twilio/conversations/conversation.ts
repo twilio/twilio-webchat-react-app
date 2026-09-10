@@ -13,8 +13,9 @@ import type {
 
 import { MockedPaginator } from "../../../test-utils";
 
-const { Conversation: OriginalConversation } =
-    jest.requireActual<{ Conversation: typeof ConversationType }>("@twilio/conversations");
+const { Conversation: OriginalConversation } = jest.requireActual<{ Conversation: typeof ConversationType }>(
+    "@twilio/conversations"
+);
 
 export class Conversation extends OriginalConversation {
     /**

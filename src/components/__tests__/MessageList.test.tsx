@@ -48,6 +48,18 @@ const defaultState = {
 };
 const messageBubbleTestId = "message-bubble";
 
+const mockMessages = (messages: unknown[]) => {
+    (useSelector as jest.Mock).mockImplementation((callback: any) =>
+        callback({
+            ...defaultState,
+            chat: {
+                ...defaultState.chat,
+                messages
+            }
+        })
+    );
+};
+
 jest.mock("react-redux", () => ({
     useDispatch: () => jest.fn(),
     useSelector: jest.fn()
@@ -213,15 +225,7 @@ describe("Message List", () => {
                 body: "message 8"
             }
         ];
-        (useSelector as jest.Mock).mockImplementation((callback: any) =>
-            callback({
-                ...defaultState,
-                chat: {
-                    ...defaultState.chat,
-                    messages
-                }
-            })
-        );
+        mockMessages(messages);
         const totalMessagesCount = 20;
         const getMessagesCountSpy = jest
             .spyOn(defaultState.chat.conversation, "getMessagesCount")
@@ -534,15 +538,7 @@ describe("Message List", () => {
         it("does not focus if triggered by a click", async () => {
             const message3 = { ...message2, index: 2 };
             const messages = [message1, message2, message3];
-            (useSelector as jest.Mock).mockImplementation((callback: any) =>
-                callback({
-                    ...defaultState,
-                    chat: {
-                        ...defaultState.chat,
-                        messages
-                    }
-                })
-            );
+            mockMessages(messages);
             const { queryAllByTestId } = render(<MessageList />);
 
             const [topBubble, middleBubble, bottomBubble] = queryAllByTestId(messageBubbleTestId);
