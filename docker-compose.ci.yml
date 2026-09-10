@@ -13,15 +13,3 @@ services:
       # the container's default $HOME/.cache/Cypress, so the cache-v2 plugin's
       # "cypress/cache" path actually persists something across builds.
       - CYPRESS_CACHE_FOLDER=/app/cypress/cache
-
-  ci-cypress:
-    build:
-      context: .
-      dockerfile: Dockerfile.ci-cypress
-    working_dir: /app
-    volumes:
-      - .:/app
-    environment:
-      - CI=true
-      - LC_ALL=en_GB.UTF-8
-      - CYPRESS_CACHE_FOLDER=/app/cypress/cache
