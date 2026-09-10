@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+
 const { TOKEN_TTL_IN_SECONDS } = require("../constants");
 const { createToken } = require("../helpers/createToken");
 const { logInitialAction, logFinalAction, logInterimAction } = require("../helpers/logs");
@@ -17,7 +18,8 @@ const refreshTokenController = async (request, response) => {
         providedIdentity = validatedToken?.grants?.identity;
     } catch (e) {
         logInterimAction("Invalid token provided:", e.message);
-        return response.sendStatus(403);
+        response.sendStatus(403);
+        return;
     }
 
     logInterimAction("Token is valid for", providedIdentity);

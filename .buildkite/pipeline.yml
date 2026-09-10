@@ -75,7 +75,6 @@ steps:
 
       - label: ":eslint: Lint"
         key: lint
-        soft_fail: true
         plugins:
           - ./.buildkite/plugins/cache-v2: *dep-cache
           - docker-compose#v5.12.1:
