@@ -41,7 +41,9 @@ export const MessageInput = () => {
 
                 // in case the input was already focused, let's make sure to send the `read` status if the customer is typing
                 if (conversation?.lastReadMessageIndex !== conversation?.lastMessage?.index) {
-                    conversation?.setAllMessagesRead()?.catch((e) => log.error(`Failed marking messages as read: ${e}`));
+                    conversation
+                        ?.setAllMessagesRead()
+                        ?.catch((e) => log.error(`Failed marking messages as read: ${e}`));
                 }
             }, 500),
         [conversation]
