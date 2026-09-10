@@ -326,7 +326,9 @@ describe("Webchat Lite general scenario's", () => {
             });
     });
 
-    it("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
+    // Skipped: transcripts are only meant to be available before the chat ends, not after -
+    // resuming an already-ended conversation to check these isn't a supported flow.
+    it.skip("FLEXEXP-886 Webchat Lite - chat transcripts - download transcript", function flexExp886Download() {
         function performDownload() {
             const downloadDirectory = Cypress.config().downloadsFolder;
             cy.task("downloads", downloadDirectory).then((before) => {
@@ -361,7 +363,8 @@ describe("Webchat Lite general scenario's", () => {
         }
     });
 
-    it("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
+    // Skipped: same reason as the download transcript test above - not a supported flow.
+    it.skip("FLEXEXP-886 Webchat Lite - chat transcripts - email transcript", function flexExp886Email() {
         if (Cypress.env("EMAIL_TRANSCRIPT_ENABLED")) {
             cy.resumeWebchatSessionCookie();
             PreEngagementChatForm.toggleWebchatExpanded();
