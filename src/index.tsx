@@ -1,4 +1,5 @@
 import merge from "lodash.merge";
+import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 
@@ -44,9 +45,11 @@ const initWebchat = async (config: ConfigState) => {
     const rootElement = document.getElementById("twilio-webchat-widget-root");
 
     render(
-        <Provider store={store}>
-            <WebchatWidget />
-        </Provider>,
+        React.createElement(
+            Provider as unknown as React.ComponentType<{ store: typeof store }>,
+            { store },
+            React.createElement(WebchatWidget)
+        ),
         rootElement
     );
 

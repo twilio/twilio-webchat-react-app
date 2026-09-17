@@ -26,7 +26,6 @@ describe("File Preview", () => {
         expect(generateDuration(transcriptData)).toEqual("1 second ");
     });
 
-
     it("calculate the duration of the chat lasting 1 minute and 2 seconds", () => {
         const transcriptData: Transcript[] = [
             { author: "John", body: "hi", timeStamp: new Date("December 17, 2022 04:30:10"), attachedMedia: null },

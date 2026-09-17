@@ -3,8 +3,9 @@ import type { ClientOptions, Client as ClientType, ConnectionState, User as User
 import { Conversation } from "./conversation";
 import { MockedPaginator } from "../../../test-utils";
 
-const { Client: ConversationClient, User } =
-    jest.requireActual<{ Client: typeof ClientType; User: typeof UserType }>("@twilio/conversations");
+const { Client: ConversationClient, User } = jest.requireActual<{ Client: typeof ClientType; User: typeof UserType }>(
+    "@twilio/conversations"
+);
 
 export class Client extends ConversationClient {
     /**

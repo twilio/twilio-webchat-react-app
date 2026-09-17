@@ -1,4 +1,4 @@
-import { fireEvent, prettyDOM, render, waitFor } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
 
