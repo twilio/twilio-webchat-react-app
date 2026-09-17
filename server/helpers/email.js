@@ -1,5 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 const axios = require("axios");
+const { validateMediaUrl } = require("./urlValidator");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -21,7 +22,22 @@ function createMessage(emailData, files) {
 
 async function sendMessage(emailParams) {
     const uniqueFilenames = emailParams.uniqueFilenames;
-    const getMedia = emailParams.mediaInfo.map((media) => axios.get(media.url, { responseType: "arraybuffer" }));
+
+    const validatedUrls = await Promise.all(
+        emailParams.mediaInfo.map(async (media) => {
+            const validUrl = await validateMediaUrl(media.url);
+            return { ...media, url: validUrl };
+        })
+    );
+
+    const getMedia = validatedUrls.map((media) =>
+        axios.get(media.url, {
+            responseType: "arraybuffer",
+            timeout: 30000,
+            maxRedirects: 0,
+            maxContentLength: 25 * 1024 * 1024
+        })
+    );
     const files = await Promise.all(getMedia).then((responses) => {
         const files = [];
         for (let i = 0; i < responses.length; i++) {

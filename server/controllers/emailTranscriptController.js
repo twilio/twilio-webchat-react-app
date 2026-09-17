@@ -1,12 +1,45 @@
 const { sendMessage } = require("../helpers/email");
 
+const validateEmailParams = (body) => {
+    const { recipientAddress, subject, text, mediaInfo, uniqueFilenames } = body;
+
+    if (!recipientAddress || typeof recipientAddress !== "string") {
+        throw new Error("Invalid recipientAddress");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientAddress)) {
+        throw new Error("Invalid email format");
+    }
+
+    if (!subject || typeof subject !== "string") {
+        throw new Error("Invalid subject");
+    }
+
+    if (text && typeof text !== "string") {
+        throw new Error("Invalid text");
+    }
+
+    if (!Array.isArray(mediaInfo)) {
+        throw new Error("mediaInfo must be an array");
+    }
+
+    if (!Array.isArray(uniqueFilenames)) {
+        throw new Error("uniqueFilenames must be an array");
+    }
+
+    return { recipientAddress, subject, text, mediaInfo, uniqueFilenames };
+};
+
 const emailTranscriptController = async (req, res) => {
-        try {
-            const message = await sendMessage(req.body);
-            res.json(message);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    try {
+        const validatedParams = validateEmailParams(req.body);
+        const message = await sendMessage(validatedParams);
+        res.json(message);
+    } catch (err) {
+        console.error("Email transcript error:", err.message);
+        res.status(400).json({ error: err.message });
+    }
+};
 
 module.exports = { emailTranscriptController };
