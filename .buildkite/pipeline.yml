@@ -1,0 +1,93 @@
+agents:
+  queue: "general-001" 
+
+env:
+  BUILD_BRANCH: $BUILDKITE_BRANCH
+  COMMIT_ID: $BUILDKITE_COMMIT
+  COMPOSE_FILE: docker-compose.ci.yml
+  BUILDKITE_PLUGIN_DOCKER_COMPOSE_PULL_RETRIES: 3
+
+retry-default: &retry-default
+  automatic:
+    - exit_status: -1
+      limit: 2
+    - exit_status: 255
+      limit: 2
+
+dep-cache: &dep-cache
+  id: dep-cache
+  key: "webchat-deps-{{ checksum 'yarn.lock' }}"
+  backend: s3
+  s3:
+    bucket: com-twilio-buildkite-artifacts-platform-corp
+  paths:
+    - node_modules
+    - cypress/cache
+
+steps:
+  - label: ":yarn: Install dependencies"
+    key: install_deps
+    retry: *retry-default
+    plugins:
+      - ./.buildkite/plugins/cache-v2: *dep-cache
+      - docker-compose#v5.12.1:
+          build: ci
+          run: ci
+          # yarn.lock pins an exact resolved URL per package (registry.yarnpkg.com,
+          # public) - with --frozen-lockfile, Yarn Classic fetches from those URLs
+          # verbatim, so neither YARN_REGISTRY nor --registry have any effect. Swap the
+          # host to Artifactory's mirror (confirmed to serve identical, hash-matching
+          # tarballs at the same paths) on the container's own throwaway checkout only -
+          # this never gets committed, so the repo's public yarn.lock stays untouched for
+          # CircleCI and outside contributors, who have normal internet access.
+          # sh, not bash - this base image doesn't have bash installed (console's
+          # Dockerfile has to apk add it explicitly), and without it, the base image's
+          # node entrypoint falls back to treating "bash" as a node script to run.
+          # git checkout -- yarn.lock at the end: docker-compose.ci.yml bind-mounts the
+          # checkout, so the sed above mutates the real file on disk, not a copy. Without
+          # reverting it, cache-v2's post-command hook uploads node_modules keyed on the
+          # *mutated* file's checksum, while every sibling step (unit_tests/lint/build)
+          # restores from a fresh, unmutated checkout and computes a different checksum -
+          # cache miss, empty node_modules, "command not found" for everything in it.
+          command:
+            - "sh"
+            - "-c"
+            - "sed -i 's#https://registry.yarnpkg.com#https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty#g' yarn.lock && yarn install --frozen-lockfile; RESULT=$?; git checkout -- yarn.lock; exit $RESULT"
+
+  - wait: ~
+    depends_on:
+      - install_deps
+
+  - group: ":white_check_mark: Validation"
+    key: group_validation
+    steps:
+      - label: ":jest: Unit Tests"
+        key: unit_tests
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              mount-buildkite-agent: true
+              command: ["yarn", "test:nowatch"]
+        artifact_paths:
+          - "coverage/**/*"
+
+      - label: ":eslint: Lint"
+        key: lint
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              command: ["yarn", "lint"]
+
+      - label: ":package: Build"
+        key: build
+        retry: *retry-default
+        plugins:
+          - ./.buildkite/plugins/cache-v2: *dep-cache
+          - docker-compose#v5.12.1:
+              run: ci
+              command: ["yarn", "build"]
+        artifact_paths:
+          - "build/**/*"

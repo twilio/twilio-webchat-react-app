@@ -1,0 +1,83 @@
+#!/bin/bash
+# shellcheck disable=SC2001
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC1090
+
+set -euo pipefail
+
+#BK_CACHE_BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
+BK_CACHE_BASEDIR="$BUILDKITE_BUILD_CHECKOUT_PATH"/.buildkite/plugins/cache-v2
+BK_CACHE_ID=""
+BK_LOG_PREFIX="(*) - "
+
+. "$BK_CACHE_BASEDIR/lib/shared.bash"
+
+if [[ -n "${BUILDKITE_PLUGIN_CACHE_V2_ID:-}" ]]; then
+  BK_CACHE_ID="${BUILDKITE_PLUGIN_CACHE_V2_ID:-}"
+  BK_LOG_PREFIX="[\033[33m$BK_CACHE_ID\033[0m] - "
+  echo -e "~~~ :bash: Processing \033[33mPost-Cache\033[0m for \033[33m$BK_CACHE_ID\033[0m"
+else
+  echo -e "~~~ :bash: Processing \033[33mPost-Cache\033[0m..."
+  echo "Please use 'id' key to identify caches"
+fi
+
+if [[ "${BUILDKITE_PLUGIN_CACHE_V2_DEBUG:-false}" =~ (true|on|1) ]]; then
+  set -x
+fi
+
+if [ "${BUILDKITE_COMMAND_EXIT_STATUS}" -ne 0 ]; then
+  if [[ "${BUILDKITE_PLUGIN_CACHE_V2_CONTINUE_ON_ERROR:-false}" =~ (true|on|1) ]]; then
+    info "Step returned non-zero exit code: ${BUILDKITE_COMMAND_EXIT_STATUS}. Continuing per instructed as continue_on_error"
+  else
+    echo -e "--- ${BK_LOG_PREFIX}🚨 Cache is skipped because step returned ${BUILDKITE_COMMAND_EXIT_STATUS}"
+    exit 0
+  fi
+fi
+
+if [[ "${BUILDKITE_PLUGIN_CACHE_V2_PR:-true}" =~ (false|off|0) ]]; then
+  if [[ ! "${BUILDKITE_PULL_REQUEST:-false}" =~ (false) ]]; then
+    echo -e "${BK_LOG_PREFIX}PR Detected. Skipping..."
+    exit 0
+  fi
+fi
+
+# BUILDKITE_PLUGIN_CACHE_V2_READ_ONLY will prevent the cache plugin to upload any data,
+# when used with 'read-only:true'.
+# This is useful when you want to only download the cache (if there is any found)
+if [ -n "${BUILDKITE_PLUGIN_CACHE_V2_KEY:-}" ] && [ "${BUILDKITE_PLUGIN_CACHE_V2_READ_ONLY:-false}" != "true" ]; then
+
+  # Defaults...
+  BK_CACHE_BACKEND="${BUILDKITE_PLUGIN_CACHE_V2_BACKEND:-tarball}"
+  CACHE_KEY="$(expand_templates "$BUILDKITE_PLUGIN_CACHE_V2_KEY")"
+
+  source_locating "$CACHE_KEY"
+
+  paths=()
+
+  if [[ -n "${BUILDKITE_PLUGIN_CACHE_V2_PATHS:-}" ]]; then
+    paths+=("$BUILDKITE_PLUGIN_CACHE_V2_PATHS")
+  fi
+
+  while IFS='=' read -r path _; do
+    if [[ $path =~ ^(BUILDKITE_PLUGIN_CACHE_V2_PATHS_[0-9]+) ]]; then
+      paths+=("${!path}")
+    fi
+  done < <(env | sort)
+
+  if [ -f "$BK_CACHE_BASEDIR/lib/backends/$BK_CACHE_BACKEND.bash" ]; then
+    . "$BK_CACHE_BASEDIR/lib/backends/$BK_CACHE_BACKEND.bash"
+    cache
+  else
+    echo -e "${BK_LOG_PREFIX}🚨 $BK_CACHE_BACKEND is not supported or not provided. Soft failing..."
+    exit 0
+  fi
+else
+  if [ "${BUILDKITE_PLUGIN_CACHE_V2_READ_ONLY:-false}" == "true" ]; then
+    echo -e "${BK_LOG_PREFIX} Cache upload is skipped because 'read-only' setting is enabled'."
+  else
+    echo -e "${BK_LOG_PREFIX} Cache upload is skipped because no cache key provided."
+  fi
+
+  exit 0
+fi

@@ -37,5 +37,16 @@
     "import/no-duplicates": ["error"],
     "spaced-comment": "warn",
     "prefer-named-capture-group": "off"
-  }
+  },
+  "overrides": [
+    {
+      // Jest manual mocks are resolved by jest.mock()'s directory convention, not by a
+      // standard ES import, so import/no-unused-modules can't see them being used and
+      // flags every export here as dead code.
+      "files": ["**/__mocks__/**"],
+      "rules": {
+        "import/no-unused-modules": "off"
+      }
+    }
+  ]
 }

@@ -69,6 +69,7 @@
     "build": "react-app-rewired build",
     "test": "LC_ALL=\"en_GB.UTF-8\" react-app-rewired test --env=jsdom --transformIgnorePatterns \"node_modules/(?!(@twilio-paste|@twilio/conversations))/\"",
     "test:nowatch": "yarn test --watchAll=false --verbose --runInBand",
+    "lint": "eslint --ext .js,.ts,.tsx src server",
     "bootstrap": "node scripts/bootstrap",
     "e2eCleanupExistingTasks": "node scripts/e2eCleanupExistingTasks",
     "deploy": "yarn build && node scripts/deploy",
