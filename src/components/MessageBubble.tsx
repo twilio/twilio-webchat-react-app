@@ -109,7 +109,7 @@ export const MessageBubble = ({
         }
     };
 
-    const author = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
+    const author: string | null = users?.find((u) => u.identity === message.author)?.friendlyName || message.author;
 
     return (
         <Box
@@ -131,7 +131,13 @@ export const MessageBubble = ({
                 )}
                 <Box {...getInnerContainerStyles(belongsToCurrentUser)}>
                     <Flex hAlignContent="between" width="100%" vAlignContent="center" marginBottom="space20">
-                        <Text {...authorStyles} as="p" aria-hidden style={{ textOverflow: "ellipsis" }} title={author}>
+                        <Text
+                            {...authorStyles}
+                            as="p"
+                            aria-hidden
+                            style={{ textOverflow: "ellipsis" }}
+                            title={author as unknown as string | undefined}
+                        >
                             {author}
                         </Text>
                         <ScreenReaderOnly as="p">
@@ -140,8 +146,8 @@ export const MessageBubble = ({
                                 : `${users?.find((u) => u.identity === message.author)?.friendlyName} sent at`}
                         </ScreenReaderOnly>
                         <Text {...timeStampStyles} as="p">
-                            {`${doubleDigit(message.dateCreated.getHours())}:${doubleDigit(
-                                message.dateCreated.getMinutes()
+                            {`${doubleDigit(message.dateCreated?.getHours() || 0)}:${doubleDigit(
+                                message.dateCreated?.getMinutes() || 0
                             )}`}
                         </Text>
                     </Flex>
