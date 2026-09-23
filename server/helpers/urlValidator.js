@@ -36,8 +36,16 @@ const validateMediaUrl = async (urlString) => {
         throw new Error("localhost not allowed");
     }
 
-    if (net.isIP(hostname)) {
-        if (isPrivateIP(hostname)) {
+    // URL keeps the brackets on an IPv6 literal (e.g. "[::1]"), but net.isIP() only
+    // recognizes bracket-free notation ("::1") - without stripping them first, every
+    // bracketed IPv6 address (the only way IPv6 literals appear in a URL) falls through
+    // to the DNS-lookup branch below, where the lookup on the literal "[::1]" string just
+    // fails and is silently treated as "no records found", letting it through unchecked.
+    const isBracketedIPv6 = hostname.startsWith("[") && hostname.endsWith("]");
+    const ipCandidate = isBracketedIPv6 ? hostname.slice(1, -1) : hostname;
+
+    if (net.isIP(ipCandidate)) {
+        if (isPrivateIP(ipCandidate)) {
             throw new Error("Private IP addresses not allowed");
         }
     } else {
