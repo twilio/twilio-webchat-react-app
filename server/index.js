@@ -23,4 +23,10 @@ app.listen(port, () => {
 
 app.post("/initWebchat", validateRequestOriginMiddleware, initWebchatController);
 app.post("/refreshToken", validateRequestOriginMiddleware, refreshTokenController);
-app.post("/email", validateRequestOriginMiddleware, emailTranscriptController);
+
+if (process.env.EMAIL_TRANSCRIPT_DISABLED === "true") {
+    console.log("Email transcript endpoint disabled (EMAIL_TRANSCRIPT_DISABLED=true)");
+} else {
+    app.post("/email", validateRequestOriginMiddleware, emailTranscriptController);
+    console.log("Email transcript endpoint enabled");
+}
