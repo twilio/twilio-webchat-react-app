@@ -2,7 +2,7 @@
   "include": [
     "./src/**/*",
     "./cypress/**/*",
-    "./server/*"
+    "./server/**/*"
   ],
   "compilerOptions": {
     "strict": true,

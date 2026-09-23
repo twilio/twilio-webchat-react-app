@@ -1,6 +1,5 @@
-import { fireEvent, prettyDOM, render, waitFor } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import React from "react";
 
 import * as genericActions from "../../store/actions/genericActions";
 import { AttachFileButton } from "../AttachFileButton";

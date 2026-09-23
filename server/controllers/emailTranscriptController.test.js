@@ -21,7 +21,7 @@ const buildRes = () => ({
 describe("emailTranscriptController", () => {
     beforeEach(() => {
         sendMessage.mockReset();
-        jest.spyOn(console, "error").mockImplementation(() => {});
+        jest.spyOn(console, "error").mockImplementation(() => undefined);
     });
 
     afterEach(() => {

@@ -9,6 +9,8 @@ jest.mock("dns", () => ({
     }
 }));
 
+const PRIVATE_IP_ERROR = "Private IP addresses not allowed";
+
 describe("isPrivateIP", () => {
     it.each([
         ["127.0.0.1", true], // loopback
@@ -51,31 +53,23 @@ describe("validateMediaUrl", () => {
     });
 
     it("rejects a private IPv4 literal", async () => {
-        await expect(validateMediaUrl("https://127.0.0.1/file.png")).rejects.toThrow(
-            "Private IP addresses not allowed"
-        );
+        await expect(validateMediaUrl("https://127.0.0.1/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
     });
 
     it("rejects the AWS metadata address", async () => {
-        await expect(validateMediaUrl("https://169.254.169.254/latest/meta-data")).rejects.toThrow(
-            "Private IP addresses not allowed"
-        );
+        await expect(validateMediaUrl("https://169.254.169.254/latest/meta-data")).rejects.toThrow(PRIVATE_IP_ERROR);
     });
 
     it("rejects an IPv6 loopback literal", async () => {
-        await expect(validateMediaUrl("https://[::1]/file.png")).rejects.toThrow("Private IP addresses not allowed");
+        await expect(validateMediaUrl("https://[::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
     });
 
     it("rejects an IPv6 unique-local literal", async () => {
-        await expect(validateMediaUrl("https://[fc00::1]/file.png")).rejects.toThrow(
-            "Private IP addresses not allowed"
-        );
+        await expect(validateMediaUrl("https://[fc00::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
     });
 
     it("rejects an IPv6 link-local literal", async () => {
-        await expect(validateMediaUrl("https://[fe80::1]/file.png")).rejects.toThrow(
-            "Private IP addresses not allowed"
-        );
+        await expect(validateMediaUrl("https://[fe80::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
     });
 
     it("allows a public IPv4 literal", async () => {
@@ -92,9 +86,7 @@ describe("validateMediaUrl", () => {
         dns.resolve4.mockResolvedValue(["93.184.216.34"]);
         dns.resolve6.mockResolvedValue([]);
 
-        await expect(validateMediaUrl("https://example.com/file.png")).resolves.toBe(
-            "https://example.com/file.png"
-        );
+        await expect(validateMediaUrl("https://example.com/file.png")).resolves.toBe("https://example.com/file.png");
     });
 
     it("rejects a hostname that DNS-resolves (A record) to a private IP - DNS rebinding", async () => {
