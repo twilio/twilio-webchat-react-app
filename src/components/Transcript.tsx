@@ -17,8 +17,7 @@ import {
     getTranscriptData,
     getAgentNames,
     generateDownloadTranscript,
-    getUniqueFilenames,
-    generateEmailTranscript
+    getUniqueFilenames
 } from "../utils/generateTranscripts";
 import { TranscriptConfig } from "../definitions";
 import { PreEngagementData } from "../store/definitions";
@@ -27,6 +26,7 @@ interface TranscriptProps {
     messages: Message[] | undefined;
     users: User[] | undefined;
     preEngagementData: PreEngagementData;
+    conversationSid: string | undefined;
     transcriptConfig: TranscriptConfig | undefined;
 }
 
@@ -102,20 +102,16 @@ export const Transcript = (props: TranscriptProps) => {
     const handleEmailTranscript = async () => {
         setEmailingTranscript(true);
         setIsGeneratingTranscript(true);
-        if (props.preEngagementData) {
+        if (props.preEngagementData && props.conversationSid) {
             const transcriptData = getTranscriptData(props.messages, props.users);
-            const uniqueFilenames = getUniqueFilenames(transcriptData);
             const customerName = props.preEngagementData?.name || transcriptData[0].author?.trim();
             const agentNames = getAgentNames(customerName, transcriptData);
-            const mediaInfo = await getMediaInfo();
-            const transcript = generateEmailTranscript(customerName, agentNames, transcriptData);
             setIsGeneratingTranscript(false);
             await contactBackend("/email", {
+                type: "transcript",
+                conversationSid: props.conversationSid,
                 recipientAddress: props.preEngagementData.email,
-                subject: props.transcriptConfig?.emailSubject?.(agentNames),
-                text: props.transcriptConfig?.emailContent?.(customerName, transcript),
-                mediaInfo,
-                uniqueFilenames
+                subject: props.transcriptConfig?.emailSubject?.(agentNames)
             });
         }
         setTimeout(() => setEmailingTranscript(false), 1000);

@@ -93,41 +93,7 @@ const generateDownloadTranscript = (
     return transcript;
 };
 
-const generateEmailTranscript = (
-    customerName: string | undefined,
-    agentNames: (string | undefined)[],
-    transcriptData: Transcript[]
-) => {
-    const doubleDigit = (number: number) => `${number < 10 ? 0 : ""}${number}`;
-    const conversationStartDate = transcriptData[0].timeStamp.toLocaleString("default", { dateStyle: "long" });
-    const duration = generateDuration(transcriptData);
-    const uniqueFilenames = getUniqueFilenames(transcriptData);
-    let mediaMessageIndex = 0;
-
-    let conversationTitle = `Chat with <strong>${customerName}</strong>`;
-    if (agentNames.length > 0) {
-        agentNames.forEach((name) => (conversationTitle = conversationTitle.concat(` and <strong>${name}</strong>`)));
-    }
-
-    let transcript = `${conversationTitle}<br><br><strong>Date:</strong> ${conversationStartDate}<br><strong>Duration:</strong> ${duration}<br><br>`;
-    for (const message of transcriptData) {
-        let messageText = `${doubleDigit(message.timeStamp.getHours())}:${doubleDigit(
-            message.timeStamp.getMinutes()
-        )} <i>${message.author}</i>: ${message.body}`;
-        if (message.attachedMedia) {
-            for (let i = 0; i < message.attachedMedia.length; i++) {
-                messageText = messageText.concat(
-                    ` (** Attached file <i>${uniqueFilenames[mediaMessageIndex + i]}</i> **)`
-                );
-            }
-            mediaMessageIndex += message.attachedMedia.length;
-        }
-        transcript = transcript.concat(`${messageText}<br><br>`);
-    }
-    return transcript;
-};
-
 // eslint-disable-next-line import/no-unused-modules
 export type { Transcript };
 // eslint-disable-next-line import/no-unused-modules
-export { getTranscriptData, getAgentNames, generateDownloadTranscript, generateEmailTranscript, getUniqueFilenames };
+export { getTranscriptData, getAgentNames, generateDownloadTranscript, getUniqueFilenames };

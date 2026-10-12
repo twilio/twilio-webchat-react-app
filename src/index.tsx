@@ -29,9 +29,6 @@ const defaultConfig: ConfigState = {
                 agentNames.slice(1).forEach((name) => (subject = subject.concat(` and ${name}`)));
             }
             return subject;
-        },
-        emailContent: (customerName, transcript) => {
-            return `<div><h1 style="text-align:center;">Chat Transcript</h1><p>Hello ${customerName},<br><br>Please see below your transcript, with any associated files attached, as requested.<br><br>${transcript}</p></div>`;
         }
     }
 };

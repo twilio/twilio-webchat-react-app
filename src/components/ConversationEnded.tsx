@@ -12,12 +12,15 @@ import type { Transcript } from "./Transcript";
 
 export const ConversationEnded = () => {
     const dispatch = useDispatch();
-    const { messages, users, preEngagementData, transcriptConfig } = useSelector((state: AppState) => ({
-        messages: state.chat.messages,
-        users: state.chat.users,
-        preEngagementData: state.chat.conversation?.attributes.pre_engagement_data,
-        transcriptConfig: state.config.transcript
-    }));
+    const { messages, users, preEngagementData, conversationSid, transcriptConfig } = useSelector(
+        (state: AppState) => ({
+            messages: state.chat.messages,
+            users: state.chat.users,
+            preEngagementData: state.chat.conversation?.attributes.pre_engagement_data,
+            conversationSid: state.chat.conversation?.sid,
+            transcriptConfig: state.config.transcript
+        })
+    );
 
     const handleStartNewChat = () => {
         sessionDataHandler.clear();
@@ -42,6 +45,7 @@ export const ConversationEnded = () => {
                 <TranscriptComponent
                     messages={messages}
                     preEngagementData={preEngagementData}
+                    conversationSid={conversationSid}
                     users={users}
                     transcriptConfig={transcriptConfig}
                 />

@@ -1,44 +1,43 @@
-const { sendMessage } = require("../helpers/email");
+const { sendTranscriptEmail, TranscriptRequestError } = require("../helpers/email");
+
+const EMAIL_TYPE_TRANSCRIPT = "transcript";
+const CONVERSATION_SID_PATTERN = /^CH[0-9a-fA-F]{32}$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateEmailParams = (body) => {
-    const { recipientAddress, subject, text, mediaInfo, uniqueFilenames } = body;
+    const { type, conversationSid, recipientAddress, subject } = body || {};
 
-    if (!recipientAddress || typeof recipientAddress !== "string") {
-        throw new Error("Invalid recipientAddress");
+    if (type !== EMAIL_TYPE_TRANSCRIPT) {
+        throw new TranscriptRequestError(400, "Invalid type");
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(recipientAddress)) {
-        throw new Error("Invalid email format");
+    if (typeof conversationSid !== "string" || !CONVERSATION_SID_PATTERN.test(conversationSid)) {
+        throw new TranscriptRequestError(400, "Invalid conversationSid");
+    }
+
+    if (typeof recipientAddress !== "string" || !EMAIL_PATTERN.test(recipientAddress)) {
+        throw new TranscriptRequestError(400, "Invalid recipientAddress");
     }
 
     if (!subject || typeof subject !== "string") {
-        throw new Error("Invalid subject");
+        throw new TranscriptRequestError(400, "Invalid subject");
     }
 
-    if (text && typeof text !== "string") {
-        throw new Error("Invalid text");
-    }
-
-    if (!Array.isArray(mediaInfo)) {
-        throw new Error("mediaInfo must be an array");
-    }
-
-    if (!Array.isArray(uniqueFilenames)) {
-        throw new Error("uniqueFilenames must be an array");
-    }
-
-    return { recipientAddress, subject, text, mediaInfo, uniqueFilenames };
+    return { conversationSid, recipientAddress, subject };
 };
 
 const emailTranscriptController = async (req, res) => {
     try {
         const validatedParams = validateEmailParams(req.body);
-        const message = await sendMessage(validatedParams);
-        res.json(message);
+        const result = await sendTranscriptEmail(validatedParams);
+        res.json(result);
     } catch (err) {
         console.error("Email transcript error:", err.message);
-        res.status(400).json({ error: err.message });
+        if (err instanceof TranscriptRequestError) {
+            res.status(err.statusCode).json({ error: err.message });
+            return;
+        }
+        res.status(500).json({ error: "Failed to send transcript email" });
     }
 };
 

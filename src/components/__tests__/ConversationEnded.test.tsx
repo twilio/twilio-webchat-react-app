@@ -1,10 +1,10 @@
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { useSelector } from "react-redux";
 
 import { ConversationEnded } from "../ConversationEnded";
 import * as genericActions from "../../store/actions/genericActions";
-import { sessionDataHandler } from "../../sessionDataHandler";
+import { sessionDataHandler, contactBackend } from "../../sessionDataHandler";
 import { EngagementPhase } from "../../store/definitions";
 
 jest.mock("react-redux", () => ({
@@ -13,10 +13,15 @@ jest.mock("react-redux", () => ({
     useSelector: jest.fn()
 }));
 
+jest.mock("@twilio-paste/core/spinner", () => ({
+    Spinner: () => <div title="Spinner" />
+}));
+
 jest.mock("../../sessionDataHandler", () => ({
     sessionDataHandler: {
         clear: jest.fn()
-    }
+    },
+    contactBackend: jest.fn()
 }));
 
 const user1 = {
@@ -158,6 +163,41 @@ describe("Conversation Ended", () => {
         const { queryByText } = render(<ConversationEnded />);
 
         expect(queryByText(emailTranscriptButtonText)).not.toBeInTheDocument();
+    });
+
+    it("sends only type, conversationSid, recipientAddress and subject when emailing the transcript", async () => {
+        const conversationSid = `CH${"a".repeat(32)}`;
+        const stateWithConversation = {
+            ...defaultState,
+            chat: {
+                ...defaultState.chat,
+                conversation: {
+                    ...defaultState.chat.conversation,
+                    sid: conversationSid,
+                    attributes: {
+                        // eslint-disable-next-line camelcase
+                        pre_engagement_data: defaultState.session.preEngagementData
+                    }
+                }
+            },
+            config: {
+                transcript: { ...transcriptConfig, emailSubject: () => "Transcript subject" }
+            }
+        };
+        (useSelector as jest.Mock).mockImplementation((callback: any) => callback(stateWithConversation));
+        (contactBackend as jest.Mock).mockResolvedValue({});
+        const { getByText } = render(<ConversationEnded />);
+
+        fireEvent.click(getByText(emailTranscriptButtonText));
+
+        await waitFor(() =>
+            expect(contactBackend).toHaveBeenCalledWith("/email", {
+                type: "transcript",
+                conversationSid,
+                recipientAddress: defaultState.session.preEngagementData.email,
+                subject: "Transcript subject"
+            })
+        );
     });
 
     it("clears session data on new chat button click", () => {
