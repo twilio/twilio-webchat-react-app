@@ -1,39 +1,32 @@
-const dns = require("dns").promises;
+const { validateMediaUrl } = require("./urlValidator");
 
-const { validateMediaUrl, isPrivateIP } = require("./urlValidator");
-
-jest.mock("dns", () => ({
-    promises: {
-        resolve4: jest.fn(),
-        resolve6: jest.fn()
-    }
-}));
-
-const PRIVATE_IP_ERROR = "Private IP addresses not allowed";
-
-describe("isPrivateIP", () => {
-    it.each([
-        ["127.0.0.1", true], // loopback
-        ["10.0.0.5", true], // RFC1918
-        ["172.16.0.1", true], // RFC1918
-        ["172.31.255.255", true], // RFC1918 (upper bound)
-        ["192.168.1.1", true], // RFC1918
-        ["169.254.169.254", true], // link-local / AWS metadata
-        ["0.0.0.0", true],
-        ["::1", true], // IPv6 loopback
-        ["fc00::1", true], // IPv6 unique local
-        ["fe80::1", true], // IPv6 link-local
-        ["8.8.8.8", false], // public
-        ["93.184.216.34", false] // public
-    ])("treats %s as private=%s", (ip, expected) => {
-        expect(isPrivateIP(ip)).toBe(expected);
-    });
-});
+const serviceSid = `IS${"a".repeat(32)}`;
+const otherServiceSid = `IS${"b".repeat(32)}`;
+const mediaSid = `ME${"c".repeat(32)}`;
+const mcsMediaUrl = `https://mcs.us1.twilio.com/v1/Services/${serviceSid}/Media/${mediaSid}`;
+const mediaHostUrl = `https://media.us1.twilio.com/${mediaSid}`;
+const NOT_TWILIO_MEDIA_URL = "URL is not a Twilio media URL";
 
 describe("validateMediaUrl", () => {
+    const originalServiceSid = process.env.CONVERSATIONS_SERVICE_SID;
+
     beforeEach(() => {
-        dns.resolve4.mockReset();
-        dns.resolve6.mockReset();
+        process.env.CONVERSATIONS_SERVICE_SID = serviceSid;
+    });
+
+    afterAll(() => {
+        process.env.CONVERSATIONS_SERVICE_SID = originalServiceSid;
+    });
+
+    it.each([
+        ["an MCS media URL", mcsMediaUrl],
+        ["an MCS media content URL", `${mcsMediaUrl}/Content`],
+        ["a signed MCS media URL", `${mcsMediaUrl}/Content?Expires=1&Signature=abc&Key-Pair-Id=xyz`],
+        ["a media host URL", mediaHostUrl],
+        ["a signed media host URL", `${mediaHostUrl}?Expires=1&Signature=abc&Key-Pair-Id=xyz`],
+        ["a media host URL with extra path", `${mediaHostUrl}/photo.png`]
+    ])("allows %s", async (_description, url) => {
+        await expect(validateMediaUrl(url)).resolves.toBe(new URL(url).href);
     });
 
     it("rejects an unparsable URL", async () => {
@@ -41,74 +34,48 @@ describe("validateMediaUrl", () => {
     });
 
     it("rejects a non-HTTPS URL", async () => {
-        await expect(validateMediaUrl("http://example.com/file.png")).rejects.toThrow("Only HTTPS URLs allowed");
-    });
-
-    it("rejects localhost", async () => {
-        await expect(validateMediaUrl("https://localhost/file.png")).rejects.toThrow("localhost not allowed");
-    });
-
-    it("rejects localhost regardless of case", async () => {
-        await expect(validateMediaUrl("https://LocalHost/file.png")).rejects.toThrow("localhost not allowed");
-    });
-
-    it("rejects a private IPv4 literal", async () => {
-        await expect(validateMediaUrl("https://127.0.0.1/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
-    });
-
-    it("rejects the AWS metadata address", async () => {
-        await expect(validateMediaUrl("https://169.254.169.254/latest/meta-data")).rejects.toThrow(PRIVATE_IP_ERROR);
-    });
-
-    it("rejects an IPv6 loopback literal", async () => {
-        await expect(validateMediaUrl("https://[::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
-    });
-
-    it("rejects an IPv6 unique-local literal", async () => {
-        await expect(validateMediaUrl("https://[fc00::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
-    });
-
-    it("rejects an IPv6 link-local literal", async () => {
-        await expect(validateMediaUrl("https://[fe80::1]/file.png")).rejects.toThrow(PRIVATE_IP_ERROR);
-    });
-
-    it("allows a public IPv4 literal", async () => {
-        await expect(validateMediaUrl("https://8.8.8.8/file.png")).resolves.toBe("https://8.8.8.8/file.png");
-    });
-
-    it("allows a public IPv6 literal", async () => {
-        await expect(validateMediaUrl("https://[2001:4860:4860::8888]/file.png")).resolves.toBe(
-            "https://[2001:4860:4860::8888]/file.png"
+        await expect(validateMediaUrl(mcsMediaUrl.replace("https:", "http:"))).rejects.toThrow(
+            "Only HTTPS URLs allowed"
         );
     });
 
-    it("allows a normal public hostname that resolves to public IPs", async () => {
-        dns.resolve4.mockResolvedValue(["93.184.216.34"]);
-        dns.resolve6.mockResolvedValue([]);
-
-        await expect(validateMediaUrl("https://example.com/file.png")).resolves.toBe("https://example.com/file.png");
+    it.each([
+        ["IPv4-mapped IPv6 loopback", `https://[::ffff:127.0.0.1]/${mediaSid}`],
+        ["IPv6 unspecified address", `https://[::]/${mediaSid}`],
+        ["IPv6 loopback", `https://[::1]/${mediaSid}`],
+        ["IPv6 unique local", `https://[fd00::1]/${mediaSid}`],
+        ["localhost", `https://localhost/${mediaSid}`],
+        ["IPv4 loopback", `https://127.0.0.1/${mediaSid}`],
+        ["decimal IPv4", `https://2130706433/${mediaSid}`],
+        ["cloud metadata address", "https://169.254.169.254/latest/meta-data"],
+        ["public host", `https://example.com/${mediaSid}`],
+        ["lookalike suffix host", `https://media.us1.twilio.com.evil.com/${mediaSid}`],
+        ["lookalike prefix host", `https://evilmedia.us1.twilio.com/${mediaSid}`],
+        ["other Twilio host", `https://api.twilio.com/${mediaSid}`],
+        ["other region", `https://media.ie1.twilio.com/${mediaSid}`]
+    ])("rejects %s", async (_description, url) => {
+        await expect(validateMediaUrl(url)).rejects.toThrow(NOT_TWILIO_MEDIA_URL);
     });
 
-    it("rejects a hostname that DNS-resolves (A record) to a private IP - DNS rebinding", async () => {
-        dns.resolve4.mockResolvedValue(["127.0.0.1"]);
-        dns.resolve6.mockResolvedValue([]);
-
-        await expect(validateMediaUrl("https://sneaky.example.com/file.png")).rejects.toThrow();
+    it.each([
+        ["credentials", `https://user:pass@media.us1.twilio.com/${mediaSid}`],
+        ["username only", `https://user@media.us1.twilio.com/${mediaSid}`],
+        ["explicit port", `https://media.us1.twilio.com:8443/${mediaSid}`],
+        ["another service SID", `https://mcs.us1.twilio.com/v1/Services/${otherServiceSid}/Media/${mediaSid}`],
+        ["MCS URL without media SID", `https://mcs.us1.twilio.com/v1/Services/${serviceSid}/Media`],
+        ["MCS URL with extra path", `${mcsMediaUrl}/Content/extra`],
+        ["MCS service listing", "https://mcs.us1.twilio.com/v1/Services"],
+        ["media host without SID", "https://media.us1.twilio.com/"],
+        ["malformed media SID", "https://media.us1.twilio.com/ME123"],
+        ["non-hex media SID", `https://media.us1.twilio.com/ME${"z".repeat(32)}`],
+        ["non-media SID", `https://media.us1.twilio.com/CH${"c".repeat(32)}`]
+    ])("rejects a URL with %s", async (_description, url) => {
+        await expect(validateMediaUrl(url)).rejects.toThrow(NOT_TWILIO_MEDIA_URL);
     });
 
-    it("rejects a hostname that DNS-resolves (AAAA record) to a private IP - DNS rebinding", async () => {
-        dns.resolve4.mockResolvedValue([]);
-        dns.resolve6.mockResolvedValue(["fe80::1"]);
+    it("rejects MCS URLs when CONVERSATIONS_SERVICE_SID is not set", async () => {
+        delete process.env.CONVERSATIONS_SERVICE_SID;
 
-        await expect(validateMediaUrl("https://sneaky.example.com/file.png")).rejects.toThrow();
-    });
-
-    it("allows a hostname with no DNS records at all (treated as unresolvable, not malicious)", async () => {
-        dns.resolve4.mockRejectedValue(Object.assign(new Error("not found"), { code: "ENOTFOUND" }));
-        dns.resolve6.mockRejectedValue(Object.assign(new Error("not found"), { code: "ENOTFOUND" }));
-
-        await expect(validateMediaUrl("https://does-not-exist.example.com/file.png")).resolves.toBe(
-            "https://does-not-exist.example.com/file.png"
-        );
+        await expect(validateMediaUrl(mcsMediaUrl)).rejects.toThrow(NOT_TWILIO_MEDIA_URL);
     });
 });
