@@ -326,16 +326,16 @@ Find out more about [Twilio UX principles](https://paste.twilio.design/principle
 The `/email` endpoint includes several security controls to prevent Server-Side Request Forgery (SSRF) attacks:
 
 ### URL Validation
-- **HTTPS Only**: Only HTTPS URLs are allowed for media attachments
-- **Localhost Blocking**: The hostname `localhost` is explicitly blocked
-- **Private IP Blocking**: Requests to private IP ranges are blocked:
-  - `127.0.0.0/8` (loopback)
-  - `10.0.0.0/8` (RFC1918)
-  - `172.16.0.0/12` (RFC1918)
-  - `192.168.0.0/16` (RFC1918)
-  - `169.254.0.0/16` (link-local, AWS metadata)
-  - IPv6 private ranges (`::1`, `fc00:`, `fe80:`)
-- **DNS Rebinding Protection**: Hostnames are resolved (both IPv4 and IPv6) and checked against private IP ranges
+Media URLs are checked against an allowlist of Twilio media URL formats. Any other URL is rejected before a request is made:
+- `https://mcs.us1.twilio.com/v1/Services/{CONVERSATIONS_SERVICE_SID}/Media/{MediaSid}`, optionally followed by `/Content`
+- `https://media.us1.twilio.com/{MediaSid}`, optionally followed by a path
+
+Additionally:
+- **HTTPS Only**: Only HTTPS URLs are allowed
+- **Exact Host Match**: Hostnames must match exactly, so IP addresses (including IPv6 forms such as `[::ffff:127.0.0.1]` or `[::]`), `localhost` and lookalike domains are rejected
+- **Own Service Only**: MCS URLs must belong to the configured `CONVERSATIONS_SERVICE_SID`
+- **Valid Media SID**: The path must contain a Media SID (`ME` followed by 32 hex characters)
+- **No Credentials or Ports**: URLs containing a username, password or explicit port are rejected
 
 ### Request Limits
 - **Timeout**: 30 second request timeout
